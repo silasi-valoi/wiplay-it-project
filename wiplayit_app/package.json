@@ -32,7 +32,7 @@
     "draft-js": "^0.11.5",
     "file-loader": "^6.0.0",
     "font-awesome": "^4.7.0",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash.assign": "^4.2.0",
     "material-design-icons": "^3.0.1",
     "popper.js": "^1.16.1",
