@@ -88,7 +88,11 @@ class Profile (models.Model):
     live            = models.CharField(max_length=100, blank=True)
     credential      = models.CharField(max_length=150, blank=True)
     favorite_quote  = models.TextField(max_length=200, blank=True)
-    profile_picture = models.ImageField(upload_to='profiles/%y/%m/%d/', blank=True)
+    profile_picture = models.ImageField(
+                        upload_to='profiles/%y/%m/%d/',
+                        blank=True,
+                        default="default-profiles/user-image-placeholder.png"
+                      )
     followers       = models.IntegerField(default=0)
     followings      = models.IntegerField(default=0)
     

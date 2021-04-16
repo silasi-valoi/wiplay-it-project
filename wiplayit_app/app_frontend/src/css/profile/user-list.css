@@ -56,16 +56,13 @@
 
 @media (max-width: 980px) {
     .users-modal-container {
-        border      : px solid blue;
         padding-top : 50px; 
         overflow-y  : auto;
     }
 
     .user-list-container {
         background : #ffff;
-        border     : px solid black
     }
-
 
     .user-list-box {
         border: px solid red;

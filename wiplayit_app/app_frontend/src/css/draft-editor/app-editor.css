@@ -440,8 +440,7 @@ div.public-DraftEditor-content {
 
     #fileContainer [type=file] {
         cursor: pointer;
-
-    }
+     }
 
     .options {
         margin-bottom: 20px;

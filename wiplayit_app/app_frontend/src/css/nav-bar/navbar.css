@@ -75,12 +75,20 @@
     font-family : 'Cambay';
 }
 
+.partial-navbar-login-link button,
+.navbar-login-link button {
+    border-radius: 15px;
+    color: green;
+    font-family: 'Signika';
+    font-weight: bold;
+}
+
 .logo-contents {
     font-weight : bold;
     font-family : 'Ubuntu';
     font-size   : 17px;
     color       : #fefefe;
-    margin-top  : 12px;
+    padding     : 12px 0 7px; 
 }
 
 .menu-img-box {
@@ -231,6 +239,7 @@
     
     }
 
+
     
     .log {
         font-family: 'Signika';
@@ -238,12 +247,26 @@
         color: white;
         padding: 10px;
     }
+    
+    .navbar-login-link button {
+        border     : 1px solid #fefefe;
+        margin-top : 10px; 
+    }
+
+    .partial-navbar-login-link button {
+        border     : 1px solid red;
+        margin-top : 5px; 
+    }
+    
+    .partial-navbar-login-link,
+    .navbar-login-link {
+        width   : 100%;
+        padding : 0 7px 7px; 
+    }
 
     .logo-contents {
         justify-content: center;
         display: flex;
-        width: 100%;
-
     }
 
     .logo-img-box {
@@ -286,13 +309,14 @@
     }
 
     .navigation-img-item { 
-        border   : px solid black;
-        padding  : 10px  15px;  
+        padding : 7px  15px;  
+        width   : 100%;
     }
 
     
     .navigation-img-box, #nav-bar-modal-men {
-        border  : px solid red;
+        justify-content: flex-end;
+        display: flex;
     
     }
 
@@ -330,16 +354,10 @@
     #navBardropdown, .nav-bar-img-box{
         border        : px solid #D5D7D5;
         border-radius : 50%;
-        width         : 27px;
-        height        : 27px; 
+        width         : 30px;
+        height        : 30px; 
     }
 
-    .nav-bar-img {
-        border-radius : 50%;
-        width         : 27px;
-        height        : 27px;
-        object-fit    : cover;
-    }
 
    .items {
         font-family     : 'Jura';
@@ -480,18 +498,16 @@
     }
 
     .navigation-menu {
-        border  : px solid blue;
         display : flex;
         width   : 100%;
 
     }
 
     .navigation-box {
-        border : px solid black;
         width  : 60%;
-        margin : 0 20%;
-    }
+        margin : 0 10% 0 20%;
 
+    }
 
     .navigation-item {
         border          : px solid black !important;
@@ -508,9 +524,8 @@
     }
 
     .nav-menu {
-        border  : px solid red;
         display : flex;
-        width   : 75%; 
+        width   : 50%; 
     }
 
     .items {
@@ -606,7 +621,6 @@
     }
 
     .post-question-box {
-        border  : px solid black;
         display : flex;
         width   : 25%;
         justify-content: flex-end !important; 
@@ -643,13 +657,32 @@
         font-size   : 13px;
     }
 
+
+    .navbar-login-link  {
+        border : px solid blue;
+        padding: 10px 5% 0 0;
+    }
+
+    
+    .navbar-login-link button {
+        border : 1px solid red;
+    }
+
     .navigation-img-box {
+        width: 25%;
         border : px solid red;
-        margin : 7px 5px 0;
+    }
+    
+    .dropdown-menu-box {
+
     }
 
     #navBardropdown {
-        border  : px solid blue;
+        margin  : 9px 0 0; 
+        padding-right : 10px;
+        width   : 100%; 
+        display: flex;
+        justify-content: flex-end;
     }
 
     .navbar-dropdown {

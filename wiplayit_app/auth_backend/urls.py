@@ -33,25 +33,30 @@ urlpatterns = [
 
     url(r'^rest-auth/account-confirm-email/(?P<key>[-:\w]+)/$',
         VerifyEmailView.as_view(), name='account_confirm_email'),
+
     path('rest-auth/account-confirm-phone-number/',
         VerifyPhoneNumberView.as_view(), name='account_confirm_phone_number'),
 
     path('rest-auth/password-change-confirm-sms-code/',
-        PasswordChangeConfirmationView.as_view(), name='password_hange_confirm_code'),
+        PasswordChangeConfirmationView.as_view(), name='password_change_confirm_code'),
 
     path('rest-auth/confirmation/resend/',
          SendAccountConfirmationView.as_view(),     name='account_confirm_send'),
 
     path("api/user/<int:pk>/followers/", 
         RetrieveUserFollowers.as_view({'get': 'list'})),
+
     path("api/user/<int:pk>/followings/",
          RetrieveUserFollowings.as_view({'get': 'list'})),  
 
     path("api/current/user/", retrieve_current_user, name="api-current-user"),
+
     path('api/profile/<int:pk>/',
          RetrieveUserProfileView.as_view({'get':'retrieve'}), name='profile'),
+
     path('api/user/list/',
-         UserView.as_view({'get': 'list'}), name="get-user-list"),   
+         UserView.as_view({'get': 'list'}), name="get-user-list"),  
+
     path('api/profile/<int:pk>/edit/',
          UpdateUserProfileView.as_view({'get':'retrieve','put':'put' }),
          name='update-user-profile'), 

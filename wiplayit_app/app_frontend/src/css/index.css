@@ -128,10 +128,6 @@
 
     }
 
-    .unconfirmed-user-warn-container {
-     	border  : px solid  red;
-    }
-
     .unconfirmed-user-warn-box {
     	border     : px solid red;
     	display    : flex;
@@ -140,9 +136,9 @@
 
 }
 
-
+.confirm-account-link button,
 .text-highlight {
-	  color : #558FF0; 
+	color : #558FF0; 
     font-size: 14px;
 }
 
@@ -151,7 +147,7 @@
 } 
 
 
-.unconfirmed-user-warn {
+.confirm-account-link {
   	font-size: 13px !important;
 }
 

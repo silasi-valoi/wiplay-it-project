@@ -231,7 +231,7 @@ class SmsCodeSerializer(serializers.Serializer):
     	code = attrs.get('sms_code')
     	sms_code = self.validate_code(code)
     	if not sms_code:
-    		msg = 'Code is invalid'
+    		msg = 'Code is invalid or it is expired'
     		raise serializers.ValidationError(msg)
 
     	if sms_code.code_expired():
@@ -256,7 +256,7 @@ class PhoneNumberConfirmationSerializer(SmsCodeSerializer):
 class PasswordChangeConfirmationSerializer(SmsCodeSerializer):
     
     def validate_code(self, value):
-    	confirmation = PhoneNumberPasswordChange.objects.filter(sms_code=value)
+    	confirmation = PhoneNumberPasswordChange.objects.filter(sms_code=value, password_changed=False)
 
     	if not confirmation:
     		return None
@@ -622,8 +622,13 @@ class UserSerializer(BaseUserSerializer):
 	user_can_edit     = serializers.SerializerMethodField()
 				                
 	def get_user_is_following(self, obj):
+		self.update_serializer_obj_perms('user_perms')
+		
+		if not self.current_user().is_authenticated:
+			return False
+		
 		perms = self.get_obj_permissions('followers_perms')
-		return has_perm(self.current_user() ,perms, obj)	  
+		return has_perm(self.current_user(), perms, obj)	  
 	
 
 class UserProfileSerializer(UserSerializer):

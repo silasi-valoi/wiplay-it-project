@@ -1,28 +1,98 @@
 
+.password-change-container,
+.account-confirmation-container {
+    width      : 100%;
+    background : #edf0f3;
+} 
+
+.registration-container {
+    width      : 100%;
+    background : #edf0f3;
+    border-radius: 7px;
+}
+
 .navbar-title-box {
     color: #ffff;
 }
 
+.account-confirmation-box .registration-spin-loader-box {
+    margin: 25px 0 0;
+}
+
+.confirmation-loader-box {
+    border: px solid black;
+}
+
+
 .social-login-container {
-     border: px solid red;
+    border: px solid red;
  }
 
+.auth-option-title {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    font-weight: bold;
+    font-family: 'Oswald';
+}
 
-.submit-btn-box {
+.sign-or-login-btns {
+   border: 1px solid #D2D2D2;
+   margin: 0px 4%;
+   padding: 10px;
+}
+
+.form-toggle-btns {
+    display    : flex;
+    background : #edf0f3;
+    color      : #5384e5;
+    font-size  : 12px;
+    margin     : 0 30px 0 7px;
+}
+
+.login-form-toggle,
+.signup-form-toggle {
+    display: flex;
+    width: 100%;
+    margin-top: 22px;
+    font-size: 13px;
+}
+
+
+.signup-toggle {
+    display : flex;
     width   : 100%;
-    padding : 0 5px; 
+    justify-content : flex-end;
+}
+
+.welcome-message  a,
+.terms-and-policy  a,
+.registration-link-box a {
+    color: #5384e5;
+    font-size: 12px;
+}
+
+
+.message-success {
+  background: #edf0f3;
+  margin: 10px;
+  font-size: 14px;
+} 
+
+.form-errors {
+    color     : red;
+    font-size : 13px;
 }
 
 .registration-spin-loader-box {
-    border          : px solid black;
     justify-content : center;
     display         : flex;
     padding         : 10px 0;
-    
 }
 
 .auth-input-field {
-    margin : 4px;
+    margin : 4px 0;
+    border : px solid red;
 }
 
 .auth-input-field input {
@@ -30,17 +100,6 @@
     font-size : 15px;
 }
 
-
-.authenticated-box {
-   border : 1px solid #D2D2D2;
-   margin: 40px 10px;
-}
-
-.authenticated-contents {
-  border     : px solid red;
-  min-height : 100px; 
-
-}
 
 .navbar-title-box,
 .authenticated-title,
@@ -50,41 +109,74 @@
    
 }
 
-
-.authenticated-title {
-    font-size: 14px;
+.registration-welcome-box {
+   margin: 20px 4%;
 }
 
-.authenticated-redirect-link{
-     border      : px solid red;
-     width       : 30%;
-     font-size   : 14px; 
-     margin      : 10px 0; 
-     background  :  #A33F0B;
-     color       : white;
-     font-weight : bold;
+.welcome-message{
+   border    : px solid red;
+   font-size : 15px;
+   color: #545353;
 }
-
 
 
 .resend-email-box {
-    border : px solid red;
-    display: flex;
-    margin:  12px 8px; 
+    border  : px solid black;
+    display : flex;
+    margin  :  12px 8px; 
 }
 
 .resend-email-text {
-    font-size: 13px;
-    padding: 7px 0 0;
+    font-size : 13px;
+    padding   : 14px 0 0;
+    border    : px solid black;
 }
 
-.resend-email-btn {
+.resend-email-box button {
     color : #5384e5;
     font-size: 15px;
+}
 
+.registration-btns-box {
+    display:  flex;
+    margin-top: 20px;
+    border    : px solid black;
+}
+
+.form-btns {
+    display: block;
 }
 
 
+.submit-btn-box {
+    width  : 100%;
+    border : px solid red; 
+}
+
+.form-submit {
+    justify-content: center;
+    display: flex;
+}
+
+.registration-submit-btn, 
+.resend-confirmation-btn {
+    color      : #ffff;
+    background : #A33F0B; 
+    width      : 50%; 
+    height     : 30px;
+    font-size  : 14px;
+}
+
+.form-submit button {
+    width: 50%;
+}
+
+.email-form-cancel {
+    border  : px solid red; 
+    display : flex;
+    justify-content : flex-end;
+    margin-top : 15px;
+}
 
 .success-resend-message {
     color: green;
@@ -92,3 +184,54 @@
     text-align: center;
     margin : 0 10px 8px;
 }
+
+.authentication-dismiss {
+    display: flex;
+    width: 100%;
+    padding: 10px 20px 0;
+    justify-content: flex-end;
+}
+
+.password-change-toggle {
+    margin-top: 8px;
+}
+
+.toggleBtn {
+   font-size: 13px;
+   color: #5384e5;
+}
+
+.authentication-btn-box {
+    margin : 15px 20px;
+    justify-content: center;
+    display:  flex;
+}
+
+.authentication-btn-box button,
+.create-account-box button {
+    width       : 50%;
+    margin-top  : 10px;
+    background  :  #A33F0B;
+    font-size   : 12px !important;
+    color       : white !important;
+    font-weight : bold;
+}
+
+.form-errors {
+   
+}
+
+.country-select-box {
+    margin : 14px 0;
+}
+
+.country-select select {
+    background-color: #D5D7D5;
+    color   : #A33F0B;
+    padding : 5px;
+    font-size : 14px;
+    width  : 100%;
+    height :30px;
+    border : none;
+}
+

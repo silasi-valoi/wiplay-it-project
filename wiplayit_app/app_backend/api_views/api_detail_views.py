@@ -42,6 +42,7 @@ class AboutView(BaseApiView, APIView):
 
 
 class IndexView(BaseView, APIView):
+	permission_classes = (AllowAny,)
 	serializer_class = IndexSerializer
 		
 	def get(self, *args, **kwargs):

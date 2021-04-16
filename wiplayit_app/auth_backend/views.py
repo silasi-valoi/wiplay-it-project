@@ -169,9 +169,10 @@ class VerifyEmailView(APIView):
 
 	def get_object(self, queryset=None):
 		key = self.kwargs['key']
-
+		
 		if allauth_settings.EMAIL_CONFIRMATION_HMAC:
 		 	emailconfirmation = EmailConfirmationHMAC.from_key(key)	
+		 	
 		else:
 			emailconfirmation = EmailConfirmation.objects.filter(key=key)[0]
 		return emailconfirmation
@@ -181,7 +182,7 @@ class VerifyEmailView(APIView):
 		serializer.is_valid(raise_exception=True)
 		self.kwargs['key'] = serializer.validated_data['key']
 		confirmation       = self.get_object()
-				
+						
 		if confirmation:
 			#Finally confirm the user 
 			confirmation.confirm(self.request)
@@ -194,12 +195,13 @@ class VerifyEmailView(APIView):
 
 			payload   = JWT_PAYLOAD_HANDLER(user)
 			jwt_token = JWT_ENCODE_HANDLER(payload)
-			msg   = """Your Account has been successfully confirmed."""
-			
+						
 			response_data = jwt_response_payload_handler(jwt_token, user, request)
+			response_data['detail'] = """Your Account has been successfully confirmed."""
+			
 			return Response(response_data, status=status.HTTP_200_OK)
 
-		msg = """Could not confirm your account"""
+		msg = """Your account Could not be confirmed"""
 		return Response({'detail': 
 			msg}, status=status.HTTP_400_BAD_REQUEST )
 
@@ -360,9 +362,8 @@ class PasswordChangeConfirmationView(APIView):
 		serializer = self.get_serializer(data=request.data)
 		serializer.is_valid(raise_exception=True)
 		sms_code = serializer.validated_data.get('sms_code', None)
-		
-		msg   = """Code is valid."""
-		response_data = {'detail': msg, 'sms_code':sms_code}
+				
+		response_data = {'sms_code':sms_code}
 		return Response(response_data, status=status.HTTP_200_OK)
 
 
@@ -389,6 +390,7 @@ class CustomPasswordResetView(PasswordResetView):
 
         	response_data = {
         		'phone_number':phone_number.national_format,
+        		'sms_sent':True,
         		'detail':msg
         		}
         	return Response(response_data, status=status.HTTP_200_OK)
@@ -396,6 +398,7 @@ class CustomPasswordResetView(PasswordResetView):
         msg = _("Password reset e-mail has been sent.")
         response_data = {
         		'detail' : msg,
+        		'email_sent':True,
         		'email' : email,
         		}
         return Response(response_data, status=status.HTTP_200_OK)
@@ -413,6 +416,7 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     """
     
     def post(self, request, *args, **kwargs):
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -456,6 +460,7 @@ class UserView(BaseApiView):
 		
 
 class RetrieveUserProfileView(UserView):
+	permission_classes = (AllowAny,)
 	serializer_class = UserProfileSerializer
 
 	def get_queryset(self):

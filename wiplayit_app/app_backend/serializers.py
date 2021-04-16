@@ -27,8 +27,9 @@ class BaseChildSerializer(BaseModelSerializer):
 				
 	def get_upvoted(self, obj):
 		perms = self.get_obj_permissions('upvotes_perms')
-		if perms:
+		if perms and self.current_user().is_authenticated:
 			return has_perm(self.current_user(), perms, obj)
+
 		return False
 
 class BaseReplySerializer(BaseChildSerializer):
@@ -191,14 +192,16 @@ class QuestionSerializer(BaseQuestionSerializer):
 	
 	def get_user_is_following(self, obj):
 		perms = self.get_obj_permissions('followers_perms')
-		return has_perm(self.current_user(), perms, obj)
+		if self.current_user().is_authenticated:
+			return has_perm(self.current_user(), perms, obj)
+
+		return False
 		
 		
 	
 	def get_user_has_answer(self, obj):
-		request = self.context.get('request', None)
-		if request:
-			return obj.answers.filter(author=request.user).exists()
+		if self.current_user().is_authenticated:
+			return obj.answers.filter(author=self.current_user()).exists()
 		return 	False
 		
 	def get_answer_count(self, obj):
@@ -238,9 +241,11 @@ class AnswerBookmarkSerializer(BaseModelSerializer):
 		return instance
 
 	def get_bookmark(self, obj):
-		request = self.context.get('request', None)
+		if not self.current_user().is_authenticated: 
+			return []
+
 		answer_bookmarks = Answer.objects.filter(
-								answer_bookmarks__author=request.user,
+								answer_bookmarks__author=self.current_user(),
 								answer_bookmarks=obj.id
 
 							)
@@ -267,9 +272,11 @@ class PostBookmarkSerializer(BaseModelSerializer):
 
 	
 	def get_post(self, obj):
-		request = self.context.get('request', None)
+		if not self.current_user().is_authenticated: 
+			return []
+
 		post_bookmarks = Post.objects.filter(
-								post_bookmarks__author=request.user,
+								post_bookmarks__author=self.current_user(),
 								post_bookmarks=obj.id
 
 							)
@@ -290,13 +297,16 @@ class IndexSerializer(BaseSerializer):
 	
 
 	def get_bookmarks(self, obj):
-		request = self.context.get('request', None)
+		if not self.current_user().is_authenticated: 
+			return []
+
+		
 		answer_bookmarks = Answer.objects.filter(
-								answer_bookmarks__author=request.user
+								answer_bookmarks__author=self.current_user()
 
 							)
 		post_bookmarks = Post.objects.filter(
-							post_bookmarks__author=request.user)
+							post_bookmarks__author=self.current_user())
 		answer_bookmarks_serialiser = AnswerReadSerializer(
 											answer_bookmarks, 
 											context=self.context,
@@ -311,9 +321,7 @@ class IndexSerializer(BaseSerializer):
 		}
 	
 	def get_questions(self, obj):
-		request = self.context.get('request', None)
 		questions = Question.objects.all()
-		
 		self.update_serializer_obj_perms('question_perms')		       
 		return QuestionSerializer(questions, context=self.context, many=True).data
 		
@@ -325,8 +333,10 @@ class IndexSerializer(BaseSerializer):
 	
 	
 	def get_posts(self, obj):
-		request = self.context.get('request', None)
-		posts = Post.objects.exclude(author=request.user)
+		if not self.current_user().is_authenticated: 
+			return []
+
+		posts = Post.objects.exclude(author=self.current_user())
 		self.update_serializer_obj_perms('post_perms')
 
 		return PostReadSerializer(posts, context=self.context, many=True).data
@@ -337,8 +347,6 @@ class IndexSerializer(BaseSerializer):
 						first_name="Anonymous"
 					).filter(
 						is_superuser=False
-					).filter(
-						is_confirmed=True
 					)
 
 		user_list = UserSerializer(users, context=self.context, many=True).data

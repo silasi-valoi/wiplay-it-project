@@ -117,9 +117,6 @@ class CreateAnswerReplyView(CreateMixin, AnswerReplyView):
 		return get_object_or_404(AnswerComment, id=self.kwargs['pk'])  
     
 
-
-
-
 class CreateAnswerReplyChildView(CreateMixin , AnswerChildReplyView):
 		
 	def get_object(self):
