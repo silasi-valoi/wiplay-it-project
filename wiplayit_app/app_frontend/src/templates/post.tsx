@@ -42,9 +42,7 @@ export const PostComponent = props => {
     if(!post) return null;
 
     const editorState  = helper.convertFromRaw(post.add_post);
-    let  postPath       = post && `/post/${post.slug}/${post.id}/`;
-    let  pathToUpvoters = post && `/upvoters/post/${post.id}/`;
-
+   
     let usersById       = post && `postUpVoters${post.id}`;
     let apiUrl          = post && api.getPostUpVotersListApi(post.id);
     let linkName = post.upvotes > 1 && `${post.upvotes} Upvoters` || `${post.upvotes} Upvoter`;
@@ -128,6 +126,7 @@ export const PostComponent = props => {
 
     const linkProps = {
         linkPath: `/post/${post.slug}/${post.id}/`,
+        state:{post},
     }
 
     return (

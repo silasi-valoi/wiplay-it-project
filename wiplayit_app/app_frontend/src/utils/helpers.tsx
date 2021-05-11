@@ -1,4 +1,5 @@
-
+import React from 'react';
+import {history} from 'App';
 import {convertToRaw, convertFromRaw, EditorState} from 'draft-js';
 import {decorator} from 'containers/draft-js-editor/plugins';
 import * as checkType from 'helpers/check-types'; 
@@ -73,8 +74,8 @@ export default class Helper {
         }
 
         contentState      = contentState && convertFromRaw(contentState);
-        const editorState = contentState && EditorState.createWithContent(contentState, decorator);
-        return editorState;
+        return contentState && 
+                            EditorState.createWithContent(contentState, decorator);
     };
 
     convertToRaw(){
@@ -216,5 +217,28 @@ const displayAlertMessage = (self, message:object) => {
         
     setTimeout(()=> {
         self.setState({displayMessage : false, message:undefined}); 
-    }, 5000);
+    }, 10000);
+};
+
+
+export const pushToRouter = (params:object, event?:React.MouseEvent<HTMLAnchorElement>) =>{
+    
+    event && event.preventDefault();
+ 
+    if (params['modalIsOpen']) {
+        history.goBack();
+    }
+
+    let location:object = history.location;
+    let currentPath = location['pathname'];
+
+    if (params['linkPath'] && params['linkPath'] !== currentPath) {
+
+        setTimeout(()=>  {
+            history.push(params['linkPath'], params['state'])
+        }, 500)
+    }
+
+    
+            
 };

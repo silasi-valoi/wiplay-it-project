@@ -14,8 +14,7 @@ export const closeModals =(background?:boolean):void => {
     let dropImageModal   = modal && modal['dropImage'];
     let userListModal    = modal && modal['userList'];
     let navigationModal  = modal && modal['navigationMenu'];
-    let smsCodeFormModal = modal && modal['smsCodeForm'];
-    let passwordConfirmForm = modal && modal['passwordConfirmForm'];
+    let passwordConfirmForm = modal && modal['passwordConfirmationForm'];
     let authenticationForm = modal && modal['authenticationForm'];
     let passwordResetModal = modal && modal['passwordReset'];
     let confirmationResendModal = modal && modal['confirmationResend'];
@@ -43,10 +42,8 @@ export const closeModals =(background?:boolean):void => {
     confirmationResendModal && confirmationResendModal.modalIsOpen && 
                                    ModalManager.close('confirmationResend', background); 
                                    
-    //smsCodeFormModal && smsCodeFormModal.modalIsOpen  && 
-    //                              ModalManager.close('smsCodeForm', background);
-    //passwordConfirmForm && passwordConfirmForm.modalIsOpen && 
-    //                               ModalManager.close('passwordConfirmForm', background); 
+    passwordConfirmForm && passwordConfirmForm.modalIsOpen && 
+                                  ModalManager.close('passwordConfirmForm', background); 
     
 
                                   

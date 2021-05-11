@@ -643,15 +643,17 @@ export const authenticationSuccess = (data:object,
 
 
 export const authenticationError = (
-                            error:string, 
-                            isSocialAuth:boolean=false, 
-                            isTokenRefresh:boolean=false):object => {
+                            error:object, 
+                            formName:string,
+                            isSocialAuth?:boolean, 
+                            isTokenRefresh?:boolean):object => {
 
     console.log(error, isTokenRefresh, isSocialAuth)
     return {
         type   : types.USER_AUTHENTICATION['ERROR'],
         payLoad : {
             error,
+            formName,
             isLoading : false,
             isSocialAuth,
             isTokenRefresh,

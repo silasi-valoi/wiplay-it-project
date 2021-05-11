@@ -18,7 +18,7 @@ export const _GetApi =(useToken:boolean, opts?:object) =>{
 
 
 export function sendMessage(params:object):Function {
-    let useToken = false;
+    let useToken:boolean = false;
     let opts = {}
     const Api    = _GetApi(useToken,{timeout:120000});
     
@@ -65,7 +65,7 @@ export function sendMessage(params:object):Function {
 
 
 export function getAboutInfo(options?:object) {
-    let useToken = false
+    let useToken:boolean = false;
     const Api    = _GetApi(useToken);
 
     if(!Api){
@@ -105,9 +105,8 @@ export function getAboutInfo(options?:object) {
 
 
 export function getIndex(options?:object):Function {
-    let useToken=false;
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken, {requestFor:'index'});
-
     
     if(!Api){
         return  dispatch =>{ 
@@ -150,7 +149,7 @@ export function getIndex(options?:object):Function {
 
 
 export function getUserList(props) {
-    let useToken=true
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);
 
     if(!Api){
@@ -189,7 +188,7 @@ export function getUserList(props) {
 
 
 export function getQuestionList(questionListById) {
-    let useToken=true
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);  
     if(!Api){
         return  dispatch =>{ 
@@ -225,7 +224,7 @@ export function getQuestionList(questionListById) {
 
 export function getPostList(postListById) {
 
-    let useToken=true
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken);  
 
     if(!Api){
@@ -234,7 +233,7 @@ export function getPostList(postListById) {
         };
     }
 
-    let   apiUrl  = api.getPostListApi();
+    let   apiUrl:string  = api.getPostListApi();
 
     return dispatch => {
         dispatch(action.getPostListPending(postListById))
@@ -260,7 +259,7 @@ export function getPostList(postListById) {
 
 
 export function getQuestion(id) {
-    let useToken=true
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken); 
 
     if(!Api){
@@ -269,8 +268,8 @@ export function getQuestion(id) {
         };
     } 
       
-    let apiUrl = api.getQuestionApi(id);
-    let questionById = `question${id}`;
+    let apiUrl:string = api.getQuestionApi(id);
+    let questionById:string = `question${id}`;
 
     return dispatch => {
         dispatch(action.getQuestionPending(questionById))
@@ -299,7 +298,7 @@ export function getQuestion(id) {
 
 
 export function getPost(id) {
-    let useToken=true
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken);  
 
     if(!Api){
@@ -340,7 +339,7 @@ export function getPost(id) {
 
 
 export function getUserProfile(id:number, apiUrl?:string) {
-    let useToken=true;
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken);
     apiUrl    = !apiUrl && api.getProfileApi(id) || apiUrl;
     
@@ -352,7 +351,7 @@ export function getUserProfile(id:number, apiUrl?:string) {
     }
   
     
-    let profileById = `userProfile${id}`;
+    let profileById:string = `userProfile${id}`;
     
     return dispatch => {
         dispatch(action.getUserProfilePending(profileById));
@@ -408,7 +407,7 @@ export function getReplyChildrenList(props) {
         }
         
     }
-    let useToken = true
+    let useToken:boolean = false;
     const Api    = _GetApi(useToken);  
 
     if(!Api){
@@ -431,7 +430,7 @@ export function getReplyChildrenList(props) {
 
 
 export function getCurrentUser():Function {
-    let useToken=true
+    let useToken = true
     const Api  = _GetApi(useToken); 
 
     if(!Api){
@@ -516,7 +515,7 @@ const removeBookmark =(bookmarkObj, bookmarkType)=>{
 
 export function handleSubmit(props) {
     
-    let useToken=true
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken); 
     if (!Api) {
         return dispatch =>{ dispatch(action.handleError()) };
@@ -694,7 +693,7 @@ export function authenticateWithGet(params:object):Function {
                 if (error.response) {
                     console.log(error.response)
                     let _error = error.response.data
-                    dispatch(action.authenticationError(_error.detail));
+                    dispatch(action.authenticationError(_error.detail, ''));
                 } 
             });
     };
@@ -741,10 +740,10 @@ export function authenticate(params:object):Function {
 
             let _error;
             if (error.response) {
-                
+                console.log(error.response)
                 if (error.response.status == 500) {
                     _error = error.response.statusText
-                    dispatch(action.authenticationError(_error, isSocialAuth));
+                    dispatch(action.authenticationError(_error,formName, isSocialAuth));
                     return dispatch(action.handleError(_error));
                 }
 
@@ -752,21 +751,23 @@ export function authenticate(params:object):Function {
                 dispatch(
                     action.authenticationError(
                         _error,
+                        formName,
                         isSocialAuth,
                         isTokenRefresh
                     )
                 );
                     
                 isSocialAuth && dispatch(
-                                    action.handleError(_error.non_field_errors[0])
+                                action.handleError(_error.non_field_errors[0])
                                 );
 
             }
             else if (error.request)  {
+                console.log(error.request)
                 _error = 'Something wrong happened. Please try again';
                 
                 dispatch(
-                    action.authenticationError(_error, isSocialAuth, isTokenRefresh)
+                    action.authenticationError(_error, formName, isSocialAuth, isTokenRefresh)
                 );
                 dispatch(action.handleError(_error));
 
@@ -786,7 +787,7 @@ const handleSuccessAuth = (formName:string, data:object, dispatch:Function):obje
         case 'logoutForm':
         case 'phoneNumberConfirmationForm':
             return handleLogin(data, dispatch);
-                
+              
         case 'passwordResetForm':
             return handlePasswordReset(data, dispatch);
 
@@ -811,10 +812,17 @@ const handleSuccessAuth = (formName:string, data:object, dispatch:Function):obje
 
 
 const handleLogin = (data:object, dispatch:Function):object => {
+
+    let isLoggedIn:boolean = false;
+    let tokenKey:string = null;
+    if (data['token'] || data['key']) {
+       isLoggedIn = true;
+       tokenKey = data['token'] || data['key'];
+    }
      
     let loginAuth:object = {
-        isLoggedIn :true,
-        tokenKey   : data['token'] || data['key'] || null,
+        isLoggedIn,
+        tokenKey,
         successMessage : data['detail'] || '',
         isConfirmed : data['isConfirmed'] || false,
         timeStamp      : timeStamp.getTime(),
@@ -825,7 +833,7 @@ const handleLogin = (data:object, dispatch:Function):object => {
         isSuperUser  && dispatch(action.getAdminSuccess({loginAuth}))
         dispatch(action.getCurrentUserSuccess(data['user']))
     }
-   
+       
     return dispatch(action.authenticationSuccess({loginAuth}));
 }
 

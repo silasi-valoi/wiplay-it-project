@@ -9,6 +9,10 @@
         border: 1px solid transparent; 
     }
 
+    .password-confirm-form {
+        border : 1px solid red;   
+    }
+
     .password-change-container,
     .registration-container,
     .account-confirmation-container {
@@ -34,6 +38,12 @@
         margin: 15px 15% 25px; 
     }
 
+    .account-confirmation-box,
+    .password-reset-box {
+        padding-bottom: 40px;
+        border: px solid black;
+    }
+
     .navigation-bar  {
         border: px solid red;
         display: flex;
@@ -42,8 +52,8 @@
         background:#A33F0B;
     }
 
-    .account-confirm-modal-container {
-        padding-bottom : 50px;
+    .account-confirm-modal-box {
+        padding-bottom: 25px;
     }
 
     .confirmation-close-box button {
@@ -248,7 +258,6 @@
         background:  #A33F0B;
 
     }
-  
 
     .confirmation-login-btn-box,
     .resend-confirmation-btn-box {

@@ -48,7 +48,7 @@ const EmailForm = props => {
                                            `phone number.`;
 
     let emailSent:boolean = passwordRestAuth && passwordRestAuth['emailSent'];
-              
+
     return(
         <div className="email-form-box">
             <ul className="form-title-box">
@@ -186,7 +186,7 @@ export const SmsCodeForm = props => {
                                                      {opacity:'0.60'}:{};
     
     let fieldSetStyles = submitting && {opacity:'0.60'} || {};
-                         
+                            
     return(
         <div className="sms-code-form-box">
             <ul className="form-title-box">

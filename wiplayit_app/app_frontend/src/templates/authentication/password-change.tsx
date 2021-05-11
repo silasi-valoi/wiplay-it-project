@@ -144,23 +144,16 @@ export const PassWordChangeForms = props => {
 export const PasswordConfirmForm =(props)=>{
 
     return(
-        <div className="password-change-contents">
-            <div className="password-change-box">
-                <div className="confirm-password-title-box">
-                    <ul className="confirm-password-title form-title-box">
-                        <li className="">Enter Password</li>
-                        
-                    </ul>
-                    <div className="password-confirm-form-dismiss">
-                        <ModalCloseBtn> 
-                            <X id="feather-x" size={20} color={'red'}/>
-                        </ModalCloseBtn>
-                    </div>
-                </div>
-
-                <_PasswordConfirmForm {...props}/>
+        <div className="">
+            <div className="confirm-password-title-box">
+                <ul className="confirm-password-title form-title-box">
+                    <li className="">Enter Password</li>
+                </ul>
             </div>
+
+            <_PasswordConfirmForm {...props}/>
         </div>
+        
     )
 };
 
@@ -177,44 +170,46 @@ export const _PasswordConfirmForm =(props)=>{
          children,
          successMessage} = props;
     
-    form = form && form.reLoginForm || undefined;
+    form = form && form.loginForm || undefined;
     if (!form) return null;
 
     let error = form && form.error; 
     let disabledStyle = submitting? {opacity:'0.60'} : {};
-    let formIsValid = validateForm(form);
-
-    let submitButtonStyles = submitting || !formIsValid?
-                                                     {opacity:'0.60'}:{};
+    let submitButtonStyles = submitting?{opacity:'0.60'}:{};
     
     let fieldSetStyles = submitting? {opacity:'0.60'}:{};
-
+    
     return (
         <form className="password-confirm-form" 
               onSubmit={(event)=> onSubmit(event)} >
-            <div className="password-form-description-box">
-                <ul className="password-form-description">
-                    <li>
-                        For security purposes, please enter your 
-                        password in order to continue. If you signed 
-                        up for Wiplayit using Facebook or Google,
-                        please <span
+            <fieldset style={fieldSetStyles} disabled={submitting}>
+                { successMessage &&
+                    <ul className="success-resend-message">
+                        <li className="">{successMessage}</li>
+                    </ul>
+                }
+                        
+                <div className="password-form-description-box">
+                    <ul className="password-form-description">
+                        <li>
+                            For security purposes, please enter your 
+                            password in order to continue. If you signed 
+                            up for Wiplayit using Facebook or Google,
+                            please <span
                                 onClick={()=> passwordRest()}
                                 style={fieldSetStyles}
                                 className="password-rest-btn text-highlight">
                                 create an account password.
-                        </span>
-                    </li>
-                </ul>
-                {error &&
-                    <ul className="form-errors">
-                        <li>The password you entered is invalid</li>   
+                            </span>
+                        </li>
                     </ul>
-                }
-            </div>
-                
-            <fieldset style={fieldSetStyles}
-                      disabled={submitting}>
+                    {error &&
+                        <ul className="form-errors">
+                            <li>The password you entered is invalid</li>   
+                        </ul>
+                    }
+                </div>
+                       
                 <div  className="" >
                     <div className="confirm-password-box auth-input-field">
                         <div className="confirm-password-input">
@@ -237,18 +232,17 @@ export const _PasswordConfirmForm =(props)=>{
                         </button>
                     </div>
                     
-                    <div className="submit-btn-box confirm-password-submit">
+                    <div className="submit-btn-bo confirm-password-submit">
+                        <div className="confirm-password-submit-btn">
+                            <RegistrationSubmitBtn {...props}/>
+                        </div>
                         <div className="password-confirm-form-cancel">
                             <ModalCloseBtn> 
                                 Cancel
                             </ModalCloseBtn>
                         </div>
-                        <RegistrationSubmitBtn {...props}/>
                     </div>
-                    <div className="password-change-link-box">
-                        {children && children[0]}
-                        {children && children[1]}
-                    </div> 
+                    
                 </div>
             </fieldset>
         </form>
@@ -266,7 +260,7 @@ export const SuccessPasswordChange =(props:object)=>{
             </div>
             <div className="authentication-btn-box">
                 <button className="btn-sm" 
-                        onClick={()=> history.push('user/registration/') }>
+                        onClick={()=> history.push('/user/registration/') }>
                         Login
                 </button> 
             </div>

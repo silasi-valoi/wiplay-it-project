@@ -377,15 +377,12 @@
   margin: 17px 0px;
 }
 
-
 .user-followers-box  {
    border:px solid blue;/* #D5D7D5;*/
    width: 100%;
    display: flex;
-    color: black;
-      
+   color: black;
 }
-
 
 .name-fields {
   display: flex;

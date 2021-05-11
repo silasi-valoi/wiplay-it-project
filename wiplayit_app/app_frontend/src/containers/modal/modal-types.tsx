@@ -3,8 +3,9 @@ import React from 'react';
 import PasswordResetPage from 'containers/authentication/password-reset';
 import AccountConfirmationResendPage from 
                                     'containers/authentication/account-confirmation-resend';
-import AccountConfirmationPage from 'containers/authentication/account-confirmation';
 
+import AccountConfirmationPage from  'containers/authentication/account-confirmation';
+import PasswordConfirmationPage from 'containers/authentication/password-confirmation';
 import { ModalOptionsMenu } from "templates/buttons";
 import {EditProfile, DropImage} from "../main/edit-profile";
 import UserListBox from "containers/users/modal-user-list"; 
@@ -44,6 +45,10 @@ export const GetModalType = (props) =>{
         case 'userList':
             modalProps['modalContents'] = <UserListBox {...modalProps}/>
             return ModalOpener.userListModal(modalName, modalProps);
+
+        case 'passwordConfirmationForm':
+            modalProps['modalContents'] = <PasswordConfirmationPage {...modalProps}/>
+            return ModalOpener.AuthenticationForm(modalName, modalProps);
 
         case 'accountConfirmation':
             modalProps['modalContents'] = <AccountConfirmationPage {...modalProps}/>

@@ -147,10 +147,21 @@
     display: block;
 }
 
+.confirm-password-submit {
+    border: px solid blue;
+    margin-left: 10px;
+    margin-right: 10px;  
+}
+
+
+.confirm-password-submit-btn {
+    border : px solid red;
+    width : 55%;
+}
+
 
 .submit-btn-box {
-    width  : 100%;
-    border : px solid red; 
+    width  : 100%; 
 }
 
 .form-submit {

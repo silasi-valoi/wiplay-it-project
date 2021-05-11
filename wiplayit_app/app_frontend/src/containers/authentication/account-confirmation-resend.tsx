@@ -28,13 +28,13 @@ class AccountConfirmationResendPage extends Component{
         let props = {...this.props, ...this.state}
 
         return (
-            <div>
+            <div className="">
                 <div className="authentication-dismiss">
                     <ModalCloseBtn>
                         <X id="feather-x" size={20} color="red"/>
                     </ModalCloseBtn>
                 </div>
-                <div className="account-confirm-container">
+                <div className="account-confirmation-box">
                     <EmailForm {...props}/>
                 </div>
             </div>

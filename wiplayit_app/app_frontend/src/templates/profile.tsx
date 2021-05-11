@@ -331,8 +331,7 @@ export const UserProfileFollowingList = props => {
 
 export const PartialUserList = props => {
         let {user, usersById, currentUser} = props
-
-        let pathToProfile   =  `/profile/${user.id}/${user.slug}/`;
+        
         let profile         = user && user.profile;
         let profile_picture = profile &&  profile.profile_picture;
 
@@ -349,6 +348,11 @@ export const PartialUserList = props => {
       
         let FollowBtn   = MatchMediaHOC(FollowUserBtn, '(min-width: 980px)');
         //console.log(props)
+        const linkProps:object = {
+                linkPath:`/profile/${user.id}/${user['slug']}/`,
+                pushToRouter: props['pushToRouter'],
+                state:{user},
+        };
 
         return (
             <div className="partial-user-list-box">
@@ -356,27 +360,29 @@ export const PartialUserList = props => {
                     <div className="partial-user-list-img-box">
                         <div className="partail-user-list-img user-list-img">
                             { profile_picture &&
-                                <img 
-                                    onClick={() => history.push(pathToProfile,user)}
-                                    src={`${profile_picture}`} alt="" 
-                                    className="user-list-photo"/> 
+                                <LinkButton {...linkProps}>
+                                    <img src={`${profile_picture}`} alt="" 
+                                        className="user-list-photo"/> 
+                                </LinkButton>
                             }        
                         </div>
                     </div>
 
                     <div className="user-list-credentials-box">
-                        <div className="user-list-credentials-contents">
-                            <p onClick={() => props.push({path:pathToProfile, user}) } 
-                                  className="partial-user-list-name user-list-name">
-                                { user.first_name }   {user.last_name }
-                            </p>
-
-                        </div>
+                        <ul className="user-list-credentials">
+                            <li className="user-list-name">
+                                <LinkButton {...linkProps}>
+                                    <span>
+                                        {user.first_name} { user.last_name }
+                                    </span> 
+                                </LinkButton>
+                            </li>
+                        </ul>
 
                     </div>
 
                     <div className="user-list-follow-box" >
-                        <div className="follow-user-list-box">
+                        <div className="user-list-follow-btn-box">
                             <FollowBtn {...btnsProps}/>
                         </div>
                     </div>
@@ -420,23 +426,24 @@ export const UserAnswers = props =>{
    var answers        = props.entities.answers;
    
    var usersAnswers   = answers[answerListById]
-   //console.log(props, answers)
+   let answerList:object[] = usersAnswers && usersAnswers.answerList;
+   
    
    return (
         <div>
-            { usersAnswers && usersAnswers.answerList?
+            { answerList && answerList.length?
 
                 <div className="answer-container">
                     <div className="number-answers-box">
-                        {usersAnswers.answerList.length === 1? 
+                        {answerList.length === 1? 
                             <p className="items-count">
-                               { usersAnswers.answerList.length }  Answer
+                               { answerList.length }  Answer
                             </p>
 
                             :
 
                             <p className="items-count">
-                              { usersAnswers.answerList.length } Answers
+                              { answerList.length } Answers
                             </p>
                         }
                     </div> 
@@ -459,7 +466,7 @@ export const UserAnswers = props =>{
                 </div>
 
                 :
-                <p>No Answer </p>
+                <p>No Answer yet</p>
             }
         </div>
     )
@@ -481,7 +488,7 @@ export const UserQuestions = props => {
     
     return (
         <div>
-            {questions &&
+            {questionList && questionList?.length &&
                 <div className="question-container">
                     <div className="number-question-box">
                         { questionList?.length? 
@@ -522,18 +529,19 @@ export const UserPosts = props => {
 
    var postListById     = `usersPosts${userProfile.id}`;
    var posts  = props.entities.posts;
-   posts      = posts && posts[postListById]
+   posts      = posts && posts[postListById];
+   let postList = posts && posts.postList;
    
    return(
         <div>
-            {posts &&
+            {postList && postList.length &&
 
                 <div className="post-container">
                     <div className="number-post-box">
-                        {posts.postList.length > 1? 
-                            <p className="items-count">{posts.postList.length } Posts</p>
+                        {postList.length > 1? 
+                            <p className="items-count">{postList.length } Posts</p>
                             :
-                            <p className="items-count">{posts.postList.length } Post</p>
+                            <p className="items-count">{postList.length } Post</p>
                         }
                     </div> 
       
@@ -549,7 +557,7 @@ export const UserPosts = props => {
                 </div>
 
                 ||
-                <p>No Post </p>
+                <p>No Post yet</p>
             }
 
         </div>
@@ -581,9 +589,12 @@ export const UsersComponent = props => {
 
     editObjProps = GetModalLinkProps.props(editObjProps);
     var btnsProps   = {...props, editObjProps};
-      
-    let FollowBtn   = MatchMediaHOC(FollowUserBtn, '(min-width: 980px)');
-      
+    
+    const linkProps:object = {
+            linkPath:`/profile/${user.id}/${user['slug']}/`,
+            modalIsOpen:props.modalIsOpen || false,
+            state:{user},
+    };
 
     return (
         <BrowserRouter>
@@ -591,24 +602,22 @@ export const UsersComponent = props => {
             <div className="user-list-contents">
                 <div className="user-list-img-box">
                     <div className="user-list-img">
-                        <div  onClick={() => 
-                              redirectToUserProfile({path:pathToProfile,state})}>  
-                            { user && profile_picture && 
-                                <img  src={`${profile_picture}`}
-                                      alt=""
-                                      className="user-list-photo"/> 
-                            }
-                                    
-                        </div>
+                        <LinkButton {...linkProps}>
+                            <img  src={`${profile_picture}`}
+                                  alt=""
+                                 className="user-list-photo"/> 
+                        </LinkButton>
                     </div>
                 </div> 
 
                 <div className="user-list-credentials-box">
                     <ul className="user-list-credentials-contents">
-                        <li onClick={() => 
-                             redirectToUserProfile({path:pathToProfile,state})}
-                           className="user-list-name">
-                            { user.first_name }   {user.last_name }
+                        <li className="user-list-name">
+                            <LinkButton {...linkProps}>
+                                <span>
+                                    {user.first_name} { user.last_name }
+                                </span> 
+                            </LinkButton>
                         </li>
 
                         <li className="user-list-credentials">
@@ -872,6 +881,7 @@ export const UserComponentSmall = props => {
 
     const linkProps = {
         linkPath:`/profile/${author.id}/${author.slug}/`,
+        state:{user:author},
     }
 
     const profile = author && author['profile'] 

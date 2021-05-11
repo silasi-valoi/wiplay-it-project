@@ -14,6 +14,7 @@ import Helper from 'utils/helpers';
 
 import {getFormFields,
         authSubmit,
+        validatePhoneNumber,
         getAuthUrl,
         formIsValid,
         changeForm,
@@ -64,7 +65,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         onPasswordChangeConfirmForm:boolean,
         onPhoneNumberConfirmationForm:boolean,
         onEmailResendForm:boolean,
-        onPasswordResetSmsCodeForm,
+        onPasswordResetSmsCodeForm:boolean,
+        modalIsOpen:boolean,
     };
 
     
@@ -102,6 +104,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             onEmailResendForm:false,
             onPasswordResetSmsCodeForm:false,
             passswordChanged     : false, 
+            modalIsOpen:false,
             passwordRestAuth:undefined,
             smsCode              : undefined,
             formIsValid          : false,
@@ -165,8 +168,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
 
-        //componentDidUpdate =(nextProps , prevState)=>{
-        //};
+        componentDidUpdate =(nextProps , prevState)=>{
+        };
    
 
         closeAuthModal = () => {
@@ -177,22 +180,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         componentDidMount =()=> {
             this._isMounted = true;
             this.onAuthStoreUpdate();
+            console.log(this.props)
             window.addEventListener('popstate', this.closeAuthModal);
-       
-        /*    
-        const authenticationType:string = this.props['authenticationType'];
-        const matchBigScreen = matchMediaSize("min-width : 980px");
-        let matchSmallScreen = matchMediaSize("max-width : 980px");
-        
-
-        if (authenticationType === 'passwordReset') {
-            this.formConstructor('passwordResetForm');
-        }
-
-        if (authenticationType === 'confirmationResend') {
-            this.formConstructor('emailResendForm');
-        }
-        */
         };
 
         onAuthStoreUpdate =()=> {
@@ -203,131 +192,134 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 let {entities} =  storeUpdate;
                 let userAuth = entities['userAuth'];
                 let errors = entities['errors']
-                                
+                                                              
                 this.setState({submitting :userAuth['isLoading']}); 
              
                 if (errors && errors.error) {
                     this._HandleErrors(errors);
                 }
                 
-                let formName = this.state['formName'];
+                let formName = userAuth['formName'];
                 let form = this.state['form'];
 
-                if (form && userAuth['error']) {
-                form[formName]['error'] = userAuth['error'];
-                this.setState({form})
-                delete userAuth['error']
-            }
+                if (form && form[formName] && userAuth['error']) {
+                    
+                    form[formName]['error'] = userAuth['error'];
+                    this.setState({form})
+                    delete userAuth['error']
+                }
             
-            this.handleLogin(userAuth)
-            this.handlePasswordReset(userAuth);
-            this.handlePasswordChangeSuccess(userAuth);
+                this.handleLogin(userAuth);
+                this.handlePasswordReset(userAuth);
+                this.handlePasswordChangeSuccess(userAuth);
+                this.handleConfirmationResend(userAuth);
+            };
+
+            this.unsubscribe = store.subscribe(onStoreChange);
         };
 
-        this.unsubscribe = store.subscribe(onStoreChange);
-    };
-        
-    handlePasswordReset = (userAuth:object):void => {
-        if (!userAuth['passwordRestAuth']) return;
-
-        let passwordRestAuth:object = userAuth['passwordRestAuth'];
-
-        let successMessage:string = passwordRestAuth['successMessage'];
-        let emailSent:boolean = passwordRestAuth['emailSent']; 
-        let smsSent:boolean = passwordRestAuth['smsSent']; 
-
-        let isPhoneNumber:boolean = this.state['isPhoneNumber'];
-        let onPasswordResetForm:boolean = this.state['onPasswordResetForm']
-
-        console.log(passwordRestAuth, isPhoneNumber)
-           
-        this.setState({passwordRestAuth})
-        displaySuccessMessage(this, successMessage)
-                    
-        if (smsSent) {
-            closeModals(true) //Close authentication modal 
-
-            const pathname:string = history['location'].pathname
-            if (pathname != '/password/change/') {
-                const pushToRouter:Function = history['push'];
-                setTimeout(()=> {
-                    pushToRouter('/password/change/', {passwordRestAuth});
-                }, 500);
+        handleConfirmationResend(userAuth:object){
+            if (!userAuth['confirmationResendAuth']) {
+                return;
             }
-        }  
 
-        delete userAuth['passwordRestAuth'];      
-    };
+            let currentUser:object = this.props['currentUser'];
+            let email:string = currentUser && currentUser['email'];
+            let isPhoneNumber:boolean = validatePhoneNumber(email);
+            
+            let confirmationResendAuth:object = userAuth['confirmationResendAuth'];
+            if (confirmationResendAuth['successMessage']) {
+                if (isPhoneNumber) {
+                    this.formConstructor('phoneNumberConfirmationForm');
+                }
 
-    handlePasswordChangeSuccess = (userAuth:object):void =>{
-        let smsCodeAuth:object = userAuth['smsCodeAuth'];
-        let passwordChangeAuth:object  = userAuth['passwordChangeAuth'];
-        console.log(userAuth)
-        if (!passwordChangeAuth && !smsCodeAuth) {
-            return
-        }
+                let successMessage = confirmationResendAuth['successMessage'];
+                this.setState({successMessage});
+            }
+            
+            delete confirmationResendAuth['successMessage'];
+        };
+        
+        handlePasswordReset = (userAuth:object):void => {
+            if (!userAuth['passwordRestAuth']) return;
 
+            let passwordRestAuth:object = userAuth['passwordRestAuth'];
+
+            let successMessage:string = passwordRestAuth['successMessage'];
+            let emailSent:boolean = passwordRestAuth['emailSent']; 
+            let smsSent:boolean = passwordRestAuth['smsSent']; 
+           
+            this.setState({passwordRestAuth, successMessage})
+            displaySuccessMessage(this, successMessage)
+                    
+            if (smsSent) {
+                delete passwordRestAuth['smsSent']; 
+                closeModals(true) //Close authentication modal 
+
+                const pathname:string = history['location'].pathname
+                if (pathname != '/password/change/') {
+                    const pushToRouter:Function = history['push'];
+                    setTimeout(()=> {
+                        pushToRouter('/password/change/', {passwordRestAuth});
+                    }, 500);
+                }
+            }  
+        };
+
+        handlePasswordChangeSuccess = (userAuth:object):void =>{
+            let smsCodeAuth:object = userAuth['smsCodeAuth'];
+            let passwordChangeAuth:object  = userAuth['passwordChangeAuth'];
+        
+            if (!passwordChangeAuth && !smsCodeAuth) {
+                return
+            }
        
-        if (smsCodeAuth && smsCodeAuth['smsCodeValidated']) {
-            displaySuccessMessage(this, smsCodeAuth['successMessage'])
-            let smsCode = smsCodeAuth['smsCode']; 
-            //this.tooglePasswordChangeForm(smsCode);
-            delete userAuth['smsCodeAuth'];
+            if (smsCodeAuth && smsCodeAuth['smsCodeValidated']) {
+                displaySuccessMessage(this, smsCodeAuth['successMessage'])
 
-        }else if(passwordChangeAuth && passwordChangeAuth['successMessage']){
-            this.setState({passswordChanged:true});
-            displaySuccessMessage(this, passwordChangeAuth['successMessage']);
-            delete userAuth['passwordChangeAuth'];
+                let smsCode = smsCodeAuth['smsCode']; 
+                let passwordAuthOpts = {sms_code:smsCode};
+                this.formConstructor('passwordChangeConfirmForm', passwordAuthOpts);
+
+                this.setState({
+                    smsCode,
+                    onPasswordChangeConfirmForm:true,
+                    onPasswordChangeSmsCodeForm:true,
+                    onPasswordResetSmsCodeForm:false }
+                )
+
+                delete userAuth['smsCodeAuth'];
+
+            }else if(passwordChangeAuth && passwordChangeAuth['successMessage']){
+                this.setState({passswordChanged:true});
+                displaySuccessMessage(this, passwordChangeAuth['successMessage']);
+                delete userAuth['passwordChangeAuth'];
                       
-            if (this.state['onPasswordChangeSmsCodeForm']) {
                 smsCodeAuth = {
                     smsCodeValidated : false,
                     smsCode : undefined,
                 };
-
                 store.dispatch<any>(action.authenticationSuccess({smsCodeAuth}));
             }
-
-            
-        }
-    };
-
-    /*
-    tooglePasswordChangeForm=(smsCode:number) : void =>{
-        if (!smsCode) return;
-                
-        let passwordAuthOpts = {sms_code:smsCode};
-        this.formConstructor('passwordChangeConfirmForm', passwordAuthOpts);
-
-        this.setState({
-            smsCode,
-            onPasswordChangeConfirmForm:true,
-            onPasswordChangeSmsCodeForm:true,
-            onPasswordResetSmsCodeForm:false }
-        )
-    };
-    */
-   
+        };
 
         handleLogin = (userAuth:object) => {
             if (!userAuth || !userAuth['loginAuth'])return;
 
-            let onLoginForm = this.state['onLoginForm'];
-            let onSignUpForm = this.state['onSignUpForm']
-
             let loginAuth = userAuth['loginAuth']
             let {isLoggedIn, isConfirmed} = loginAuth;
-            this.setState({isConfirmed});
+            const pathname:string = history['location'].pathname
                                                            
-            if(isLoggedIn && !isConfirmed && onSignUpForm || onLoginForm){
-                             
+            if(isLoggedIn && pathname === '/use/registration/' || 
+                pathname === '/user/registration'){
+                
                 setTimeout(()=> {
-                    history.back(); 
+                    history.goBack(); 
                 }, 500);
             }
 
             if (isLoggedIn && isConfirmed) {
-                this.setState({isConfirmed:true});   
+                this.setState({isConfirmed});   
             }
         };
       
@@ -399,42 +391,26 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
         
         formConstructor = (formName:string, options?:object) => {
-            console.log('constructing form', formName)   
-            let defaultActiveForm = formName;
-            let form:object;
+            let formFields = getFormFields();
+            let form:object = formFields[formName];
+            
+            if (formName === 'passwordResetForm' || 
+                formName === 'emailResendForm') {
+                form = formFields['emailForm'];
 
-            switch(formName){
-                case 'loginForm':
-                    form = getFormFields().loginForm;
-                    return this._SetForm(form, formName)
+            }else if(formName === 'passwordResetSmsCodeForm' || 
+                     formName === 'phoneNumberConfirmationForm'){
+                form = formFields['smsCodeForm'];
 
-                case 'signUpForm':
-                    form = getFormFields().signUpForm;
-                    return this._SetForm(form, formName);
+            }else if(formName === 'passwordChangeConfirmForm'){
+                form = formFields['passwordChangeForm'];
+            }
 
-                case 'passwordResetForm':
-                    form = getFormFields().emailForm;
-                    return this._SetForm(form, formName); 
-
-                case 'emailResendForm':
-                    form = getFormFields().emailForm;
-                    form = Object.assign(form, options || {});
-                    return this._SetForm(form, formName);
-
-                case 'passwordResetSmsCodeForm':
-                case 'phoneNumberConfirmationForm':
-                    form = getFormFields().smsCodeForm;
-                    return this._SetForm(form, formName)
-
-                case 'passwordChangeConfirmForm':
-                case 'passwordChangeForm':
-                    form = getFormFields().passwordChangeForm;
-                    form = Object.assign(form, options || {});
-                    return this._SetForm(form, formName);
-
-                default:
-                    return null;
-            };
+            console.log(form, formName)
+            if (form) {
+               form =  Object.assign(form, options || {});
+                return this._SetForm(form, formName);
+            }
         };
 
         toggleAuthForm = (params:object):void => {
@@ -468,9 +444,10 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                     break;
             }
         };
-
+        
         onSubmit = (e) => {
             e && e.preventDefault();
+            console.log('submitting authentication data', this)
             authSubmit(this);
         };
               
@@ -487,15 +464,10 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 responseTwitter  : this.responseTwitter.bind(this),
                 validateForm     : formIsValid.bind(this), 
                 toggleAuthForm   : this.toggleAuthForm.bind(this), 
-            
             };
-
         };
 
         render() {
-            console.log(this)
-            //if (!this._isMounted) return null;
-
             let props = this.getProps();
             
             let fieldSetStyles = props['submitting'] && {opacity:'0.60'} || {};

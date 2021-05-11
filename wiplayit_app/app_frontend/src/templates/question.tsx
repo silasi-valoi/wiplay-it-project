@@ -37,10 +37,7 @@ export const QuestionComponent = props => {
         color      : '#4A4A4A',
         margin     : '0 0 2px'
     }
-
-    let questionPath = question && `/question/${question.slug}/${question.id}/`;
-    let pathToFollowers =  question && `/followers/${question.id}/${question.slug}/`;
-
+   
     let state = {
         question,
         usersIsFor : 'questionFollowers', 
@@ -137,13 +134,10 @@ export const QuestionComponent = props => {
             btn3         : <OpenOptionlBtn {...btnsProps}/>,
             Styles       : Styles,
         }
-
-    let QuestionProps = {questionPath, state, btnsList};
-    Object.assign(QuestionProps, props)
-
     
     const linkProps = {
         linkPath: `/question/${question.slug}/${question.id}/`,
+        state:{question},
     }
    
     return(

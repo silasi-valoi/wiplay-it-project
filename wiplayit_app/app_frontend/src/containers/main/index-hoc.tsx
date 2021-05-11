@@ -146,9 +146,10 @@ export function MainAppHoc(Component) {
         }
         
         onStoreUpdate = () => {
- 
+            if (!this.isMounted) return;
+
             const onStoreChange = () => {
-                if (this.isMounted) {
+                
                 
                 let storeUpdate = store.getState();
                 var timeStamp = new Date();
@@ -171,10 +172,9 @@ export function MainAppHoc(Component) {
                 let userListModal    = modal['userList'];
                 let smsCodeFormModal = modal['smsCodeForm']; 
               
-                this.setState({userAuth});  
-                this.confirmLogout(userAuth);
-                this.confirmLogin(userAuth);
-                this.handlePasswordChangeSuccess(userAuth);
+                if (userAuth) {
+                    this.handleAuth(userAuth);
+                }
 
                 if (errors.error) {
                     console.log(errors)
@@ -198,39 +198,45 @@ export function MainAppHoc(Component) {
                     this._SetCurrentUser(currentUser.user)
                 }
                                 
-            }
+            };
+        
+            this.unsubscribe = store.subscribe(onStoreChange);
+
         };
 
-        this.unsubscribe = store.subscribe(onStoreChange);
-
+        handleAuth = (userAuth:object) =>{
+            this.setState({userAuth});  
+            this.confirmLogout(userAuth);
+            this.confirmLogin(userAuth);
+            this.handlePasswordChangeSuccess(userAuth);
         };
 
-        _HandleErrors(errors){
-            if (!errors || !errors.error) return;
+        _HandleErrors(errors:object){
+            if (!errors || !errors['error']) return;
               
-            displayErrorMessage(this, errors.error);
-            delete errors.error;
+            displayErrorMessage(this, errors['error']);
+            delete errors['error'];
         }
 
-        handleMessageSuccess =(message)=> {
+        handleMessageSuccess =(message:object)=> {
             if (!message) return;
 
-            if (message.messageSent) {
-                delete message.messageSent;
-                displaySuccessMessage(this, message.successMessage)
+            if (message['messageSent']) {
+                delete message['messageSent'];
+                displaySuccessMessage(this, message['successMessage'])
             }
         };
 
         
-        handlePasswordChangeSuccess(userAuth){
-            if (!userAuth?.passwordChangeAuth)return;
+        handlePasswordChangeSuccess(userAuth:object){
+            if (!userAuth['passwordChangeAuth'])return;
 
-            let {passwordChangeAuth} = userAuth
+            let passwordChangeAuth = userAuth['passwordChangeAuth']
              
                                                       
-            if(passwordChangeAuth?.successMessage){
-                displaySuccessMessage(this, passwordChangeAuth.successMessage)
-                delete passwordChangeAuth.successMessage;
+            if(passwordChangeAuth['successMessage']){
+                displaySuccessMessage(this, passwordChangeAuth['successMessage'])
+                delete passwordChangeAuth['successMessage'];
         
                 let passwordConfirmAuth = {
                         passwordValidated : false,
@@ -242,15 +248,15 @@ export function MainAppHoc(Component) {
             }
         };  
 
-        handleCreateSuccess(modal){
+        handleCreateSuccess(modal:object){
             if (!modal) return;
             if (!Object.keys(modal).length) return;
                        
-            if (modal.created === true) {
-                delete modal.created;
+            if (modal['created'] === true) {
+                delete modal['created'];
                 this.closeModal(modal)
-                displaySuccessMessage(this, modal.successMessage);
-                let data = modal.data
+                displaySuccessMessage(this, modal['successMessage']);
+                let data = modal['data']
                                
                 setTimeout(()=> {
                     let {answer,question,post} = data
@@ -287,51 +293,30 @@ export function MainAppHoc(Component) {
         handleNewQuestion =(params)=> {
             let data = params.data;
             let { question } = data
-            let pathToQuestion = question  && `/question/${question.slug}/${question.id}/`; 
-            let questionRedirectProps = {
-                    path  : pathToQuestion,
-                    state : {question, recentlyCreated : true},
-                }
-            question && this.redirectToRouter(questionRedirectProps);
+            let path   = question && `/question/${question.slug}/${question.id}/`;
+            let state : {question, recentlyCreated : true}
+         
+            question && history.push(path, state);
         };
 
-        handleNewPost =(params)=> {
-            let data       = params.data;
+        handleNewPost =(params:object)=> {
+            let data       = params['data'];
             let {post}     = data
-            let pathToPost = post && `/post/${post.title}/${post.id}`;
-
-            let postRedirectProps = {
-                    path  : pathToPost,
-                    state : {post, recentlyCreated : true},
-                };
-
-            post && this.redirectToRouter(postRedirectProps);
+            let path   = post && `/post/${post.title}/${post.id}/`;
+            let state : {post, recentlyCreated : true}
+         
+            post && history.push(path, state);
 
         };
 
-        handleNewAnswer =(params)=> {
-            let data     = params.data;
-            let question = params.obj;
+        handleNewAnswer =(params:object)=> {
+            let data     = params['data'];
+            let question = params['obj'];
             let {answer} = data;
-            let pathToAnswer   = answer && `/answer/${answer.id}/`;
-
-            let answerRedirectProps = {
-                    path  : pathToAnswer,
-                    state : {answer, question, recentlyCreated : true},
-                } 
-            
-            answer && this.redirectToRouter(answerRedirectProps);
-
-
-        };
-
-        redirectToRouter =(params)=>{
-            let path  = params && params.path;
-            let state = params && params.state;
-
-            if (path) {
-                history.push(path, state);
-            }
+            let path   = answer && `/answer/${answer.id}/`;
+            let state : {answer, question, recentlyCreated : true}
+         
+            answer && history.push(path, state);
         };
 
         clearItemFromStore =(item)=> {
@@ -343,45 +328,47 @@ export function MainAppHoc(Component) {
                             
             Object.keys(entities).forEach(key => {
                 let entitie = entities[key]
-                            
+                                            
                 Object.keys(entitie).forEach(k => {
 
                     if (k === item && entities[key][k]) {
-                        console.log(k, cacheEntities[key][k])
                         delete cacheEntities[key][k];
                         delete entities[key][k];
                     }
                 })
             })
-
-        };
-
-        isLoggedOut =(userAuth)=>{
-            let {successMessage} = userAuth && userAuth.loginAuth || {};
-            let isLoggedOut      = successMessage === 'Successfully logged out.'
             
-            if (isLoggedOut) return true;
-            return false;
+            localStorage.setItem('@@CacheEntities',JSON.stringify(cacheEntities));
+
+        };
+       
+        isLoggedOut =(userAuth:object)=>{
+            if (!userAuth || !userAuth['loginAuth']) {
+                return false;
+            }
+
+            let {successMessage} = userAuth && userAuth['loginAuth'];
+            return successMessage === 'Successfully logged out.';
         };
 
-        isTokenRefresh =(userAuth:object)=>{
+        isTokenRefresh =(userAuth:object):boolean =>{
             if (!userAuth) {
                 return false;
             }
             const isTokenRefresh:boolean =  userAuth['isTokenRefresh'];
             const error:object = userAuth['error'];
 
-            if (error  && isTokenRefresh) return true;
+            if (error && isTokenRefresh) return true;
         };
 
-        confirmLogin =(userAuth)=>{
-            let {loginAuth} = userAuth || {};
-            if (loginAuth && loginAuth.isLoggedIn) {
+        confirmLogin =( userAuth:object) => {
+            let loginAuth:object = userAuth['loginAuth'];
+            if (loginAuth && loginAuth['isLoggedIn']) {
                 this.setState({isAuthenticated:true})
             }
 
-            if (loginAuth && loginAuth.isConfirmed) {
-                delete loginAuth.isConfirmed
+            if (loginAuth && loginAuth['isConfirmed']) {
+                delete loginAuth['isConfirmed']
                 closeModals(true);
 
                 let textMessage = 'You successfully confirmed your account'
@@ -396,7 +383,6 @@ export function MainAppHoc(Component) {
             let isTokenRefresh:boolean = this.isTokenRefresh(userAuth);
 
             if (isLoggedOut || isTokenRefresh) {
-                this.clearItemFromStore("loginAuth");
                 this.clearItemFromStore("user");
             }
 
@@ -408,72 +394,68 @@ export function MainAppHoc(Component) {
         };
 
         loginUser = () => {
-            history.push('user/registration');
+            history.push('/user/registration');
         };
 
         logout= () => {
-            let apiUrl   =  api.logoutUser();
-            let useToken = false;
-            let formName = 'logoutForm';
+            let apiUrl:string   =  api.logoutUser();
+            let useToken:boolean = false;
+            let formName:string = 'logoutForm';
             this.props.authenticateUser({apiUrl, form:{},formName, useToken})
         };  
        
-        push(params){
-            let path = params && params.path;
-            let state = params && params.state;
+        pushToRouter(params:object, event?:React.MouseEvent<HTMLAnchorElement>){
+            console.log(params)
+            event && event.preventDefault();
 
-            if (path) {
+            let path:string =  params['linkPath'];
+            let state:object = params['state'];
+            let location:object = history.location;
+
+            let currentPath = location['pathname'];
+
+            if (path && path !== currentPath) {
                 history.push(path, state);
-                //this.reloadPage();
             }
-        }
+        };
 
         reloadPage(){
             console.log(this.props,window.location, 'Im reloading this page')
             window.location.reload();
         }
      
-        redirecToQuestionPage  = (questionObj) => {
-            questionObj = questionObj.newObject;
-            if (questionObj) {
-                let path = `/question/${questionObj.slug}/`; 
-                let currentUser = this.state.currentUser;
-                let state = {questionObj, currentUser, isNeQuestion:true};
-            
-                this.props.history.push(path, state);
-            }
-        }
-
-        editfollowersOrUpVoters = (params) =>{
+        editfollowersOrUpVoters = (params:object) =>{
             console.log(params)
             this.setState({isUpdating:true})
             params = this._getFormData(params);
             this.props.submit(params); 
         }
 
-        removeAnswerBookmark =(params)=>{
-            let obj = params?.obj
-            let apiUrl = api.removeAnswerBookMarkApi(obj?.id);
+        removeAnswerBookmark =(params:object)=>{
+            let obj:object = params['obj']
+            let apiUrl = api.removeAnswerBookMarkApi(obj['id']);
             store.dispatch<any>(Delete({...params, apiUrl}))
         }
 
-        addBookmark =(params)=> {
+        addBookmark =(params:object)=> {
             console.log(params)
             
-            let isBookMarked = IsBookMarked('answers', params?.obj)
+            let isBookMarked = IsBookMarked('answers', params['obj'])
             console.log(isBookMarked)
             if (isBookMarked){
                 return this.removeAnswerBookmark(params)
             }
             
-            var data   = params?.obj
+            var data   = params['obj']
             params['formData'] = helper.createFormData({data});
             this.props.submit(params);
         }
 
-        _getFormData = (params) =>{
+        _getFormData = (params:object) =>{
            
-            let {objName, obj} = params;
+            let obj = params['obj'];
+
+            let objName:string = params['objName'];
 
             switch(objName){
                 case 'Question':
@@ -484,25 +466,23 @@ export function MainAppHoc(Component) {
                     return params;
 
                 default:
-                    var upvotes       = params.obj.upvotes; 
+                    var upvotes       = obj.upvotes; 
                     params['formData'] = helper.createFormData({upvotes});
                     return params; 
             }
 
         };
-     
-        getProps(){
+    
+        getProps():object{
 
             return {
                 ...this.props,
-                logout                  : this.logout,
+                logout                  : this.logout.bind(this),
                 loginUser               : this.loginUser.bind(this),
                 editfollowersOrUpVoters : this.editfollowersOrUpVoters.bind(this),
                 addBookmark             : this.addBookmark.bind(this),
                 reloadPage              : this.reloadPage.bind(this),
-                push                    : this.push.bind(this),
-                redirectToRouter        : this.redirectToRouter.bind(this),
-              
+                pushToRouter            : this.pushToRouter.bind(this),
                 ...this.state,
             };
         };
@@ -517,19 +497,19 @@ export function MainAppHoc(Component) {
             const feather = require('feather-icons')
 
             let props = this.getProps();
-            let {userAuth} = props.entities;
+            let {userAuth} = props['entities'];
             
 
-            let alertMessageStyles = props.displayMessage?{ display : 'block'}:
+            let alertMessageStyles = props['displayMessage']?{ display : 'block'}:
                                                           { display : 'none' };
 
-            let onModalStyles = props.modalIsOpen ? {opacity:'0.70',} :
+            let onModalStyles = props['modalIsOpen'] ? {opacity:'0.70',} :
                                                     {opacity:'2',};
                       
             return (
                 <div  className="app-container">
                     <fieldset style={ onModalStyles } 
-                              disabled={ props.modalIsOpen } >
+                              disabled={ props['modalIsOpen'] } >
                         
                        <Component {...props}/>                    
 

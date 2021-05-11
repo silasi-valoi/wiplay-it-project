@@ -197,15 +197,14 @@
 	}
 
 	.confirm-password-submit {
-		display  : flex;
-		justify-content:  flex-end;
+		display : flex;
 	}
 
 	.confirm-password-rest-btn {
 		border    : px solid black;
 		color     : gray;
 		font-size : 14px; 
-		margin    : 6px 0 15px;
+		margin    : 6px 10px 15px;
 	}
 
 	.confirm-password-rest-btn:hover,
@@ -370,8 +369,8 @@
 
 	.confirm-password-submit {
 		display :  flex;
-		margin   : 8% 8px 0; 
-		justify-content:  flex-end;
+		margin   : 5% 8px 0; 
+		
 	}
 
 	.confirm-password-rest-btn {

@@ -32,9 +32,10 @@ const AccountConfirmation = props => {
 export default AccountConfirmation;
 
 const ConfirmationContents =(props)=> {
+    
     return(
         <div>
-            {props.isConfirmed &&
+            {props.userIsConfirmed &&
                 <ConfirmationSuccess {...props}/>
                 ||
                 <ConfirmationError {...props}/>
@@ -58,7 +59,7 @@ const ConfirmationSuccess =(props)=> {
 
             <div className="authentication-btn-box">
                 <button className="btn-sm" 
-                        onClick={()=> history.push('user/registration/') }>
+                        onClick={()=> history.push('/user/registration/') }>
                         Login
                 </button>  
             </div>
@@ -67,8 +68,10 @@ const ConfirmationSuccess =(props)=> {
 };
 
 const ConfirmationError =(props)=> {
-    let error   = "Something wrong happened, please try again"
-    let {errorMessage} = props;
+    let errorMessage:string = "Something wrong happened while trying " + 
+                            "to verify your account. " +  
+                           "Please click the button bellow to resend confirmation mail again."
+    
 
     let authenticationProps = {
             linkName  : 'Resend Confirmation',
@@ -79,8 +82,8 @@ const ConfirmationError =(props)=> {
     return(
         <div>
             <div className="confirmation-error-box">
-                <p className="confirmation-message message-success">
-                    {errorMessage || error}
+                <p className="confirmation-message alert-danger message-success">
+                    {errorMessage}
                 </p>
             </div>
 

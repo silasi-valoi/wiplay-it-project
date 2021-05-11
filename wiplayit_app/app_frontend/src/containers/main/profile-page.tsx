@@ -98,6 +98,7 @@ class UserProfileContainer extends Component {
 
     componentDidUpdate(prevProps, nextProps){
         if(!this.isMounted) return;
+
         
         let { slug, id } = this.props['match'].params;
         let profileById  = `userProfile${id}`;
@@ -157,6 +158,7 @@ class UserProfileContainer extends Component {
         let { userProfile, users }   = cacheEntities
 
         userProfile = userProfile && userProfile[profileById];
+        console.log(userProfile)
         
         if (userProfile && userProfile.user) {
             let timeStamp      = userProfile.timeStamp;

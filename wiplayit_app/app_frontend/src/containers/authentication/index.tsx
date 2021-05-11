@@ -48,6 +48,10 @@ class AuthenticationPage extends React.Component<State, Props> {
             _formConstructor('loginForm');
         }
     };
+
+    componentWillMount(){
+                
+    }
     
           
     getProps =():object=> {

@@ -234,9 +234,9 @@ class PhoneNumberConfirmation(models.Model):
    
     def code_expired(self):
         
-        if self.sent:
+        if self.created:
             now = timezone.now()
-            expiration_date = now - self.sent 
+            expiration_date = now - self.created 
             return expiration_date >= datetime.timedelta(hours=1)
 
         return True
@@ -287,7 +287,7 @@ class PhoneNumberPasswordChange(models.Model):
    
     def code_expired(self):
         now = timezone.now()
-        expiration_date = now - self.sent 
+        expiration_date = now - self.created 
         expired = expiration_date >= datetime.timedelta(hours=1)
         return expired
     code_expired.boolean = True

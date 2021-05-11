@@ -52,6 +52,7 @@ class  SettingsContainer extends Component  {
     componentDidMount() {
         this.isMounted = true
         this.onSettingsStoreUpdate()
+        console.log(this.props)
      
     };
 
@@ -121,25 +122,23 @@ class  SettingsContainer extends Component  {
         store.dispatch<any>(authenticationSuccess({passwordConfirmAuth}));
     }; 
 
-    togglePasswordChangeForm=(params)=>{
+    togglePasswordChangeForm = (params?:object) => {
         let formName = 'passwordChangeForm';
-
-        let old_password = params?.old_password;
-        let fromCache    = this.getOldPassword();
+        let old_password = params && params['old_password'];
+        
         if (old_password) {
             this.cachePassword(params);
         }
-                    
+        
+        let fromCache    = this.getOldPassword();     
         if (!old_password && !fromCache) {
                 return this.openPasswordConfirmationModal();
                 
         }else{
             
-            let formFields = getFormFields();
-            let form = formFields.passwordChangeForm;
-            let onPasswordChangeForm = true;
-            let passwordChanged      = false
-            this.setState({onPasswordChangeForm, passwordChanged})
+            let form = getFormFields().passwordChangeForm;
+                            
+            this.setState({onPasswordChangeForm:true, passwordChanged:false})
             return this._SetForm(form, formName, {old_password})
         }
     }
@@ -174,14 +173,14 @@ class  SettingsContainer extends Component  {
         timeStamp = new GetTimeStamp({timeStamp});
 
         if (timeStamp) {
-            return timeStamp.menutes() >= 30;
+            return timeStamp.menutes() >= 1;
         }
 
         return true;
     }
 
     getOldPassword =()=> {
-        let cacheEntities = this.props['cacheEntities'];
+        let cacheEntities:object = this.props['cacheEntities'];
         let userAuth:object = cacheEntities['userAuth'];
         
         if (userAuth && userAuth['passwordConfirmAuth']) {
@@ -205,8 +204,7 @@ class  SettingsContainer extends Component  {
         let modalProps = {
             togglePasswordChangeForm: this.togglePasswordChangeForm.bind(this),
             currentUser,
-            modalName : 'passwordConfirmation',
-            authenticationType : 'passwordConfirmation',
+            modalName : 'passwordConfirmationForm',
         }; 
 
         Modal(modalProps)

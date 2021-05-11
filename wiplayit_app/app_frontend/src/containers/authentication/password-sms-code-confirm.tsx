@@ -106,6 +106,7 @@ class PasswordChangeSmsCodePage extends Component{
 
     render(){
         let props = this.getProps();
+        
         let alertMessageStyles = props['displayMessage'] && { display : 'block'} ||
                                                          { display : 'none' };
                      
@@ -145,6 +146,7 @@ const PasswordChange =(props)=>{
             linkName  : 'Resend',
             authenticationType : 'passwordReset',
             modalName : 'passwordReset',
+
     };
     
     

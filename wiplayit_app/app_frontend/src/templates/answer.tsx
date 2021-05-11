@@ -140,9 +140,10 @@ export const AnswersComponent = props => {
 
 
     let question = answer.question;
-    let questionPath = question && `/question/${question.slug}/${question.id}/`;
+    
     const linkProps:object = {
-        linkPath:`/question/${question.slug}/${question.id}/`
+        linkPath:`/question/${question.slug}/${question.id}/`,
+        state:{question},
     }
                                         
     return (

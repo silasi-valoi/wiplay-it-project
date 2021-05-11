@@ -4,7 +4,8 @@ import  * as types  from 'actions/types';
 
 const helper   = new Helper();
 
-const updateStateEntyties = (stateEntintieKey:string, params:object, state:object ):object=>{
+const updateStateEntyties = (
+         stateEntintieKey:string, params:object, state:object ):object => {
             const byId:string = params['byId'];
             const payLoad:object = params['payLoad'];
             let oldState:object = state;
@@ -40,7 +41,7 @@ const CreateNewEntities = (action:object):object =>{
             enumerable   : true,
     }
         
-    return  Object.defineProperty({}, key,value  );
+    return  Object.defineProperty({}, key, value );
 };
 
 

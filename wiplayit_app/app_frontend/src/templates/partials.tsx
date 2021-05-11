@@ -133,7 +133,7 @@ export const UnconfirmedUserWarning =(props)=> {
 
                     <ul className="confirm-account-link">
                         <li>
-                            Your account has not been confirmed and you won't be able to
+                            Your account has not been confirmed yet and you won't be able to
                             post or edit your profile. Please click 
                             <OpenAuthModalBtn {...authenticationProps}/> to 
                             verify your account.

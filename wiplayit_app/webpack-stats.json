@@ -1,1 +1,1 @@
-{"status":"done","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/app_frontend/app.bundle.js"}]},"error":"unknown-error","message":"[tsl] ERROR in /home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_frontend/src/containers/modal/modal-types.tsx(46,44)\n      TS2304: Cannot find name 'AccountConfirmationPage'."}
+{"status":"done","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/app_frontend/app.bundle.js"}]}}

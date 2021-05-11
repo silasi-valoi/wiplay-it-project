@@ -7,7 +7,7 @@ import {ModalManager, Modal}   from  "containers/modal/modal-container";
 import {closeModals}   from  'containers/modal/helpers';
 import { store } from "store/index";
 import {showModal, handleError} from 'actions/actionCreators';
-import {IsBookMarked} from 'utils/helpers';
+import {IsBookMarked, pushToRouter} from 'utils/helpers';
 
 
  let unfollowedBtnStyles = {
@@ -26,7 +26,7 @@ export const LinkButton = (props)=>{
     let linkPath = props['linkPath'];
 
     return(
-        <a href={linkPath}>
+        <a href={linkPath} onClick={(event) => pushToRouter(props, event) }>
             {props['children']}
         </a>
     )
@@ -235,7 +235,7 @@ export const QuestionOptsModalBtns = props => {
             Follow Question
         </button>
     )
-}
+};
 
 export const OptionsMenuBtns = props => {
     
@@ -245,7 +245,7 @@ export const OptionsMenuBtns = props => {
             <Author {...props}/>
         </div>
     )
-}
+};
 
 export const Author = props =>{
     let {currentUser} = props;
@@ -268,7 +268,7 @@ export const Author = props =>{
         </div>
     )
 
-} 
+}; 
 
 export const ExtraBtns = (props) =>{
     console.log(props)
@@ -309,7 +309,7 @@ export const ExtraBtns = (props) =>{
 }
 
 
-export const ModalOptionsMenu = props => {
+export const ModalOptionsMenu = (props:object) => {
     return (
         <div className="modal-menu">
             <OptionsMenuBtns {...props}/>
@@ -324,15 +324,15 @@ export const ModalOptionsMenu = props => {
 }
 
 
-export const ModalCloseBtn = props => {
-    let styles = props.styles || {};
+export const ModalCloseBtn = (props:object) => {
+    let styles = props['styles'];
 
     return(
         <button type="button" 
               style={styles}
               onClick={()=> closeModals(true)}
               className="nav-bar-back-bt btn-sm" >
-           {props.children}
+           {props['children']}
         </button>  
     )
 }
@@ -392,7 +392,7 @@ const OpenModalEditor=(props)=>{
     let optionsModal = modal && modal['optionsMenu'];
 
     if (currentUser && !currentUser.is_confirmed) {
-        let error = 'Sorry, you must confirm your account to start posting and editting ';
+        let error = 'Sorry, you must confirm your account first before you start posting ';
         return store.dispatch<any>(handleError(error));
     }
 
@@ -478,7 +478,8 @@ export const ChangeImageBtn = props => {
             className="edit-img-btn btn" 
             onClick={()=> {
                 if (!currentUser.is_confirmed) {
-                    let error = 'Sorry, you must confirm your account to to change photo.';
+                    let error = 'Please confirm your account first before you can ' + 
+                    'change your profile picture.';
                     store.dispatch<any>(handleError(error));
                         return;   
                     }

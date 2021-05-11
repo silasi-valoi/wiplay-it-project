@@ -80,195 +80,6 @@ export default class FormValidator {
 
 };
 
-/*
-
-export class Authentication {
-    constructor(props){
-
-    }
-
-    responseFacebook =(response)=> {
-        console.log(response)
-        let apiUrl =  api.facebookLoginApi();
-        let accessToken =  response.accessToken
-        accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
-
-        return ;
-    };
-
-
-    responseTwitter =(response)=> {
-        let accessToken =  response.accessToken
-        let apiUrl =  api.twitterLoginApi(this)
-        accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
-         
-        return ;
-    };
-
-
-    responseGoogle =(response)=> {
-        let accessToken =  response.accessToken
-        let apiUrl =  api.googleLoginApi();
-        accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
-        return ;
-    };
-
-    _SendSocialAuthentication =(accessToken, apiUrl)=>{
-        let isSocialAuth = true
-        let form   = helper.createFormData({"access_token": accessToken});
-        this.setState({isSocialAuth, submitting:true})
-        return this.props.authenticate({ apiUrl, form, isSocialAuth });
-
-    };
-    
-    handleFormChange=(e)=>{
-        if (!this.isMounted) return;
-
-        e.preventDefault()
-        changeForm(this, event);
-    };
-
-    selectCountry =(val)=> {
-        if (!this.isMounted) return;
-        let {formName, form} = this.state;
-        form[formName]['country'] = val
-        this.setState({ form });
-    };
-
-    hideToggledForm =()=>{
-        let {onPasswordResetForm,
-             onEmailResendForm,
-             onSignUpForm} = this.state;
-
-        onPasswordResetForm && this.setState({onPasswordResetForm : false})
-        onEmailResendForm   && this.setState({onEmailResendForm : false})
-
-    }   
-    
-    formConstructor =(name, opts={})=> {
-            if (!this.isMounted) return;
-            
-            if (name) {
-                let formName = name;
-                let currentForm = this.state.form
-                if (currentForm) {
-                    //return
-                }
-
-                let defaultActiveForm = formName;
-                let form = null;
-
-                switch(formName){
-
-                    case 'loginForm':
-                        form = getFormFields().loginForm;
-                        return this._SetForm(form, formName)
-
-                    case 'signUpForm':
-
-                        form = getFormFields().signUpForm;
-                        return this._SetForm(form, formName);
-
-                    case 'passwordResetForm':
-                        form = getFormFields().emailForm;
-                        return this._SetForm(form, formName); 
-
-                    case 'emailResendForm':
-                        form = getFormFields().emailForm;
-                        return this._SetForm(form, formName);
-
-                    case 'passwordResetSmsCodeForm':
-                        form = getFormFields().smsCodeForm;
-                        return this._SetForm(form, formName)
-
-                    case 'passwordChangeConfirmForm':
-                    case 'passwordChangeForm':
-                        form = getFormFields().passwordChangeForm;
-                        form = Object.assign(opts, form);
-                        return this._SetForm(form, formName);
-
-                    default:
-                        return null;
-                };
-
-            }
-        };
-
-         _SetForm =(form, formName)=> {
-            if (!this.isMounted) return;
-
-            let currentForm = this.state.form;
-            form = setForm(form, currentForm, formName);
-            this.setState({form, formName, successMessage:undefined});
-            this.setFormOpts(formName);
-            
-        };
-
-        setFormOpts(formName){
-            if (formName) {
-                switch(formName){
-
-                    case 'loginForm':
-                        return this.setState({ onLoginForm : true})
-                  
-                    case 'signUpForm':
-                        return this.setState({onSignUpForm : true})
-
-                    case 'passwordResetForm':
-                        return this.setState({onPasswordResetForm : true});
-
-                    case 'emailResendForm':
-                        return this.setState({ onEmailResendForm : true });
-                        
-                    case 'passwordResetSmsCodeForm':
-                        return this.setState({onPasswordResetSmsCodeForm:true});
-                        
-                    case 'passwordChangeConfirmForm':
-                        return this.setState({onPasswordChangeConfirmForm : true});
-                        
-                    default:
-                        return null;
-                };
-
-            }
-
-        };
-
-        getCurrentDefaultForm=()=>{
-           return this.state.defaultActiveForm;
-        }
-        
-        toggleSignUpForm =(params={})=>{
-            //if(!this.isMounted) return;
-            let { value } = params;
-
-            if (!params.value) {
-                this.setState({onSignUpForm : false})
-                this.formConstructor(currentFormName) 
-            }
-
-            if ( params.value) {
-                this.formConstructor("signUpForm");
-            }
-        };
-
-        toggleEmailForm = (params) => {
-            let {value,
-                 successMessage,
-                 defaultFormName,
-                 formName } = params;
-
-            if (value) {
-                this.formConstructor(formName)
-
-            }else{
-                this.hideToggledForm();
-                this.formConstructor(defaultFormName)
-            }
-        };
-      
-};*/
-
 
 export const authSubmit =(self:object,formName?:string, useToken:boolean=false)=>{
     const state:object = self['state']
@@ -297,6 +108,7 @@ export const getForm =(self:object, formName:string):FormValidator => {
 
 export const setFormErrors =(self, error, formName)=> {
     let form = self.state.form;
+    console.log(formName, error)
 
     if (form) {
         form[formName]['error'] = error
@@ -406,7 +218,7 @@ export const getFormFields =()=> {
             'new_password1' : '',
             'new_password2' : '',
         },
-        phoneNumberForm : {phone_number:''}, 
+        phoneNumberForm : {'phone_number':''}, 
 
     };  
 };

@@ -397,9 +397,9 @@ class CustomPasswordResetSerializer(PasswordResetSerializer):
 			raise serializers.ValidationError(msg)
 
 		self.phone_number =  self.get_unique_phone_number(value)
-		if self.phone_number and not self.phone_number.verified:
-			msg = _('You must confirm your account before you can change a password.')
-			raise serializers.ValidationError(msg)
+		#if self.phone_number and not self.phone_number.verified:
+		#	msg = _('You must confirm your account before you can change a password.')
+		#	raise serializers.ValidationError(msg)
 						
 		return value
 
@@ -437,9 +437,9 @@ class CustomPasswordResetSerializer(PasswordResetSerializer):
 			msg = _('Account with this email address does not exists.')
 			raise serializers.ValidationError(msg)
 
-		if  not email_is_verified(email):
-			msg = _('You must confirm your account before you can change a password.')
-			raise serializers.ValidationError(msg)
+		#if  not email_is_verified(email):
+		#	msg = _('You must confirm your account before you can change a password.')
+		#	raise serializers.ValidationError(msg)
 
 		self.reset_form = CustomPasswordResetForm(data=self.initial_data)
 		if not self.reset_form.is_valid():

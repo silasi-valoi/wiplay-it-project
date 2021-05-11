@@ -464,8 +464,9 @@ const _UserList = (props) =>{
                 let profile         = user['profile'];
                 let profile_picture = profile['profile_picture'];
 
-                const linkProps = {
+                const linkProps:object = {
                     linkPath:`/profile/${user.id}/${user['slug']}/`,
+                    state:{user},
                 }
 
                 let editObjProps = {
@@ -485,25 +486,13 @@ const _UserList = (props) =>{
                         <div className="index-user-list-contents">
                             <div className="index-user-list-img-container">
                                 <div className="index-user-img-box">
-                                    { profile_picture?
-                                        <div className="index-user-list-img-box"> 
-                                            <LinkButton {...linkProps}>
-                                                <img  src={`${profile_picture}`} 
-                                                      alt="" 
-                                                      className="index-user-list-img"/> 
-                                            </LinkButton>
-                                        </div>
-    
-                                        :
-    
-                                        <div className="index-user-list-img-box">
-                                            <LinkButton {...linkProps}>
-                                                <img  src={`${profile_picture}`} 
-                                                      alt="" 
-                                                      className="index-user-list-img"/> 
-                                            </LinkButton>
-                                        </div>
-                                    }
+                                    <div className="index-user-list-img-box">
+                                        <LinkButton {...linkProps}>
+                                            <img  src={`${profile_picture}`} 
+                                                  alt="" 
+                                                  className="index-user-list-img"/> 
+                                        </LinkButton>
+                                    </div>
                                 </div>
 
                                 <div className="hid-user-btn-box">

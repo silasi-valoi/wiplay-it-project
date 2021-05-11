@@ -17,7 +17,9 @@
     cursor          : pointer;
     text-decoration : none;
 }
-
+.user-list-follow-box {
+   border : px solid blue;    
+}
 
 .user-list-follow-btn-box {
     border : px solid black; 
@@ -149,7 +151,7 @@
     }
 
     .user-list-container {
-        border     : 1px solid black;
+        border     : px solid black;
         
     }
 
@@ -209,10 +211,7 @@
         width: 100%;
         border: px solid blue;
     }
-
-    .user-list-credentials-contents {
-        border : px solid green;
-    }
+  
 
     .user-list-img-box {
         border :  px solid blue;
@@ -241,7 +240,7 @@
         border: px solid blue;
         font-weight : bold; 
         line-height : 1;
-        margin-top  : 12px 
+        margin-top  : 20px 
    
     }
 

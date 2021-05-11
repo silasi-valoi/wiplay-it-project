@@ -29,6 +29,7 @@ class UserListBox extends Component {
             usersById         : `filteredUsers`,
             apiUrl            : '',
             modalTitle        : "Authors",
+            modalIsOpen       : true,
             isReloading       : false,
             users             : undefined,
             onScroolStyles    : undefined,
