@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from auth_backend.models import User
 from .models import ( Question, Post, Answer, AnswerComment, AnswerReply,
 	                  PostComment, PostReply, DraftEditorMediaContent,
-	                  AnswerBookmark,PostBookmark, AboutCompany,
+	                  AnswerBookmark,PostBookmark, AboutCompany, DefaultProfilePicture,
 	                  BugReport, FeedBack, ContactAdmin)
 
 from .mixins.serializer_mixins import   SerialiizerMixin
@@ -20,6 +20,14 @@ class BaseModelSerializer(SerialiizerMixin, serializers.ModelSerializer):
 
 class BaseSerializer(SerialiizerMixin, serializers.Serializer):
 	pass
+
+	
+class DefaultProfilePictureSerializer(serializers.ModelSerializer):
+		
+	class Meta:
+		model  = DefaultProfilePicture 
+		fields = '__all__'
+	
 	
 class BaseChildSerializer(BaseModelSerializer):
 	upvoted    = serializers.SerializerMethodField()
@@ -345,6 +353,8 @@ class IndexSerializer(BaseSerializer):
 		self.update_serializer_obj_perms('user_perms')
 		users = User.objects.exclude(
 						first_name="Anonymous"
+					).filter(
+						is_confirmed=True
 					).filter(
 						is_superuser=False
 					)

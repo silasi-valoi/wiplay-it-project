@@ -10,8 +10,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 from app_backend.helpers import get_users_with_permissions
 from auth_backend.models import User  
-from app_backend.models import (Question, Post, Answer, AnswerComment, AnswerReply,
-	                             PostComment, PostReply, AboutCompany )
+
+from app_backend.models import (Question, Post, Answer, AnswerComment,
+								AnswerReply, DefaultProfilePicture,
+								PostComment, PostReply, AboutCompany )
 
 from app_backend.views import ( BaseView, BaseApiView, QuestionView, PostDetailView,
                                 PostCommentDetailView,PostReplyDetailView,
@@ -19,7 +21,8 @@ from app_backend.views import ( BaseView, BaseApiView, QuestionView, PostDetailV
 	                            AnswerReplyDetailView )
 
 from auth_backend.views import UserView
-from app_backend.serializers import IndexSerializer, AboutSerializer
+from app_backend.serializers import ( IndexSerializer, AboutSerializer,
+									  DefaultProfilePictureSerializer )
 from app_backend.mixins.views_mixins import RetrieveMixin
 
 
@@ -28,6 +31,16 @@ from app_backend.mixins.views_mixins import RetrieveMixin
 def index(request, resource=''):
 	return render(request, 'index.html')
 
+
+class DefaultProfilePictureView(BaseApiView, APIView):
+	permission_classes = (AllowAny,)
+	serializer_class = DefaultProfilePictureSerializer
+	queryset = DefaultProfilePicture.objects.all()
+
+	def get(self, *args, **kwargs):
+		serializer = self.serializer_class(*args, **kwargs)
+		print(serializer.data)
+		return Response(serializer.data,  status=status.HTTP_200_OK )
 
 class AboutView(BaseApiView, APIView):
 	permission_classes = (AllowAny,)

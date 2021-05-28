@@ -178,6 +178,7 @@ class UserListBox extends Component {
 
         users = users && users[usersById];
         onScroolStyles = onScroolStyles || {};
+        console.log(users)
                  
         return (
             <div 

@@ -446,7 +446,7 @@ class UserView(BaseApiView):
 	fields_to_update = get_model_fields('user_model_fields') 
 
 	def get_queryset(self):
-		users = User.objects.exclude(
+		return User.objects.exclude(
 						first_name="Anonymous"
 					).filter(
 						is_confirmed=True
@@ -454,10 +454,6 @@ class UserView(BaseApiView):
 						is_superuser=False
 					)
 
-		return users
-
-
-		
 
 class RetrieveUserProfileView(UserView):
 	permission_classes = (AllowAny,)

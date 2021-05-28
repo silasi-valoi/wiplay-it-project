@@ -3,6 +3,10 @@
 
 export default class Api{
 
+    getDefaultProfilePicture(){
+        return `/api/default/profile/picture/`;
+    }
+
     getContactAdminApi() {
        return `/api/contact/admin/`;
     }

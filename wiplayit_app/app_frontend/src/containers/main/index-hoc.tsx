@@ -332,6 +332,7 @@ export function MainAppHoc(Component) {
                 Object.keys(entitie).forEach(k => {
 
                     if (k === item && entities[key][k]) {
+                        console.log(k, item,entities[key[k]] )
                         delete cacheEntities[key][k];
                         delete entities[key][k];
                     }
@@ -375,7 +376,7 @@ export function MainAppHoc(Component) {
                 let message = {textMessage, messageType:'success'}
                 this.displayAlertMessage(message)
             }
-        }
+        };
 
         confirmLogout =(userAuth:object)=> {
 
@@ -405,7 +406,6 @@ export function MainAppHoc(Component) {
         };  
        
         pushToRouter(params:object, event?:React.MouseEvent<HTMLAnchorElement>){
-            console.log(params)
             event && event.preventDefault();
 
             let path:string =  params['linkPath'];
@@ -425,17 +425,22 @@ export function MainAppHoc(Component) {
         }
      
         editfollowersOrUpVoters = (params:object) =>{
-            console.log(params)
+            let isAuthenticated:boolean = this.state.isAuthenticated;
+
+            if(!isAuthenticated){
+               return history.push('/user/registration/');
+            }
+           
             this.setState({isUpdating:true})
             params = this._getFormData(params);
             this.props.submit(params); 
-        }
+        };
 
         removeAnswerBookmark =(params:object)=>{
             let obj:object = params['obj']
             let apiUrl = api.removeAnswerBookMarkApi(obj['id']);
             store.dispatch<any>(Delete({...params, apiUrl}))
-        }
+        };
 
         addBookmark =(params:object)=> {
             console.log(params)
@@ -449,12 +454,10 @@ export function MainAppHoc(Component) {
             var data   = params['obj']
             params['formData'] = helper.createFormData({data});
             this.props.submit(params);
-        }
+        };
 
         _getFormData = (params:object) =>{
-           
             let obj = params['obj'];
-
             let objName:string = params['objName'];
 
             switch(objName){
@@ -494,14 +497,9 @@ export function MainAppHoc(Component) {
 
         render() {
             if(!this.isMounted) return null;
-            const feather = require('feather-icons')
-
             let props = this.getProps();
-            let {userAuth} = props['entities'];
-            
-
             let alertMessageStyles = props['displayMessage']?{ display : 'block'}:
-                                                          { display : 'none' };
+                                                             { display : 'none' };
 
             let onModalStyles = props['modalIsOpen'] ? {opacity:'0.70',} :
                                                     {opacity:'2',};
@@ -526,7 +524,6 @@ export function MainAppHoc(Component) {
 
     };
 };
-
 
 
 //binds on `props` change

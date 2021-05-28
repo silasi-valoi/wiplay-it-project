@@ -21,7 +21,8 @@ from app_backend.api_views.api_detail_views import ( RetrievePostView,
                                                      RetrievePostCommentUpVoters,
                                                      RetrievePostReplyUpVoters)
 
-from app_backend.api_views.api_detail_views import ( index, IndexView, AboutView )
+from app_backend.api_views.api_detail_views import ( DefaultProfilePictureView,
+                                                     index, IndexView, AboutView )
  
 
 app_name = 'retrive_apis'
@@ -35,9 +36,13 @@ urlpatterns = [
     path("api/question/list/",
          RetrieveQuestionListView.as_view({'get':'list'}), name="question_list"),
     path("api/answer/<int:pk>/comment/list/", 
-         RetrieveAnswerCommentListView.as_view({'get':'list','post':'post' }), name="comment_list"),
+         RetrieveAnswerCommentListView.as_view({'get':'list','post':'post' }),
+          name="comment_list"),
+
     path("api/answer/comment/<int:pk>/reply/list/",
-         RetrieveAnswerReplyListView.as_view({'get':'list','post':'post' }), name="reply_list"),
+         RetrieveAnswerReplyListView.as_view({'get':'list','post':'post' }), 
+         name="reply_list"),
+
     path("api/answer/reply/<int:pk>/children/list/",
          RetrieveAnswerReplyChildrenListView.as_view({'get':'list'}), name="reply_list"),
     path("api/question/<int:pk>/followers/",
@@ -67,6 +72,8 @@ urlpatterns = [
     path("api/post/reply/<int:pk>/upvoters/",
          RetrievePostReplyUpVoters.as_view({'get': 'list'})),
     path("api/about/", AboutView.as_view({'get':'list'}), name='about'),
+    path("api/default/profile/picture/", 
+          DefaultProfilePictureView.as_view({'get':'list'}), name='default_profile_pic'),
 
 ]
 

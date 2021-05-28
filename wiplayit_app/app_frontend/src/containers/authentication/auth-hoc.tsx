@@ -154,10 +154,16 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         _SendSocialAuthentication = (accessToken, apiUrl):void => {
-            let isSocialAuth = true
-            let form   = this.helper.createFormData({"access_token": accessToken});
-            this.setState({isSocialAuth, submitting:true})
-            return store.dispatch<any>(authenticate({ apiUrl, form, isSocialAuth }));
+            const socialLoginProps:object = {
+                isSocialAuth : true,
+                form : this.helper.createFormData({"access_token": accessToken}),
+                formName:'loginForm',
+                apiUrl,
+            };
+
+            
+            this.setState({isSocialAuth:true, submitting:true})
+            return store.dispatch<any>(authenticate(socialLoginProps));
         };
 
         componentWillUnmount =()=> {
@@ -309,8 +315,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             let loginAuth = userAuth['loginAuth']
             let {isLoggedIn, isConfirmed} = loginAuth;
             const pathname:string = history['location'].pathname
-                                                           
-            if(isLoggedIn && pathname === '/use/registration/' || 
+                                                                       
+            if(isLoggedIn && pathname === '/user/registration/' || 
                 pathname === '/user/registration'){
                 
                 setTimeout(()=> {
@@ -341,9 +347,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         }
 
         _SetForm = (form:object, formName:string):void => {
-            console.log(this, this._isMounted)
-            //if (!this._isMounted) return;
-
             let currentForm = this.state['form'];
             form = setForm(form, currentForm, formName);
             this.setState({
@@ -405,8 +408,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             }else if(formName === 'passwordChangeConfirmForm'){
                 form = formFields['passwordChangeForm'];
             }
-
-            console.log(form, formName)
+            
             if (form) {
                form =  Object.assign(form, options || {});
                 return this._SetForm(form, formName);
@@ -414,8 +416,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         toggleAuthForm = (params:object):void => {
-            console.log(params);
-                              
+                                          
             if (params['value'] === false ) {
                 this.hideToggledForm(params['formName']);
                 this.formConstructor(this.state['defaultFormName']); 
@@ -447,7 +448,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         
         onSubmit = (e) => {
             e && e.preventDefault();
-            console.log('submitting authentication data', this)
             authSubmit(this);
         };
               

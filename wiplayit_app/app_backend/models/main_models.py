@@ -425,7 +425,6 @@ class FootballClubs(models.Model):
  
 
 class DraftEditorMediaContent(models.Model):
-    
 
     #Stores draft editor content files 
     def get_upload_path(self, filename):
@@ -449,3 +448,9 @@ class DraftEditorMediaContent(models.Model):
         return "{0}".format(self.id)
 
 
+class DefaultProfilePicture(models.Model):
+    profile_picture = models.ImageField(
+                        upload_to='profiles/%y/%m/%d/',
+                        blank=True,
+                        default="default-profiles/user-image-placeholder.png"
+                      )

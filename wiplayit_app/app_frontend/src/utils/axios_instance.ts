@@ -25,11 +25,11 @@ export default class Axios {
         this.useToken      =  props['useToken'];
         this.timeout       =  props['timeout'] || 15000; 
         this.requestFor    =  props['requestFor'];
-    }
+    };
 
     authTimeStampe(timeStamp){
         return new GetTimeStamp({timeStamp});
-    }
+    };
 
     _getAuth = () => {
         
@@ -47,11 +47,12 @@ export default class Axios {
         return null;
     };
 
-    tokenExpired =()=>{
+    tokenExpired =():boolean => {
         let loginAuth  = this._getAuth();
         let expireTime = loginAuth && this.authTimeStampe(loginAuth.timeStamp);
+        
         if (expireTime) {
-            return expireTime.days() >= 7;
+            return expireTime.days() >= 1;
         }
         return true
     };
@@ -66,6 +67,7 @@ export default class Axios {
             const authProps:object ={
                 apiUrl :api.refreshTokenApi(), 
                 form   :{token},
+                formName:'loginForm',
                 isTokenRefresh : true,
                 useToken : false,
             };
@@ -73,7 +75,7 @@ export default class Axios {
             store.dispatch<any>(authenticate(authProps))
         }
     };
-
+   
     getToken(loginAuth:object):string{
         return loginAuth && loginAuth['tokenKey']; 
     };
@@ -88,7 +90,6 @@ export default class Axios {
         return instance;
 
     };
-
 
     instance = () => {
         const instance = this.createInstance();

@@ -158,17 +158,13 @@ class HomePage extends Component<any, any> {
     
     componentDidMount() {
         this.isMounted = true;
-        
         this.onIndexUpdate();
-              
         window.addEventListener("beforeunload",(event)=>{
             return store.dispatch<any>(getIndex()); 
               
         });
-
-
+        
         let cacheEntities = this.props['cacheEntities']
-                     
         let index     = this.props['entities'];
         let cachedIndex  = cacheEntities?.index; 
         let checkDataExist  = this.checkDataExist ; 
@@ -179,8 +175,7 @@ class HomePage extends Component<any, any> {
             console.log(menDifference)
 
             if (menDifference <= 5) {
-                this.updateIndexEntities(cachedIndex);
-                return;
+                return this.updateIndexEntities(cachedIndex);
             }
         }
 

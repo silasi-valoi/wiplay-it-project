@@ -32,12 +32,12 @@ export const ProfileComponent = props => {
         currentUser,
         isAuthenticated,
         userIsConfirmed,
+        userProfile,
         profileById} = props;
-
-    let userProfile = entities.userProfile[profileById];
-    userProfile     = userProfile?.user;
+    
     if (!userProfile) return null;
 
+    userProfile = userProfile.user;
          
     let profile  = userProfile.profile;
     let apiUrl   = api.getQuestionFollowersListApi(userProfile?.id);
@@ -420,7 +420,7 @@ export const UserList = props => {
 
 export const UserAnswers = props =>{
    var profileById    = props.profileById;
-   let userProfile    = props.entities.userProfile[profileById];
+   let userProfile    = props.userProfile;
    userProfile        = userProfile.user;
    var answerListById = `usersAnswers${userProfile.id}`
    var answers        = props.entities.answers;
@@ -477,7 +477,7 @@ export const UserAnswers = props =>{
 
 export const UserQuestions = props => {
     var profileById = props.profileById;
-    let userProfile = props.entities.userProfile[profileById];
+    let userProfile = props.userProfile;
     userProfile    = userProfile.user;
 
     let  questionListById     = `usersQuestions${userProfile.id}`
@@ -644,7 +644,7 @@ export const UsersComponent = props => {
 
 export const UserFollowings = props => {
    var profileById = props.profileById;
-   let userProfile = props.entities.userProfile[profileById];
+   let userProfile = props.userProfile;
    userProfile    = userProfile.user;
 
    var usersById   = `usersFollowings${userProfile.id}`;
@@ -686,7 +686,7 @@ export const UserFollowings = props => {
 
 export const UserFollowers = props => {
     var profileById = props.profileById;
-    let userProfile = props.entities.userProfile[profileById];
+    let userProfile = props.userProfile;
     userProfile    = userProfile.user;
 
     var usersById   = `usersFollowers${userProfile.id}`
@@ -725,47 +725,45 @@ export const UserFollowers = props => {
 
 export const UserActivitiesBtns = props => {
     var profileById = props.profileById;
-    var userProfile = props.entities.userProfile[profileById];
+    var userProfile = props.userProfile;
     var userProfile = userProfile.user;
 
-    //console.log(userProfile)
-
     var usersAnswers = {
-      component      : UserAnswers,
-      byId           : userProfile && `usersAnswers${userProfile.id}`,
-      data           :  userProfile.answers,
-      items          : 'isUsersAnswers',
+        component      : UserAnswers,
+        byId           : userProfile && `usersAnswers${userProfile.id}`,
+        data           :  userProfile.answers,
+        items          : 'isUsersAnswers',
 
-    }
+    };
    
     var usersQuestions = {
-      component        : UserQuestions,
-      byId             : `usersQuestions${userProfile.id}`,
-      data             :  userProfile.questions, 
-      items            : 'isUsersQuestions',
-     }
+        component        : UserQuestions,
+        byId             : `usersQuestions${userProfile.id}`,
+        data             :  userProfile.questions, 
+        items            : 'isUsersQuestions',
+    };
 
     var usersPosts = {
-      component      : UserPosts,
-      byId           : `usersPosts${userProfile.id}`,
-      data           :  userProfile.posts,
-      items          : 'isUsersPosts',
-    }
+        component      : UserPosts,
+        byId           : `usersPosts${userProfile.id}`,
+        data           :  userProfile.posts,
+        items          : 'isUsersPosts',
+    };
    
     var usersFollowers = {
-      component          : UserFollowers,
-      byId               : `usersFollowers${userProfile.id}`,
-      data               :  userProfile.followers,
-      items              : 'isUsersFollowers'
-    }
+        component          : UserFollowers,
+        byId               : `usersFollowers${userProfile.id}`,
+        data               :  userProfile.followers,
+        items              : 'isUsersFollowers'
+    };
 
 
     var usersFollowings = {
-      component           :  UserFollowings,
-      byId                :  `usersFollowings${userProfile.id}`,
-      data                :  userProfile.followings,
-      items               :  'isUsersFollowings'
-    }
+        component           :  UserFollowings,
+        byId                :  `usersFollowings${userProfile.id}`,
+        data                :  userProfile.followings,
+        items               :  'isUsersFollowings'
+    };
 
     let totalAnswers    = userProfile?.answers?.length || 0;
     let totalQuestions  = userProfile?.questions?.length || 0;
@@ -779,7 +777,6 @@ export const UserActivitiesBtns = props => {
         followersBtnStyles,
         followingsBtnStyles} = props.userItemsStyles && props.userItemsStyles;
         
-    //console.log(answersBtnStyles, props)
     return (
         <div className="user-activities">
             <div style={answersBtnStyles} className="user-activities-btn-box">

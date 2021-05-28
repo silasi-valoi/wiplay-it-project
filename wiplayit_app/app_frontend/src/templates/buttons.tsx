@@ -271,7 +271,6 @@ export const Author = props =>{
 }; 
 
 export const ExtraBtns = (props) =>{
-    console.log(props)
     let objName = props?.editObjProps?.objName
     if (objName == 'Question') return <QuestionOptsModalBtns {...props}/>
     if (objName === 'UserProfile') return <ProfileOptsModalBtns {...props}/>   
@@ -279,7 +278,7 @@ export const ExtraBtns = (props) =>{
 
     let obj = props.answer || props.post;
     let inBookMarks = IsBookMarked('answers', obj);
-    console.log(inBookMarks, 'inBookMarks')
+    
     return(
         <div>
             <button  
@@ -339,7 +338,7 @@ export const ModalCloseBtn = (props:object) => {
 
 
 export const SubmitBtn = props => {
-    //console.log(props)
+ 
     return (
         <div className="submit-btn-box">
             <button type="button" 
@@ -349,7 +348,7 @@ export const SubmitBtn = props => {
             </button>
         </div>
     )
-}
+};
 
 
 export const OpenEditorBtn = props => {
@@ -377,14 +376,7 @@ export const OpenEditorBtn = props => {
 const OpenModalEditor=(props)=>{
     let {isAuthenticated, currentUser} = props;
 
-    if (!isAuthenticated) {
-        let modalProps = {
-            authenticationType : 'Login',
-            modalName : 'authenticationForm', 
-        };
-
-        return Modal(modalProps);
-    }
+    if(!isAuthenticated) return history.push('/user/registration/');
     
     let storeUpdate = store.getState();
     let {entities}  = storeUpdate;
@@ -431,8 +423,6 @@ export const OptionsDropDownBtn = props => {
     )
 }
 
-
-
 export const  OptionModal = props => {
     let  modalProps = {
             ...props,
@@ -440,8 +430,8 @@ export const  OptionModal = props => {
         };
 
     return(
-        <button className="btn-sm options-btn"    onClick={()=> {  Modal(modalProps) }}>
-             <Icon.MoreHorizontal id="feather-more-horizontal" size={30}/>  
+        <button className="btn-sm options-btn" onClick={()=> {  Modal(modalProps) }}>
+            <Icon.MoreHorizontal id="feather-more-horizontal" size={30}/>  
         </button>
     )
 }
@@ -503,12 +493,7 @@ export const OpenUsersModalBtn = props => {
         }; 
            
     return(
-        <button className="btn-sm "
-                onClick={()=> {
-                    //if(!isAuthenticated) return history.push('/user/registration/');
-                    
-                    Modal(modalProps)
-                } }>
+        <button className="btn-sm " onClick={()=> {Modal(modalProps)}}>
             {linkName} 
             {props.children} 
         </button>

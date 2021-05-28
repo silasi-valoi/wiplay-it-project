@@ -37,6 +37,7 @@ class UserProfileContainer extends Component {
             isProfileBox       : true,
             pageName           : "Profile", 
             profileById        : '',
+            userProfile        : undefined,
             usersById          : 'filteredUsers',
             isMouseInside      : false,
             isReloading        : false,
@@ -68,15 +69,9 @@ class UserProfileContainer extends Component {
             
             if (userProfile) {
                 this.setErrors(userProfile); 
-
-                let user = userProfile['user'];
-                answers = answers[`usersAnswers${user?.id}`];
                 
-                if (!answers) {
-                    this._dispatchUserProfileItems(userProfile['user']);
-                }
-
-                
+                this.setState({userProfile})
+                this._dispatchUserProfileItems(userProfile['user']);
             }
         };
         this.unsubscribe = store.subscribe(onStoreChange);
@@ -116,8 +111,7 @@ class UserProfileContainer extends Component {
     componentDidMount() {
         this.isMounted = true;
         this.onProfileUpdate();
-        console.log(this.props)
-                
+                        
         let entities    = this.props['entities'];
         let { slug, id }           = this.props['match'].params;
         let { users, userProfile}  = entities; 
@@ -158,20 +152,14 @@ class UserProfileContainer extends Component {
         let { userProfile, users }   = cacheEntities
 
         userProfile = userProfile && userProfile[profileById];
-        console.log(userProfile)
-        
+                
         if (userProfile && userProfile.user) {
             let timeStamp      = userProfile.timeStamp;
             const getTimeState = new GetTimeStamp({timeStamp});
-            //let menDiff        = parseInt();
-            
-            if (getTimeState.menutes() >= 2) {
-                userProfile = userProfile && userProfile.user;
-                                
-                store.dispatch<any>(action.getUserProfilePending(profileById));
-                store.dispatch<any>(action.getUserProfileSuccess( profileById, userProfile));
-                this._dispatchUserProfileItems(userProfile);
-                return 
+               
+            if (getTimeState.menutes() <= 2) {
+                this.setState({userProfile})
+                return this._dispatchUserProfileItems(userProfile.user);
             }
         }
      
@@ -227,7 +215,6 @@ class UserProfileContainer extends Component {
             opacity      : '0.60',
         }
     }
-
    
     showUserItems(params) {
         if(!this.isMounted) return;
@@ -293,14 +280,10 @@ class UserProfileContainer extends Component {
         this.setState({isMouseInside: true})
     } 
 
-
     mouseLeave = ()=>{
         //alert('Mouse is leaving')
         this.setState({isMouseInside : false})
     } 
-
-
-       
 
     getProps(){
 
@@ -314,13 +297,10 @@ class UserProfileContainer extends Component {
             ...this.state, 
         };
     };
-  
-
-  
+    
     render() {
         let   props = this.getProps();
-        var   profileById = props['profileById'];
-        const userProfile = props['entities'].userProfile[profileById];
+        const userProfile = props['userProfile'];
                       
         return (
             <div>
@@ -334,16 +314,13 @@ class UserProfileContainer extends Component {
                             <div className="page-spin-loader-box partial-page-loader">
                                  <AjaxLoader/>
                             </div>
-                        }
-
-                        <PageErrorComponent {...props}/>
-
-                        {!userProfile.isLoading &&
+                            ||
                             <div className="profile-page" id="profile-page">
                                 <ProfileComponent {...props}/> 
                             </div>
                         }
-                        
+
+                        <PageErrorComponent {...props}/>
                     </div>
                 }
             </div>

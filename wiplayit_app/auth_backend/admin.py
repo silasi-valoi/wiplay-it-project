@@ -4,7 +4,13 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from mptt.admin import MPTTModelAdmin
 
 from .models import *
+from app_backend.models import DefaultProfilePicture;
 
+
+class DefaultProfilePictureAdmin(admin.ModelAdmin):
+	fields = ['profile_picture']
+
+admin.site.register(DefaultProfilePicture, DefaultProfilePictureAdmin)
 
 
 class Userdmin(admin.ModelAdmin):

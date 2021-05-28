@@ -9,12 +9,24 @@ import {history} from 'App';
 
 const api = new Api();
 const timeStamp = new Date();
+const isOnline:boolean = false;
 
-export const _GetApi =(useToken:boolean, opts?:object) =>{
+export const _GetApi = (useToken:boolean, opts?:object) =>{
     const axios     = new Axios({useToken, ...opts});
     return axios.instance()
 
 } 
+
+const checkOnlineStatus = async () => {
+    try {
+        let apiUrl:string = api.getDefaultProfilePicture();
+        const online = await fetch(apiUrl);
+        return online.status >= 200 && online.status < 300; // either true or false
+
+    } catch (err) {
+        return false; // definitely offline
+    }
+};
 
 
 export function sendMessage(params:object):Function {
@@ -32,15 +44,21 @@ export function sendMessage(params:object):Function {
     const apiUrl:string = params['apiUrl'];;
     const formData:object = params['formData'];   
     
-    return dispatch => {
-        dispatch(action.sendMessagePending());
+    return async dispatch => {
+         let online = await checkOnlineStatus();
 
-        Api.post(apiUrl, formData)
-            .then(response => {
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+        }else{
+
+            dispatch(action.sendMessagePending());
+
+            Api.post(apiUrl, formData).then(response => {
                 console.log(response)  
                 dispatch(action.sendMessageSuccess(response.data)); 
-            })
-            .catch(error => {
+            
+            }).catch(error => {
                             
                 if (error.response) {
                     error = error.response.data;
@@ -59,8 +77,8 @@ export function sendMessage(params:object):Function {
                     dispatch(action.handleError(error));
                 }
             })
-                
-    }
+        }        
+    };
 };
 
 
@@ -495,7 +513,7 @@ export const Delete = (params)=>{
                 }
             });
     };
-} 
+}; 
 
 const removeBookmark =(bookmarkObj, bookmarkType)=>{
     let cache = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
@@ -511,166 +529,137 @@ const removeBookmark =(bookmarkObj, bookmarkType)=>{
     index['bookmarkRemoved'] = true
     
     return index
-} 
+}; 
 
-export function handleSubmit(props) {
+export  function  handleSubmit(props) {
     
-    let useToken:boolean = true;
-    const Api  = _GetApi(useToken); 
-    if (!Api) {
-        return dispatch =>{ dispatch(action.handleError()) };
-    }
+    return async dispatch => {
+        let online = await checkOnlineStatus() 
+       
+        if (online && props['isPut']) {
+            sendUpdateResquest(props, dispatch);
 
-    let { currentUser } = props;
-    currentUser = currentUser || GetLoggedInUser()
+        }else if(online && props['isPost']){
 
-    let userIsConfirmed = UserIsConfirmed(currentUser);
-    if (!userIsConfirmed) {
-        let error = 'Sorry. You must confirm your account before you can do any action';
-        
-        return dispatch => {
+            sendPostRequest(props, dispatch);
+        }else if(!online){
+            let error:string = 'Your internet connection is offline'
             dispatch(action.handleError(error));
+        }  
+    }          
+
+};
+
+function sendPostRequest(params:object, dispatch:Function){
+    const Api  = _GetApi(true); 
+    
+    let isModal:boolean = params['isModal'];
+    let modalName:string = params['modalName'];
+    let objName:string = params['objName'];
+
+    let createProps:object = {
+        ...params,
+        isCreating:true,
+        byId: params['byId'] || "newObject", 
+    };
+        
+    isModal && dispatch(action.ModalSubmitPending(modalName))
+    !isModal && dispatch(action.createActionPending(createProps ))
+
+    Api.post(params['apiUrl'], params['formData']).then(response => {
+        console.log(response)
+        createProps['data'] = prepPayLoad(objName, response.data); 
+        params['isModal'] && dispatch(action.ModalSubmitSuccess(createProps))
+        dispatch(action.createActionSuccess(createProps));
+                            
+        let alertMessage = {
+            textMessage : BuildAlertMessage(createProps),
+            messageType : 'success'
         }
-         
-    }
-     
-    let { 
-        actionType, 
-        byId,
-        objName,  
-        formData,
-        apiUrl,
-        isModal,
-        modalName,
-        obj } = props;
+        isModal && dispatch(action.HandleAlertMessage(alertMessage))
+              
+    }).catch(error => {
+                                
+        if (error.response && error.response.data) {
+            console.log(error)
+            createProps['error'] = error.response.data;
+            isModal  && dispatch(action.ModalSubmitError(createProps))
+            !isModal && dispatch(action.createActionError(createProps));
+              
+        }else if(error.request){
+            console.log(error.request)
+            error = 'Something wrong happened.';
+            createProps['error'] = error;
+            isModal && dispatch(action.handleError(error));
+                    
+        }else{
+            console.log(error)
+            dispatch(action.handleError());
+            createProps['error'] = 'Something wrong happened.'
+        }
 
+        !isModal && dispatch(action.createActionError(error));
+        isModal && dispatch(action.ModalSubmitError(createProps))
+    });
+    
+};
 
-   
-    byId = byId?byId:"newObject"; 
-    isModal = isModal || false;
+function sendUpdateResquest(params:object, dispatch:Function){
+    const Api  = _GetApi(true);
+
+    let isModal:boolean = params['isModal'];
+    let modalName:string = params['modalName'];
+    const formData = params['formData'];
+    let objName = params['objName'];
 
     let updateProps = {
-            actionType,
-            byId,
-            objName,
-            modalName,
-            obj,
-            isUpdating:true,
-        };
+        ...params,
+        isUpdating:true,
+    }
+     
+    Api.put(params['apiUrl'], formData).then(response => {
+                
+        updateProps['data'] = prepPayLoad(objName, response.data);
+        isModal && dispatch(action.ModalSubmitSuccess(updateProps));
+        dispatch(action.updateActionSuccess(updateProps));
 
-    let createProps = {
-            actionType,
-            byId,
-            objName,
-            modalName,
-            obj,
-            isCreating: true, 
-        }; 
-
-    
-    if (props.isPut) {
-   	    return dispatch => {
-            isModal && dispatch(action.ModalSubmitPending(modalName))
-            !isModal && dispatch(action.updateActionPending(updateProps))
-
-		    Api.put(apiUrl, formData)
-		    .then(response => {
-		        
-                updateProps['data'] = prepPayLoad(objName, response.data);
-                isModal && dispatch(action.ModalSubmitSuccess(updateProps));
-			    dispatch(action.updateActionSuccess(updateProps));
-
-                let alertMessage = {
-                    textMessage : BuildAlertMessage(updateProps),
-                    messageType : 'success'
-                }
-                isModal && dispatch(action.HandleAlertMessage(alertMessage))
-			
-		    })
-		    .catch(error => {
-			    			
-			    if (error.response && error.response.data) {
-                    
-                    error = error.response.data
-                    updateProps['error'] = error.detail;
-
-                    isModal  && dispatch(action.ModalSubmitError(updateProps));
-			        !isModal && dispatch(action.updateActionError(updateProps));
-
-			    }else if(error.request){
-                    
-                    error = 'Something wrong happened.';
-                    updateProps['error'] = error;
-                    !isModal && dispatch(action.updateActionError(updateProps));
-                                      
-                    isModal && dispatch(action.ModalSubmitError(updateProps));
-
-                    !isModal && dispatch(action.handleError(error));
-
-                }else{
-                    console.log(error)
-                    !isModal && dispatch(action.handleError());
-
-                    updateProps['error'] = 'Something wrong happened.'
-                    isModal && dispatch(action.ModalSubmitError(updateProps))
-                }
-        
-	        })
+        let alertMessage:object = {
+            textMessage : BuildAlertMessage(updateProps),
+            messageType : 'success'
         }
 
-	}else if (props.isPost) {
-        console.log(props)
-        return dispatch => {
-           isModal && dispatch(action.ModalSubmitPending(modalName))
-     	   !isModal && dispatch(action.createActionPending(createProps ))
+        isModal && dispatch(action.HandleAlertMessage(alertMessage))
+            
+    }).catch(error => {
+        if (error.response) {
+            console.log(error.response)
+            error = error.response.data;
+            updateProps['error'] = error.detail;
 
-		    Api.post(props.apiUrl, props.formData)
-		    .then(response => {
-                console.log(response)
-			    createProps['data'] = prepPayLoad(objName, response.data); 
-                isModal && dispatch(action.ModalSubmitSuccess(createProps))
-			    dispatch(action.createActionSuccess(createProps));
-                            
-                let alertMessage = {
-                    textMessage : BuildAlertMessage(createProps),
-                    messageType : 'success'
-                }
-                isModal && dispatch(action.HandleAlertMessage(alertMessage))
-                
-		    })
-		    .catch(error => {
-                				
-			    if (error.response && error.response.data) {
-                    console.log(error)
-                    createProps['error'] = error.response.data;
-                    isModal  && dispatch(action.ModalSubmitError(createProps))
-				    !isModal && dispatch(action.createActionError(createProps));
-      		
-         	    }else if(error.request){
-                    console.log(error.request)
-                    error = 'Something wrong happened.';
-                    createProps['error'] = error;
-                    isModal && dispatch(action.handleError(error));
+            isModal  && dispatch(action.ModalSubmitError(updateProps));
+            !isModal && dispatch(action.updateActionError(updateProps));
+
+        }else if(error.request){
+            console.log(error.request)
                     
-                }else{
-                    console.log(error)
-                    dispatch(action.handleError());
-                    createProps['error'] = 'Something wrong happened.'
-                }
+            error = 'Something wrong happened.';
+            updateProps['error'] = error;
+            !isModal && dispatch(action.updateActionError(updateProps));
+            isModal && dispatch(action.ModalSubmitError(updateProps));
 
-                !isModal && dispatch(action.createActionError(error));
-                isModal && dispatch(action.ModalSubmitError(createProps))
-			   
-	        })
-   	    }
+            !isModal && dispatch(action.handleError(error));
 
-    }else{
-
-        return dispatch =>{
- 		   dispatch(action.handleError())
- 	    }
- 	}
+        }else{
+            console.log(error)
+            !isModal && dispatch(action.handleError());
+            updateProps['error'] = 'Something wrong happened.'
+            isModal && dispatch(action.ModalSubmitError(updateProps));
+        }
+    });
+    
 };
+
+
 
 export function authenticateWithGet(params:object):Function {
 
@@ -716,67 +705,69 @@ export function authenticate(params:object):Function {
         };
     }
 
-    return dispatch => {
-        dispatch(
-            action.authenticationPending(
-                        isSocialAuth,
-                        isTokenRefresh
-                    ));
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-        Api.post(apiUrl, form)
-            .then(response => {
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+
+        }else{ 
+            dispatch(action.authenticationPending( isSocialAuth, isTokenRefresh));
+        
+            Api.post(apiUrl, form).then(response => {
                 let {data}  = response;
-                console.log(response)
-                
                 if (formName === 'phoneNumberConfirmationForm'){
                     data = {...data, isConfirmed:true}
                 }
-                
-                if (isSocialAuth) handleLogin(data, dispatch);
-                handleSuccessAuth(formName, data, dispatch)
-            }
-        )
-        .catch(error =>{
+                handleSuccessAuth(formName, data, dispatch);
 
-            let _error;
-            if (error.response) {
-                console.log(error.response)
-                if (error.response.status == 500) {
-                    _error = error.response.statusText
-                    dispatch(action.authenticationError(_error,formName, isSocialAuth));
-                    return dispatch(action.handleError(_error));
-                }
+            }).catch(error =>{
 
-                _error = error.response.data;
-                dispatch(
-                    action.authenticationError(
-                        _error,
-                        formName,
-                        isSocialAuth,
-                        isTokenRefresh
-                    )
-                );
+                let _error;
+                if (error.response) {
+                    console.log(error.response)
+                    if (error.response.status == 500) {
+                        _error = error.response.statusText
+                        dispatch(action.authenticationError(_error,formName, isSocialAuth));
+                        return dispatch(action.handleError(_error));
+                    }
+
+                    _error = error.response.data;
+                    dispatch(
+                        action.authenticationError(
+                            _error,
+                            formName,
+                            isSocialAuth,
+                            isTokenRefresh
+                        )
+                    );
                     
-                isSocialAuth && dispatch(
-                                action.handleError(_error.non_field_errors[0])
-                                );
+                    isSocialAuth && dispatch(
+                            action.handleError(_error.non_field_errors[0])
+                            );
 
-            }
-            else if (error.request)  {
-                console.log(error.request)
-                _error = 'Something wrong happened. Please try again';
+                }
+                else if (error.request)  {
+                    console.log(error.request)
+                    _error = 'Something wrong happened. Please try again';
                 
-                dispatch(
-                    action.authenticationError(_error, formName, isSocialAuth, isTokenRefresh)
-                );
-                dispatch(action.handleError(_error));
+                    dispatch(
+                        action.authenticationError(
+                            _error, 
+                            formName,
+                            isSocialAuth,
+                            isTokenRefresh
+                        )
+                    );
+                    dispatch(action.handleError(_error));
 
-            }else{
-                dispatch(action.handleError());
-            }
-        });
+                }else{
+                    dispatch(action.handleError());
+                }
+            });
+        }
     }
-   
 }; 
 
 const handleSuccessAuth = (formName:string, data:object, dispatch:Function):object => {
@@ -833,10 +824,9 @@ const handleLogin = (data:object, dispatch:Function):object => {
         isSuperUser  && dispatch(action.getAdminSuccess({loginAuth}))
         dispatch(action.getCurrentUserSuccess(data['user']))
     }
-       
+          
     return dispatch(action.authenticationSuccess({loginAuth}));
-}
-
+};
 
 const handlePasswordReset = (data:object, dispatch:Function):object => {
         

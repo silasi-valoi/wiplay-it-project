@@ -107,8 +107,6 @@ class AccountConfirmationPage extends Component{
      
     render() {
         let props = this.getProps();
-        console.log(props);
-        
         let  submitting = props['submitting'];
         
         let submitButtonStyles = submitting? {opacity:'0.60'} : {};

@@ -152,17 +152,19 @@ export const RedirectMenuLinks = props => {
     let { entities } = storeUpdate;
     let modal     = entities['modal'];
     let navigationMenuModal = modal && modal['navigationMenu'];
+    let location:object = history.location;
+
+    let currentPath = location['pathname'];
 
     if (navigationMenuModal && navigationMenuModal.modalIsOpen ) {
         window.history.back() 
-
-        return setTimeout(()=> {
+    }
+    
+    if (pathname != currentPath) {
+        setTimeout(()=> {
             history.push(pathname, state); 
         }, 500);
     }
-
-    history.push(pathname, state);
-
 };
 
 const NavBarDropDown = props => {
