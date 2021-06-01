@@ -2,7 +2,7 @@
 @media (min-width:980px) {
    
     .registration-page {
-        background:  #edf0f3 url("../../images/soccer.jpeg") no-repeat;
+        background:  #edf0f3 url("../../media/soccer.jpeg") no-repeat;
         background-size: 100% 100%;
         height: 100vh;
         max-height: 500vh;
