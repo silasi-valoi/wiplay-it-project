@@ -124,7 +124,7 @@ export function getAboutInfo(options?:object) {
                 }
             })
         }       
-    }
+    };
 };
 
 
@@ -206,25 +206,27 @@ export function getUserList(props) {
      
         }else{
 
-        dispatch(action.getUserListPending(usersById))
+            dispatch(action.getUserListPending(usersById))
 
-	    Api.get(apiUrl)
-        .then(response => dispatch(action.getUserListSuccess(usersById, response.data)))
-        .catch(error => {
+	        Api.get(apiUrl).then(response =>{
+                dispatch(action.getUserListSuccess(usersById, response.data))
 
-            console.log(error)
-            if (error.response) {
-                error = error.response.data;
-                dispatch(action.getUserListError(usersById, error.detail));
+            }).catch(error => {
 
-            }else if(error.request){
-                error = 'Something wrong happened.';
-                dispatch(action.getUserListError(usersById, error));
+                console.log(error)
+                if (error.response) {
+                    error = error.response.data;
+                    dispatch(action.getUserListError(usersById, error.detail));
 
-            }else{
-                dispatch(action.handleError());
-            }
-        }); 
+                }else if(error.request){
+                    error = 'Something wrong happened.';
+                    dispatch(action.getUserListError(usersById, error));
+
+                }else{
+                    dispatch(action.handleError());
+                }
+            }); 
+        }
     };
 };
 
@@ -270,7 +272,7 @@ export function getQuestionList(questionListById) {
                 }
             });
         } 
-   };
+    };
 };
 
 
@@ -364,7 +366,7 @@ export function getQuestion(id) {
                 }
             });
         }
-    }
+    };
 };
 
 
@@ -412,7 +414,7 @@ export function getPost(id) {
                 }
             });
         } 
-   };
+    };
 };
 
 
@@ -464,7 +466,7 @@ export function getUserProfile(id:number, apiUrl?:string) {
                 }
             });
         }
-    }
+    };
 };
 
 
