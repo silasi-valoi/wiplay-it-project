@@ -56,7 +56,7 @@ export const PageErrorComponent = props => {
     return(
         <div className="page-error-box" id="page-error-box">
             <ul className="error-box">
-                <li className="alert alert-danger error-text">
+                <li className="error-text">
                     {error}
                 </li>
             </ul>

@@ -24,6 +24,11 @@
         padding    : 0px 10px;
     } 
     
+    .page-error-box {
+       padding-top: 5%;
+       border    : px solid  red; 
+    }
+
     .empty-question-list-box,
     .empty-post-list-box {
         border    : px solid  red; 
