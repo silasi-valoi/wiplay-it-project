@@ -22,7 +22,7 @@ import {AlertComponent} from 'templates/partials';
 import {showModal}  from 'actions/actionCreators';
 import {handleModalScroll} from '../modal/helpers';
 import {store} from 'store/index';
-//import {history} from "App";
+
 import Api from 'utils/api';
 import {handleSubmit, _GetApi }  from "dispatch/index"
 import  * as action  from "actions/actionCreators";
@@ -651,16 +651,9 @@ const Author =(author)=>{
     return(
         <div className="modal-user-box">
             <div className="editor-img-box">
-                {profile && profile.profile_picture &&
-                    <img alt="" 
-                         src={profile.profile_picture}
-                          className="profile-photo"/>
-                        ||
-
-                    <img alt="" 
-                         src={require("media/user-image-placeholder.png")}
-                         className="profile-photo"/> 
-                }
+                <img alt="" 
+                     src={profile.profile_picture}
+                     className="profile-photo"/>
             </div>
             <ul className="editor-username-box">
                 <li className="editor-username" >

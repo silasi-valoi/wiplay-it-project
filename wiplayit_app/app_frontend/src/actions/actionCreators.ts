@@ -644,7 +644,7 @@ export const authenticationSuccess = (data:object,
 
 export const authenticationError = (
                             error:object, 
-                            formName:string,
+                            formName?:string,
                             isSocialAuth?:boolean, 
                             isTokenRefresh?:boolean):object => {
 

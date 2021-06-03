@@ -94,15 +94,21 @@ export function getAboutInfo(options?:object) {
 
     let apiUrl = api.getAboutInfoApi(); 
     
-    return dispatch => {
-        dispatch(action.getAboutInfoPending());
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-        Api.get(apiUrl)
-            .then(response => {
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getAboutInfoError(error));
+      
+        }else{
+            dispatch(action.getAboutInfoPending());
+
+           Api.get(apiUrl).then(response => {
                 console.log(response)  
                 dispatch(action.getAboutInfoSuccess(response.data)); 
-            })
-            .catch(error => {
+            }).catch(error => {
             
                 if (error.response) {
                     error = error.response.data;
@@ -117,7 +123,7 @@ export function getAboutInfo(options?:object) {
                     dispatch(action.handleError());
                 }
             })
-                
+        }       
     }
 };
 
@@ -133,33 +139,44 @@ export function getIndex(options?:object):Function {
     }
 
     let apiUrl = api.getIndexApi(); 
-    
-    return dispatch => {
 
-        dispatch(action.getIndexPending());
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-        Api.get(apiUrl)
-            .then(response => {
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getIndexError(error));
+            
+
+        }else{
+            dispatch(action.getIndexPending());
+
+            Api.get(apiUrl).then(response => {
                 dispatch(action.getIndexSuccess(response.data)); 
-            })
-            .catch(error => {
-                                
+           
+            }).catch(error => {
+                                               
                 if (error.response) {
-                    error = error.response.data;
-                    console.log(error)
-                    dispatch(action.getIndexError(error.detail));
+                    let errorResponse = error.response
+                    console.log(errorResponse)
+                    if (errorResponse.status === 500) {
+                        error = errorResponse.statusText
+                        return dispatch(action.getIndexError(error));
+                    }
 
+                    error = error.response.data;
+                    dispatch(action.getIndexError(error.detail));
                 }else if(error.request){
                     console.log(error.request)
                     error = 'Something wrong happened.';
                     dispatch(action.getIndexError(error));
-
                 }else{
                     console.log(error)
                     dispatch(action.handleError());
                 }
-           }); 
-        
+            }); 
+        }
     };
 };
 
@@ -179,7 +196,15 @@ export function getUserList(props) {
     let { apiUrl, usersById } = props;
     apiUrl = !apiUrl && api.getUserListApi() || apiUrl; 
 
-    return dispatch => {
+    return async dispatch => {
+        let online = await checkOnlineStatus();
+
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getUserListError(usersById, error));
+     
+        }else{
 
         dispatch(action.getUserListPending(usersById))
 
@@ -216,24 +241,35 @@ export function getQuestionList(questionListById) {
 
     let apiUrl     = api.getQuestionListApi(); 
 
-    return dispatch => {
-      dispatch(action.getQuestionListPending(questionListById))
-	   Api.get(apiUrl)
-      .then(response => dispatch(action.getQuestionListSuccess(questionListById, response.data)))
-      .catch(error => {
-            console.log(error)
-      	    if (error.response) {
-                error = error.response.data;
-                dispatch(action.getQuestionListError(questionListById, error.detail));
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-            }else if(error.request){
-                error = 'Something wrong happened.';
-                dispatch(action.getQuestionListError(questionListById, error));
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getQuestionListError(questionListById, error));
+            
 
-            }else{
-                dispatch(action.handleError());
-            }
-      }); 
+        }else{
+            dispatch(action.getQuestionListPending(questionListById))
+	        Api.get(apiUrl).then(response =>{
+                dispatch(action.getQuestionListSuccess(questionListById, response.data));
+
+            }).catch(error => {
+                console.log(error)
+      	        if (error.response) {
+                    error = error.response.data;
+                    dispatch(action.getQuestionListError(questionListById, error.detail));
+
+                }else if(error.request){
+                    error = 'Something wrong happened.';
+                    dispatch(action.getQuestionListError(questionListById, error));
+
+                }else{
+                    dispatch(action.handleError());
+                }
+            });
+        } 
    };
 };
 
@@ -253,25 +289,35 @@ export function getPostList(postListById) {
 
     let   apiUrl:string  = api.getPostListApi();
 
-    return dispatch => {
-        dispatch(action.getPostListPending(postListById))
-	    Api.get(apiUrl)
-        .then(response => dispatch(action.getPostListSuccess(postListById, response.data)))
-        .catch(error => {
+    return async dispatch => {
+        let online = await checkOnlineStatus();
+
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getPostListError(postListById, error));
+          
+        }else{
+            dispatch(action.getPostListPending(postListById))
+	        
+            Api.get(apiUrl).then(response => {
+                dispatch(action.getPostListSuccess(postListById, response.data))
+            }).catch(error => {
       	   
-            if (error.response) {
-                error = error.response.data;
-                dispatch(action.getPostListError(postListById, error.detail));
+                if (error.response) {
+                    error = error.response.data;
+                    dispatch(action.getPostListError(postListById, error.detail));
 
-            }else if(error.request){
-                error = 'Something wrong happened.';
-                dispatch(action.getPostListError(postListById, error));
+                }else if(error.request){
+                    error = 'Something wrong happened.';
+                    dispatch(action.getPostListError(postListById, error));
 
-            }else{
-                dispatch(action.handleError());
-            }
-      }); 
-   };
+                }else{
+                    dispatch(action.handleError());
+                }
+            });
+        } 
+    };
 };
 
 
@@ -289,15 +335,22 @@ export function getQuestion(id) {
     let apiUrl:string = api.getQuestionApi(id);
     let questionById:string = `question${id}`;
 
-    return dispatch => {
-        dispatch(action.getQuestionPending(questionById))
-	    Api.get(apiUrl)
-            .then(response =>{
-                dispatch(action.getQuestionSuccess( questionById, response.data))
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-            })
-            .catch(error => {
-                console.log(error)
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getQuestionError(questionById, error));
+            
+
+        }else{
+            dispatch(action.getQuestionPending(questionById))
+	        Api.get(apiUrl).then(response =>{
+                    dispatch(action.getQuestionSuccess( questionById, response.data))
+
+            }).catch(error => {
+                    console.log(error)
                 if (error.response) {
                     error = error.response.data;
                     dispatch(action.getQuestionError( questionById, error.detail));
@@ -309,7 +362,8 @@ export function getQuestion(id) {
                 }else{
                     dispatch(action.handleError());
                 }
-            })
+            });
+        }
     }
 };
 
@@ -328,28 +382,36 @@ export function getPost(id) {
     let apiUrl     = id && api.getPostApi(id);
     let postById   = id && `post${id}`
 
-    return dispatch => {
-        dispatch(action.getPostPending(postById))
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-	    Api.get(apiUrl)
-       .then(response =>{
-        console.log(response)
-            dispatch(action.getPostSuccess(postById, response.data));
-        })
-       .catch(error => {
-            console.log(error)
-            if (error.response) {
-                error = error.response.data;
-                dispatch(action.getPostError(postById ,error.detail));
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getPostError(postById, error));
+       
+        }else{
+            dispatch(action.getPostPending(postById))
 
-            }else if(error.request){
-                error = 'Something wrong happened.';
-                dispatch(action.getPostError(postById ,error));
+	        Api.get(apiUrl).then(response =>{
+                console.log(response)
+                dispatch(action.getPostSuccess(postById, response.data));
+            
+            }).catch(error => {
+                console.log(error)
+                if (error.response) {
+                    error = error.response.data;
+                    dispatch(action.getPostError(postById ,error.detail));
 
-            }else{
-                dispatch(action.handleError());
-            }
-        }) 
+                }else if(error.request){
+                    error = 'Something wrong happened.';
+                    dispatch(action.getPostError(postById ,error));
+
+                }else{
+                    dispatch(action.handleError());
+                }
+            });
+        } 
    };
 };
 
@@ -371,29 +433,37 @@ export function getUserProfile(id:number, apiUrl?:string) {
     
     let profileById:string = `userProfile${id}`;
     
-    return dispatch => {
-        dispatch(action.getUserProfilePending(profileById));
+    return async dispatch => {
+        let online = await checkOnlineStatus();
 
-	    Api.get(apiUrl)
-        .then(response => {
-        	
-            dispatch(action.getUserProfileSuccess(profileById ,response.data));
-        })
-        .catch(error => {
-            console.log(error)
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.getUserProfileError(profileById, error));
+            
+
+        }else{
+            dispatch(action.getUserProfilePending(profileById));
+
+	        Api.get(apiUrl).then(response => {
+        	    dispatch(action.getUserProfileSuccess(profileById ,response.data));
+            
+            }).catch(error => {
+                console.log(error)
       	
-      	    if (error.response) {
-                error = error.response.data;
-      		    dispatch(action.getUserProfileError(profileById, error.detail));
+      	        if (error.response) {
+                    error = error.response.data;
+      		        dispatch(action.getUserProfileError(profileById, error.detail));
 
-            }else if(error.request){
-                error = 'Something wrong happened.';
-                dispatch(action.getUserProfileError(profileById, error));
+                }else if(error.request){
+                    error = 'Something wrong happened.';
+                    dispatch(action.getUserProfileError(profileById, error));
 
-            }else{
-                dispatch(action.handleError());
-            }
-        });
+                }else{
+                    dispatch(action.handleError());
+                }
+            });
+        }
     }
 };
 
@@ -668,10 +738,18 @@ export function authenticateWithGet(params:object):Function {
     const apiUrl = api.accountConfirmApi(key);
     const Api    = _GetApi(useToken, {timeout:30000, requestFor:'authentication'}); 
 
-    return dispatch => {
-        dispatch(action.authenticationPending());
-        Api.get(apiUrl)
-            .then(response => { 
+    return async dispatch => {
+        let online = await checkOnlineStatus();
+
+        if(!online){
+            let error:string = 'Your internet connection is offline';
+            dispatch(action.handleError(error));
+            dispatch(action.authenticationError({error}));
+            
+
+        }else{
+            dispatch(action.authenticationPending());
+            Api.get(apiUrl).then(response => { 
                 let {data}  = response;
                 
                 data = {...data,isConfirmed:true}
@@ -685,6 +763,7 @@ export function authenticateWithGet(params:object):Function {
                     dispatch(action.authenticationError(_error.detail, ''));
                 } 
             });
+        }
     };
 }
 

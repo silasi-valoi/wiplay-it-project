@@ -108,7 +108,6 @@ def download_file_from_url(url):
     try:
         request = requests.get(url, stream=True)
     except requests.exceptions.RequestException as e:
-        # TODO: log error here
         return None
 
    

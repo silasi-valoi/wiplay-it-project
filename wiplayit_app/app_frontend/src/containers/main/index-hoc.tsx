@@ -213,7 +213,7 @@ export function MainAppHoc(Component) {
 
         _HandleErrors(errors:object){
             if (!errors || !errors['error']) return;
-              
+                          
             displayErrorMessage(this, errors['error']);
             delete errors['error'];
         }

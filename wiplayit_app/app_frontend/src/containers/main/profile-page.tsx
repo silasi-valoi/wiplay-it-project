@@ -77,12 +77,14 @@ class UserProfileContainer extends Component {
         this.unsubscribe = store.subscribe(onStoreChange);
     }
     
-    setErrors =(userProfile) => {
-        let {isLoading, isUpdating, error} = userProfile;
-        if (isUpdating) return
+    setErrors =(userProfile:object) => {
+        let isLoading:boolean = userProfile['isLoading'];
+        let isUpdating:boolean =userProfile['isUpdating'];
+        let error:string = userProfile['error'];
 
+        if (isUpdating) return
         this.setState({ isReloading : isLoading, error});
-        delete userProfile?.error
+        delete userProfile['error']
     }
   
 

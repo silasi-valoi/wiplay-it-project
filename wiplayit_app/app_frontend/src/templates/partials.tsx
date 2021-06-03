@@ -50,12 +50,13 @@ export const Styles = {
 
 export const PageErrorComponent = props => {
     let {error, isReloading } = props;
+    
     if (isReloading || !error || !checkType.isString(error)) return null;
    
     return(
         <div className="page-error-box" id="page-error-box">
             <ul className="error-box">
-                <li className="error-text">
+                <li className="alert alert-danger error-text">
                     {error}
                 </li>
             </ul>

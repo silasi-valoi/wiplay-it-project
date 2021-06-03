@@ -75,30 +75,24 @@ class HomePage extends Component<any, any> {
         const onStoreChange = () => {
             let storeUpdate   = store.getState();
             let {entities }   = storeUpdate;
-            /*let {
-               index,
-               questions,
-               posts, 
-               answers,
-               userAuth, 
-               errors }   = entities && entities;*/
             let index:object = entities['index']
                      
             if(index){
+                console.log(index)
                 let state = {
                     isReloading : index['isLoading'],
                     error       : index['error']
                 }
-                this.setState({state});
+                this.setState({...state});
 
                 if (index['isSuccess']) {
                     index['isSuccess'] = false;
-
                     this.updateIndexEntities(index);
-                }
 
-                delete index['error'];
-               
+                }else if(index['error']){
+                    this.setState({error:index['error']})
+                    delete index['error'];
+                }
             }
           
         };
@@ -172,8 +166,6 @@ class HomePage extends Component<any, any> {
         if (!checkDataExist(index) && checkDataExist(cachedIndex)) {
                         
             let menDifference = this.getTimeState(cachedIndex.timeStamp);
-            console.log(menDifference)
-
             if (menDifference <= 5) {
                 return this.updateIndexEntities(cachedIndex);
             }
@@ -188,7 +180,7 @@ class HomePage extends Component<any, any> {
     };
       
     reLoader =()=>{
-        this.setState({isReloading : true, error:undefined})
+        this.setState({isReloading : true})
         return store.dispatch<any>(getIndex());
     };
 

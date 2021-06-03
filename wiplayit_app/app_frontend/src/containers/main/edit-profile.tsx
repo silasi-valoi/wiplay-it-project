@@ -503,15 +503,9 @@ const EditProfilePicture = (props:object)=>{
                 <div className="edit-image-container">
                     <div className="edit-profile-image-box">
                             <div className="edit-image-btn-box">
-                                { profile && profile.profile_picture?
-                                    <img alt="" 
-                                         className="edit-image" 
-                                         src={profile.profile_picture }/>
-                                    :
-                                    <img alt="" 
-                                         src={require("media/user-image-placeholder.png")} 
-                                         className="edit-image"/> 
-                                }
+                                <img alt="" 
+                                     className="edit-image" 
+                                     src={profile.profile_picture }/>
                             </div>
                     </div>
                     <div className="change-img-btn-box">

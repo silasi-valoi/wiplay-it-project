@@ -351,12 +351,19 @@ class IndexSerializer(BaseSerializer):
 
 	def get_users(self, obj):
 		self.update_serializer_obj_perms('user_perms')
+		user = self.current_user()
+		print(user)
+		print(self.context)
 		users = User.objects.exclude(
 						first_name="Anonymous"
+					).exclude(
+					   id=user.id
 					).filter(
 						is_confirmed=True
 					).filter(
 						is_superuser=False
+					).filter(
+						user
 					)
 
 		user_list = UserSerializer(users, context=self.context, many=True).data

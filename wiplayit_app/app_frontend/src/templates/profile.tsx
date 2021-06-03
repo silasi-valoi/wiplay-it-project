@@ -147,12 +147,10 @@ export const ProfileComponent = props => {
                                      onMouseLeave={props.mouseLeave} 
                                      className="profile-img-box">
 
-                                    { profile_picture &&
-                                        <img alt=""
-                                             src={`${profile_picture}`}
-                                             className="profile-image"/>
-                                    }
-                                </div>
+                                    <img alt=""
+                                         src={`${profile_picture}`}
+                                         className="profile-image"/>
+                                    </div>
 
                                 {userProfile.user_can_edit && props.isMouseInside?
                                     <div className="edit-img-btn-box"

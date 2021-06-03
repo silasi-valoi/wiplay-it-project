@@ -1,25 +1,48 @@
+.page-not-found-box {
+    border : px solid black;
+    width  : auto;
+}
+
+
+.page-not-found-contents {
+    border : px solid blue;
+}
+
+.page-not-found-text {
+    border : px solid red;
+    margin : 0 5%;    
+}
+
+.page-not-found-btns {
+    margin-top: 20px;
+
+}
+
+
+.page-not-found-btns-box {
+    
+}
+
+.page-not-found-title {
+    border : px solid blue;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: Cambay;
+}
 
 @media (min-width: 980px) {
+
     .page-not-found-contents {
-        border: px solid blue;
+        margin : 10% 25% 0;
     }
-    .page-not-found-text {
-        border:  px solid black;
-        justify-content : center;
-        display         : flex;
-    }
+
 }
 
 
 
 @media (max-width: 980px) {
     .page-not-found-contents {
-        border: px solid blue;
+        margin : 10% 0;
     }
-
-	.page-not-found-text {
-        border: px solid red;
-        justify-content : center;
-        display         : flex;
-    }
+   
 } 

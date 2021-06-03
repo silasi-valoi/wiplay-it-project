@@ -389,12 +389,9 @@ export const Reply = (props, replyProps=undefined, isNewReply=false) => {
 
 
 
-export const RepliesLink = props => {
-   //console.log(props)
-
-
-
-   let styles:object = {
+export const RepliesLink = (props:object) => {
+   
+    let styles:object = {
       border        : "px solid #D5D7D5",
       display       : 'flex',
       flexDirection : 'row',
@@ -453,28 +450,27 @@ export const RepliesLink = props => {
       lineHeight  : '1.8',
       margin      : '2px 0 0 4px',
    }
+
+   let reply:object = props['reply'];
+   let replyAuthor:object = reply && reply['author'];
+   let authorProfile:object = replyAuthor && replyAuthor['profile'];
    
    return (
       <div style={styles} className="comments-link">
 
          <ul style={ userStyles}>
             <li style={ imgStiles }>
-               { props.reply.author.profile.profile_picture === null?
-                  <img alt="" src={require("media/user-image-placeholder.png")} className="profile-photo"/>
-               :  
-                  <img alt="" src={props.reply?.author?.profile.profile_picture}
-                         className="profile-photo"/> 
-               }
-
-            </li>
-            <li style={ userNameStyles } >
-               { props.reply?.author?.first_name }   { props.reply?.author?.last_name } ...
+                <img alt="" src={authorProfile && authorProfile['profile_picture']}
+                     className="profile-photo"/> 
+           </li>
+            <li style={userNameStyles} >
+               {replyAuthor['first_name']} {replyAuthor['last_name']} ...
             </li>
          </ul>
 
          <ul style={ itemStyles} >
             <li style={ textStyles } > Replied </li>
-            <li style={totalRepliesStyles}> { props.totalReplies } Reply</li>
+            <li style={totalRepliesStyles}> { props['totalReplies'] } Reply</li>
          </ul>
       </div>
    )

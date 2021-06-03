@@ -1,13 +1,9 @@
 
 import React, { Component } from 'react';
-import {PartalNavigationBar,NavigationBarBigScreen } from "templates/navBar";
-import  MainAppHoc from "containers/main/index-hoc";
-import { FollowUserBtn, LinkButton} from "templates/buttons"; 
-import {store} from "store/index";
-import {getAboutInfo} from "dispatch/index"
-
-
-
+import {PartalNavigationBar,NavigationBarBigScreen } from 'templates/navBar';
+import  MainAppHoc from 'containers/main/index-hoc';
+import {history} from 'App';
+import {LinkButton} from 'templates/buttons';
 
 class  NotFoundPage extends Component  {
    
@@ -24,8 +20,7 @@ class  NotFoundPage extends Component  {
     };
 
     componentDidMount() {
-       
-        console.log(this.props)
+        
     }
 
     render(){
@@ -43,22 +38,45 @@ class  NotFoundPage extends Component  {
     }
 };
 
-export default NotFoundPage; 
+export default MainAppHoc(NotFoundPage); 
 
 
 export const NotFoundComponent = props => {
-    console.log(props)
-    
+    const linkProps = {
+        linkPath: `/`,
+        styles:{
+            textDecoration:'none',
+            color:'#5384e5',
+            marginLeft:'15px',
+        },
+    }
+        
     return(
-        <div className="page-not-found-contents">
-            <div className="page-not-found-text">
-                <h1>Page Not Found</h1>
+        <div className="">
+            <div className="page-not-found-contents">
+                <div className="text-center page-not-found-title">
+                    <p className="">
+                        Page Not Found
+                    </p>
+                </div>
+
+                <p className="text-center page-not-found-text">
+                    We searched everywhere but couldn't find the page you were looking for.
+                </p>
+                <div className="text-center page-not-found-btns">
+                    <div className="page-not-found-btns-box">
+                        <button className="btn-sm text-highlight" 
+                                onClick={()=> history.goBack()}>
+                            Go Back
+                        </button>
+                      
+                        <LinkButton {...linkProps}>
+                            <span>Go Home</span>
+                        </LinkButton>
+                    </div>
+                </div>
             </div>
-            <div className="page-not-found-igm-box">
-                <img alt=""
-                     className="page-not-found-igm" 
-                     src={require('media/page-not-found/custom-404-page-creation-1024x585.png')}/>
-            </div>
+            
         </div>
     )
 };

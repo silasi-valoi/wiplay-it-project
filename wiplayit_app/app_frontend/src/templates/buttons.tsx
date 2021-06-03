@@ -24,12 +24,13 @@ import {IsBookMarked, pushToRouter} from 'utils/helpers';
 
 export const LinkButton = (props)=>{
     let linkPath = props['linkPath'];
+    let styles = props['styles'];
 
     return(
-        <a href={linkPath} onClick={(event) => pushToRouter(props, event) }>
+        <a style={styles} href={linkPath} onClick={(event) => pushToRouter(props, event) }>
             {props['children']}
         </a>
-    )
+    );
 };
 
 export const FollowUserBtn = props => {
