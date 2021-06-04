@@ -356,8 +356,6 @@ class IndexSerializer(BaseSerializer):
 		print(self.context)
 		users = User.objects.exclude(
 						first_name="Anonymous"
-					).exclude(
-					   id=user.id
 					).filter(
 						is_confirmed=True
 					).filter(
