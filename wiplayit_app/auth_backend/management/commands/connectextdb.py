@@ -15,9 +15,9 @@ class Command(BaseCommand):
 
     def database_connect(self, *args, **kwargs):
         DATABASE_NAME = os.getenv('DATABASE_NAME')
-        USER = os.getenv("DATABASE_USER")
-        PASSWORD = os.getenv("DATABASE_PASSWORD")
-        HOST = os.getenv('DATABASE_HOST')
+        DATABASE_USER = os.getenv("DATABASE_USER")
+        DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+        DATABASE_HOST = os.getenv('DATABASE_HOST')
 
     
         return Database.connect(
