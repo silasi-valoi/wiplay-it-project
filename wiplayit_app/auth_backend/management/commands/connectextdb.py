@@ -1,3 +1,4 @@
+import os
 from django.core.management.base import BaseCommand, CommandError
 from auth_backend.models import User
 import MySQLdb as Database
@@ -13,11 +14,17 @@ class Command(BaseCommand):
     #    parser.add_argument('user_ids', nargs='+', type=int)
 
     def database_connect(self, *args, **kwargs):
+        DATABASE_NAME = os.getenv('DATABASE_NAME')
+        USER = os.getenv("DATABASE_USER")
+        PASSWORD = os.getenv("DATABASE_PASSWORD")
+        HOST = os.getenv('DATABASE_HOST')
+
+    
         return Database.connect(
-            host="localhost",
-            user="silasi",
-            passwd="sila9020@?",
-            database="wiplayit_db"
+            host=DATABASE_HOST,
+            user=DATABASE_USER,
+            passwd=DATABASE_PASSWORD,
+            database=DATABASE_NAME
         )
         
 
