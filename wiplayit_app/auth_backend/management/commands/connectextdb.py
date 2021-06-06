@@ -1,0 +1,57 @@
+from django.core.management.base import BaseCommand, CommandError
+from auth_backend.models import User
+import MySQLdb as Database
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
+from allauth.account.models import EmailAddress
+
+
+
+class Command(BaseCommand):
+    help = 'Get the specified user'
+
+    #def add_arguments(self, parser):
+    #    parser.add_argument('user_ids', nargs='+', type=int)
+
+    def database_connect(self, *args, **kwargs):
+        return Database.connect(
+            host="localhost",
+            user="silasi",
+            passwd="sila9020@?",
+            database="wiplayit_db"
+        )
+        
+
+    def handle(self, *args, **options):
+        try:
+            connection = self.database_connect()
+            cursor = connection.cursor()
+            socialaccounts = "SELECT * FROM socialaccount_socialaccount"
+            socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
+            socialaccount_socialtoken = "SELECT * FROM socialaccount_socialtoken"
+
+
+            cursor.execute(socialaccounts)
+            columns = cursor.description
+            results = cursor.fetchall()
+
+            print(results)
+            cursor.connection.close()
+        
+        except Exception as e:
+            raise e
+
+        self.stdout.write(self.style.SUCCESS('Successfully'))
+       
+
+        #self.stdout.write('Database connection is {0}'.format(connection))
+        
+        '''
+        for user_id in options['user_ids']:
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                raise CommandError('User "%s" does not exist' % user_id)
+
+            
+            self.stdout.write(self.style.SUCCESS('Successfully got user "%s"' % user_id))
+        '''

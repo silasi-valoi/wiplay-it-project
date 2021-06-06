@@ -352,7 +352,7 @@ class IndexSerializer(BaseSerializer):
 	def get_users(self, obj):
 		self.update_serializer_obj_perms('user_perms')
 		user = self.current_user()
-		print(user.id)
+		
 		users = User.objects.exclude(
 						first_name="Anonymous"
 					).exclude(
