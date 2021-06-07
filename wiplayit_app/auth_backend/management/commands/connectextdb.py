@@ -90,7 +90,7 @@ class Command(BaseCommand):
             else:
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
-            print(socialaccount)
+            print(socialaccount.extra_data.from_db_value())
             #avatar_url = socialaccount.get_avatar_url()
             #avatar = download_file_from_url(avatar_url)
             #print(avatar)
