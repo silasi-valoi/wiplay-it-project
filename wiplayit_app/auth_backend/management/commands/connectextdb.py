@@ -79,17 +79,20 @@ class Command(BaseCommand):
 
             
             user_id = dict_results['id'] 
+            extra_data = dict_results['extra_data']
             socialaccount = SocialAccount.objects.filter(id=user_id)
 
             if socialaccount[0]:
+                print(extra_data)
                 socialaccount = socialaccount[0]
+                socialaccount.extra_data = extra_data
             else:
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
             print(socialaccount)
-            avatar_url = socialaccount.get_avatar_url()
-            avatar = download_file_from_url(avatar_url)
-            print(avatar)
+            #avatar_url = socialaccount.get_avatar_url()
+            #avatar = download_file_from_url(avatar_url)
+            #print(avatar)
             print(' ')
 
     def extract_socialapps(self, cursor):
