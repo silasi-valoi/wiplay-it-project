@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 dict_results[key] = value 
 
             print(dict_results)
-            user = User.objects.get_or_create(**dict_results)
+            user, _ = User.objects.get_or_create(**dict_results)
             print(user)
             print(' ')
 
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 dict_results[key] = value 
 
             print(dict_results)
-            socialaccount = SocialAccount.objects.get_or_create(**dict_results)
+            socialaccount, _ = SocialAccount.objects.get_or_create(**dict_results)
             print(socialaccount)
             print(' ')
 
