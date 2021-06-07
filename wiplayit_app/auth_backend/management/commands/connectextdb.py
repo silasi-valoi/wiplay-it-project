@@ -60,6 +60,9 @@ class Command(BaseCommand):
                 dict_results[key] = value 
 
             print(dict_results)
+            socialaccount = SocialAccount.objects.create_or_get(**dict_results)
+            prnt(socialaccount)
+            print(' ')
 
     def extract_socialapps(self, cursor):
         pass
