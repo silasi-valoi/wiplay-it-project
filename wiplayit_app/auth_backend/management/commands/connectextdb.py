@@ -81,6 +81,7 @@ class Command(BaseCommand):
             
             user_id = dict_results['id'] 
             extra_data = dict_results['extra_data']
+            extra_data = json.loads(extra_data)
             socialaccount = SocialAccount.objects.filter(id=user_id)
 
             if socialaccount[0]:
@@ -92,11 +93,11 @@ class Command(BaseCommand):
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
             print(socialaccount.extra_data)
-            extra_data = json.loads(socialaccount.extra_data)
-            print(extra_data)
-            #avatar_url = socialaccount.get_avatar_url()
-            #avatar = download_file_from_url(avatar_url)
-            #print(avatar)
+            #extra_data = json.loads(socialaccount.extra_data)
+            #print(extra_data)
+            avatar_url = socialaccount.get_avatar_url()
+            avatar = download_file_from_url(avatar_url)
+            print(avatar)
             print(' ')
 
     def extract_socialapps(self, cursor):
