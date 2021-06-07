@@ -1,4 +1,5 @@
 import os
+import json
 from django.core.management.base import BaseCommand, CommandError
 from auth_backend.models import User
 from auth_backend.custom_adapter import download_file_from_url
@@ -90,7 +91,9 @@ class Command(BaseCommand):
             else:
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
-            print(socialaccount.extra_data.from_db_value())
+            print(socialaccount.extra_data)
+            extra_data = json.loads(socialaccount.extra_data)
+            print(extra_data)
             #avatar_url = socialaccount.get_avatar_url()
             #avatar = download_file_from_url(avatar_url)
             #print(avatar)
