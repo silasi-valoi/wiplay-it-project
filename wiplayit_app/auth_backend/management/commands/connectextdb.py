@@ -78,7 +78,7 @@ class Command(BaseCommand):
 
             print(dict_results)
             socialaccount = SocialAccount.objects.get_or_create(**dict_results)
-            prnt(socialaccount)
+            print(socialaccount)
             print(' ')
 
     def extract_socialapps(self, cursor):
