@@ -34,12 +34,9 @@ class Command(BaseCommand):
         try:
             connection = self.database_connect()
             cursor = connection.cursor()
-                                   
-            #self.extract_users(cursor)
-            #self.extract_socialacconts(cursor)
-            #self.extract_socialapps(cursor)
-            #self.extract_socialtokens(cursor)
-            self.extract_email_address(cursor)
+            
+            self.extract_questions(cursor)
+            self.extract_answers(cursor)
            
             cursor.connection.close()
         
@@ -48,9 +45,9 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS('Successfully'))
 
-    def extract_users(self, cursor):
-        users = "SELECT * FROM users"
-        cursor.execute(users)
+    def extract_questions(self, cursor):
+        questions = "SELECT * FROM questions"
+        cursor.execute(questions)
         columns = cursor.description
         results = cursor.fetchall()
 
@@ -62,8 +59,26 @@ class Command(BaseCommand):
                 dict_results[key] = value 
 
             print(dict_results)
-            user, _ = User.objects.get_or_create(**dict_results)
-            print(user)
+            question, _ = Question.objects.get_or_create(**dict_results)
+            print(question)
+            print(' ')
+
+    def extract_answers(self, cursor):
+        answers = "SELECT * FROM answers"
+        cursor.execute(answers)
+        columns = cursor.description
+        results = cursor.fetchall()
+
+        for k, row in enumerate(results):
+            dict_results = dict()
+
+            for i, value in enumerate(row):
+                key = columns[i][0]
+                dict_results[key] = value 
+
+            print(dict_results)
+            answers, _ = Answer.objects.get_or_create(**dict_results)
+            print(answers)
             print(' ')
 
 
