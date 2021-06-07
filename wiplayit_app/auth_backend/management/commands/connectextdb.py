@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 dict_results[key] = value 
 
             print(dict_results)
-            socialaccount = SocialAccount.objects.create_or_get(**dict_results)
+            socialaccount = SocialAccount.objects.get_or_create(**dict_results)
             prnt(socialaccount)
             print(' ')
 
