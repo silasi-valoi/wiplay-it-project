@@ -32,10 +32,9 @@ class Command(BaseCommand):
         try:
             connection = self.database_connect()
             cursor = connection.cursor()
-            
-            socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
-            socialaccount_socialtoken = "SELECT * FROM socialaccount_socialtoken"
-            self.extract_socialacconts(cursor)
+                                   
+            self.extract_users(cursor)
+            #self.extract_socialacconts(cursor)
            
             cursor.connection.close()
         
@@ -43,6 +42,24 @@ class Command(BaseCommand):
             raise e
 
         self.stdout.write(self.style.SUCCESS('Successfully'))
+
+    def extract_users(self, cursor):
+        users = "SELECT * FROM users"
+        cursor.execute(users)
+        columns = cursor.description
+        results = cursor.fetchall()
+
+        for k, row in enumerate(results):
+            dict_results = dict()
+
+            for i, value in enumerate(row):
+                key = columns[i][0]
+                dict_results[key] = value 
+
+            print(dict_results)
+            user = User.objects.get_or_create(**dict_results)
+            prnt(user)
+            print(' ')
 
 
     def extract_socialacconts(self, cursor):
@@ -65,9 +82,11 @@ class Command(BaseCommand):
             print(' ')
 
     def extract_socialapps(self, cursor):
+        socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
         pass
 
     def extract_socialtokens(self, cursor):
+        socialaccount_socialtoken = "SELECT * FROM socialaccount_socialtoken"
         pass
        
 
