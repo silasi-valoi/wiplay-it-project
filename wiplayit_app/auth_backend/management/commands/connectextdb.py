@@ -37,6 +37,9 @@ class Command(BaseCommand):
                                    
             #self.extract_users(cursor)
             self.extract_socialacconts(cursor)
+            self.extract_socialapps(cursor)
+            self.extract_socialtokens(cursor)
+            self.extract_email_address(cursor)
            
             cursor.connection.close()
         
@@ -85,28 +88,71 @@ class Command(BaseCommand):
             socialaccount = SocialAccount.objects.filter(id=user_id)
 
             if socialaccount[0]:
-                print(extra_data)
                 socialaccount = socialaccount[0]
                 socialaccount.extra_data = extra_data
                 socialaccount.save()
+
             else:
+                dict_results.extra_data = extra_data
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
-            print(socialaccount.extra_data)
-            #extra_data = json.loads(socialaccount.extra_data)
-            #print(extra_data)
             avatar_url = socialaccount.get_avatar_url()
             avatar = download_file_from_url(avatar_url)
-            print(avatar)
-            print(' ')
-
+            user = socialaccount.user
+            profile = user.profile
+            profile.profile_picture = avatar
+            profile.save()
+           
     def extract_socialapps(self, cursor):
         socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
-        pass
+        cursor.execute(socialaccount_apps)
+        columns = cursor.description
+        results = cursor.fetchall()
+
+        for k, row in enumerate(results):
+            dict_results = dict()
+
+            for i, value in enumerate(row):
+                key = columns[i][0]
+                dict_results[key] = value 
+
+            print(dict_results)
+            social_app, _ = SocialApp.objects.get_or_create(**dict_results)
+        
 
     def extract_socialtokens(self, cursor):
         socialaccount_socialtoken = "SELECT * FROM socialaccount_socialtoken"
-        pass
+        cursor.execute(socialaccount_socialtoken)
+        columns = cursor.description
+        results = cursor.fetchall()
+
+        for k, row in enumerate(results):
+            dict_results = dict()
+
+            for i, value in enumerate(row):
+                key = columns[i][0]
+                dict_results[key] = value 
+
+            print(dict_results)
+            social_token, _ = SocialToken.objects.get_or_create(**dict_results)
+
+    def extract_email_address(self, cursor):
+        users = "SELECT * FROM account_emailaddress"
+        cursor.execute(email_address)
+        columns = cursor.description
+        results = cursor.fetchall()
+
+        for k, row in enumerate(results):
+            dict_results = dict()
+
+            for i, value in enumerate(row):
+                key = columns[i][0]
+                dict_results[key] = value 
+
+            print(dict_results)
+            email_address, _ = EmailAddress.objects.get_or_create(**dict_results)
+            print(email_address)
+            print(' ')
        
 
        

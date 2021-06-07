@@ -86,14 +86,7 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_profile_picture(self, user, sociallogin):
         if sociallogin == None:
             return
-
-        preferred_avatar_size_pixels=256
-
-        picture_url = "http://www.gravatar.com/avatar/{0}?s={1}".format(
-            hashlib.md5(user.email.encode('UTF-8')).hexdigest(),
-            preferred_avatar_size_pixels
-        )
-
+            
         avatar_url = sociallogin.account.get_avatar_url()
         avatar = download_file_from_url(avatar_url)
         profile = user.profile 
