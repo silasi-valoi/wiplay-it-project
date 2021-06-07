@@ -33,8 +33,8 @@ class Command(BaseCommand):
             connection = self.database_connect()
             cursor = connection.cursor()
                                    
-            self.extract_users(cursor)
-            #self.extract_socialacconts(cursor)
+            #self.extract_users(cursor)
+            self.extract_socialacconts(cursor)
            
             cursor.connection.close()
         
