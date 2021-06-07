@@ -86,6 +86,7 @@ class Command(BaseCommand):
                 print(extra_data)
                 socialaccount = socialaccount[0]
                 socialaccount.extra_data = extra_data
+                socialaccount.save()
             else:
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
