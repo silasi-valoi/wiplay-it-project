@@ -36,9 +36,9 @@ class Command(BaseCommand):
             cursor = connection.cursor()
                                    
             #self.extract_users(cursor)
-            self.extract_socialacconts(cursor)
-            self.extract_socialapps(cursor)
-            self.extract_socialtokens(cursor)
+            #self.extract_socialacconts(cursor)
+            #self.extract_socialapps(cursor)
+            #self.extract_socialtokens(cursor)
             self.extract_email_address(cursor)
            
             cursor.connection.close()
@@ -137,7 +137,7 @@ class Command(BaseCommand):
             social_token, _ = SocialToken.objects.get_or_create(**dict_results)
 
     def extract_email_address(self, cursor):
-        users = "SELECT * FROM account_emailaddress"
+        email_address = "SELECT * FROM account_emailaddress"
         cursor.execute(email_address)
         columns = cursor.description
         results = cursor.fetchall()
