@@ -2,6 +2,7 @@ import os
 import json
 from django.core.management.base import BaseCommand, CommandError
 from auth_backend.models import User
+from app_backend.models import Question, Answer
 from auth_backend.custom_adapter import download_file_from_url
 import MySQLdb as Database
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
