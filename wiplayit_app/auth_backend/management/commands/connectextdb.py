@@ -58,7 +58,7 @@ class Command(BaseCommand):
 
             print(dict_results)
             user = User.objects.get_or_create(**dict_results)
-            prnt(user)
+            print(user)
             print(' ')
 
 
