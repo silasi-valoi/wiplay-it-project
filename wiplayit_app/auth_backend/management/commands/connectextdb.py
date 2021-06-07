@@ -1,6 +1,7 @@
 import os
 from django.core.management.base import BaseCommand, CommandError
 from auth_backend.models import User
+from auth_backend.custom_adapter import download_file_from_url
 import MySQLdb as Database
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from allauth.account.models import EmailAddress
@@ -76,9 +77,19 @@ class Command(BaseCommand):
                 key = columns[i][0]
                 dict_results[key] = value 
 
-            print(dict_results)
-            socialaccount, _ = SocialAccount.objects.get_or_create(**dict_results)
+            
+            user_id = dict_results['id'] 
+            socialaccount = SocialAccount.objects.filter(id=user_id)
+
+            if socialaccount[0]:
+                socialaccount = SocialAccount.objects.update(**dict_results)
+            else:
+                socialaccount = SocialAccount.objects.get_or_create(**dict_results)
+
             print(socialaccount)
+            avatar_url = socialaccount.get_avatar_url()
+            avatar = download_file_from_url(avatar_url)
+            print(avatar)
             print(' ')
 
     def extract_socialapps(self, cursor):
