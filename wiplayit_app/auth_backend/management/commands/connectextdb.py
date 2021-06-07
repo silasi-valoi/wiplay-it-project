@@ -82,7 +82,7 @@ class Command(BaseCommand):
             socialaccount = SocialAccount.objects.filter(id=user_id)
 
             if socialaccount[0]:
-                socialaccount = SocialAccount.objects.update(**dict_results)
+                socialaccount = socialaccount[0]
             else:
                 socialaccount = SocialAccount.objects.get_or_create(**dict_results)
 
