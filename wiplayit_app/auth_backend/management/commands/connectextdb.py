@@ -41,7 +41,17 @@ class Command(BaseCommand):
             columns = cursor.description
             results = cursor.fetchall()
 
-            print(results)
+            list_results = []
+            for k, row in enumerate(results):
+                dict_results = dict()
+
+                for i, value in enumerate(row):
+                    key = columns[i][0]
+                    dict_results[key] = value 
+
+                list_results.append(dict_results)
+
+            print(list_results)
             cursor.connection.close()
         
         except Exception as e:
