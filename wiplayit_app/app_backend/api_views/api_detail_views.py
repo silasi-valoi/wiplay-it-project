@@ -68,7 +68,7 @@ class RetrievePostListView(RetrieveMixin, PostDetailView):
 	pass
 	
 
-class RetrieveQuestionListView( RetrieveMixin, QuestionView):
+class RetrieveQuestionListView(RetrieveMixin, QuestionView):
 		
 	def get_action_data(self, request):
 		serializer = self.list(request)
@@ -79,6 +79,7 @@ class RetrievePostView(RetrieveMixin, PostDetailView):
 		
 
 class RetrieveQuestionView(QuestionDetailView):
+	permission_classes = (AllowAny,)
 
 	def get_action_data(self, request):
 		serializer = self.retrive(request)
@@ -90,8 +91,7 @@ class RetrieveAnswerCommentListView(AnswerCommentDetailView):
 	def get_queryset(self):
 		return AnswerComment.objects.filter(answer=self.kwargs['pk'])
 			
-	
-	
+		
 
 class RetrieveAnswerReplyListView(AnswerReplyDetailView):
 	

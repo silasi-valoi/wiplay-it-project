@@ -59,9 +59,9 @@ class UserProfileContainer extends Component {
         if (!this.isMounted) return;    
         const onStoreChange = () => {
             
-            let { slug, id } = this.props['match'].params;
+            let {slug, id} = this.props['match'].params;
             let storeUpdate  = store.getState();
-            let {entities }  = storeUpdate;
+            let {entities}  = storeUpdate;
             let profileById  = id? `userProfile${id}`:null;
             let answers      = entities['answers'];
 
@@ -95,16 +95,15 @@ class UserProfileContainer extends Component {
 
     componentDidUpdate(prevProps, nextProps){
         if(!this.isMounted) return;
-
         
-        let { slug, id } = this.props['match'].params;
+        let {slug, id} = this.props['match'].params;
         let profileById  = `userProfile${id}`;
         let {state}      = this;
         let byId         =  state['profileById']; 
 
         if (byId && byId !== profileById) {
-         
-            this.setState({profileById });
+                    
+            this.setState({profileById});
             this.updateWithCacheData({profileById, id});
             this.updateUsersStore();
         }
@@ -113,6 +112,7 @@ class UserProfileContainer extends Component {
     componentDidMount() {
         this.isMounted = true;
         this.onProfileUpdate();
+        console.log(this.props)
                         
         let entities    = this.props['entities'];
         let { slug, id }           = this.props['match'].params;
@@ -142,8 +142,8 @@ class UserProfileContainer extends Component {
 
         }
 
-        store.dispatch<any>(getUserList({usersById}))
-        return
+        return store.dispatch<any>(getUserList({usersById}))
+        
     }
 
     updateWithCacheData(params){
@@ -159,22 +159,13 @@ class UserProfileContainer extends Component {
             let timeStamp      = userProfile.timeStamp;
             const getTimeState = new GetTimeStamp({timeStamp});
                
-            if (getTimeState.menutes() <= 2) {
+            if (getTimeState.menutes() >= 1) {
                 this.setState({userProfile})
                 return this._dispatchUserProfileItems(userProfile.user);
             }
         }
      
-       store.dispatch<any>(getUserProfile(id));
-
-    };
-
-    reLoader =()=>{
-        if(!this.isMounted) return;
-
-        let id = this.state['id'];   
-        this.isMounted && this.setState({isReloading : true, error:undefined})
-        return store.dispatch<any>(getUserProfile(id));
+        store.dispatch<any>(getUserProfile(id));
     };
 
     _dispatchUserProfileItems(userProfile){
@@ -275,6 +266,14 @@ class UserProfileContainer extends Component {
                 //console.log(data, items)
                 return;  
         };
+    };
+
+    reLoader =()=>{
+        if(!this.isMounted) return;
+
+        let id = this.state['id'];   
+        this.isMounted && this.setState({isReloading : true, error:undefined})
+        return store.dispatch<any>(getUserProfile(id));
     };
 
     mouseEnter = () =>{

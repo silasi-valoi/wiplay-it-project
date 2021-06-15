@@ -160,8 +160,7 @@ export const IsBookMarked =(contentType, obj)=>{
 
     if (bookmarks && obj) {
         let contents = bookmarks[contentType] || []
-        console.log(contents)
-
+       
         contents.map((value, key)=> {
                         
             if(value.id === obj.id) {
@@ -169,7 +168,6 @@ export const IsBookMarked =(contentType, obj)=>{
             }
         })
     }
-    console.log('Object exist in bookmarks ', isBookmarked)
     return isBookmarked
 
 }

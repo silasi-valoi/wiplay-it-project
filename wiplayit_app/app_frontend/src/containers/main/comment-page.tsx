@@ -36,8 +36,6 @@ class CommentsBox extends Component {
    
 
     componentDidMount() {
-        //console.log(this.props)
-               
         let answer = this.props['answer'];
         let post = this.props['post'];
             
@@ -69,28 +67,27 @@ class CommentsBox extends Component {
 
    render() { 
         let props  = this.getProps();
-        
         let commentsById = props['commentsById'];
         let newCommentsById = props['newCommentsById'];
             
         let comments  =  props['entities']['comments'];
         let newComments = comments && comments[newCommentsById]; 
-        comments        = comments && comments[commentsById]
+        let oldComments = comments && comments[commentsById]
             
         
         return (
             <div>
                 <div>
                     { newComments?
-                        <NewAddedComments {...props}/>
+                        <NewComments {...props}/>
                         :
                         ""       
                     }
                 </div>
                
                 <div>
-                    { comments?  
-                        <ViewedComments {...props}/>
+                    {oldComments?  
+                        <OldComments {...props}/>
                         :
                         ""
                     }
@@ -138,26 +135,31 @@ export const CommentsLink = props => {
    )
 }
 
-const NewAddedComments = props => {
+const NewComments = props => {
    let {entities, newCommentsById} = props;
    let comments = entities.comments[newCommentsById]; 
    
    let commentsProps = Object.assign({isNewComments:true}, props)
 
-   let commentList = comments.commentList && comments.commentList.length && comments.commentList;  
+   let commentList = comments.commentList 
+                   && comments.commentList.length 
+                   && comments.commentList;  
+
    return Comments(commentsProps, commentList);
 };
 
 
-const ViewedComments = props => {
+const OldComments = props => {
    let {entities, commentsById, parent} = props;
    let comments = entities.comments[commentsById]; 
 
-   let commentList = comments.commentList &&  comments.commentList.length && comments.commentList;
+   let commentList = comments.commentList 
+                   && comments.commentList.length 
+                   && comments.commentList;
 
    return(
         <div>
-            { comments.showLink?
+            {comments.showLink?
                 <CommentsLink {...props}/>
                 :
                 <div>

@@ -5,11 +5,11 @@ import {PartalNavigationBar,
     NavigationBarBigScreen } from 'templates/navBar';
 
 import  AjaxLoader from 'templates/ajax-loader';
-
-import { PostComponent} from 'templates/post';
+import CommentsBox from 'containers/main/comment-page';
+import {PostComponent} from 'templates/post';
 import  MainAppHoc from "containers/main/index-hoc";
 
-import { UnconfirmedUserWarning, PageErrorComponent } from 'templates/partials';
+import {UnconfirmedUserWarning, PageErrorComponent} from 'templates/partials';
 
 import  * as action  from 'actions/actionCreators';
 import { getPost } from 'dispatch/index';
@@ -75,49 +75,43 @@ class  PostPage extends Component  {
     componentDidMount() {
         this.isMounted = true;
         this.onPostUpdate()
+        console.log(this.props)
 
         let entities = this.props['entities'];
           
-        let { slug, id }  =  this.props['match'].params;
-        let {state}       =  this.props['location'];
+        let {slug, id} =  this.props['match'].params;
+        let {state}    =  this.props['location'];
 
         let postById      = `post${id}`;
         this.setState({postById, id})
 
         if (state && state.recentlyCreated) {
-
-            let post = state.post
+            let post = state.post;
             console.log('Post recently created')
-            this.dispatchToStore(postById, post)
-            return; 
+            return this.dispatchToStore(postById, id);
         }
 
         let {post} = entities;
-        post       = post && post[postById]
-        !post && this.updatePostStore(id);
+        post = post && post[postById]
+        !post && this.updatePostStore(postById, id);
 
     };
 
 
-    updatePostStore(id){
+    updatePostStore(postById:string, id?:number){
 
         let cacheEntities  = this.props['cacheEntities'];
-        let { post }     = cacheEntities && cacheEntities;
-        post = post[`post${id}`]
+        let post:object  = cacheEntities && cacheEntities['post'];
+        post = post[postById]
 
         if (post) {
-            let timeStamp = post.timeStamp;
-            const getTimeState = new GetTimeStamp({timeStamp});
-                       
-               
-            if (getTimeState.menutes() <= 10) {
-                post     = post.post;
-                let postById = `post${id}`;
-                this.setState({postById })
+            let timeStamp:number = post['timeStamp'];
+            const getTimeState:GetTimeStamp = new GetTimeStamp({timeStamp});
+            let menDiff:number = parseInt(`${getTimeState.menutes()}`)
+                                
+            if (menDiff <= 2) {
                 console.log('Post found from cachedEntyties')
-                this.dispatchToStore(postById, post)
-
-                return 
+                return this.dispatchToStore(postById, post['post'])
             }
         }
 
@@ -202,6 +196,7 @@ export const Post = props => {
                 <div className="post-contents"> 
                     <PostComponent {...postProps }  />
                 </div>
+                <CommentsBox {...postProps}/>
             </div>
         </div>
     );

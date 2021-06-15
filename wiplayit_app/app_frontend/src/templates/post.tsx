@@ -38,14 +38,21 @@ export const PostComponent = props => {
               margin     : '0 0 2px'
     }
 
-    let {post, currentUser, postById, postListById}     =    props;
+    let {
+        post,
+        isAuthenticated,
+        currentUser, 
+        postById,
+        postListById}     =    props;
+
     if(!post) return null;
 
     const editorState  = helper.convertFromRaw(post.add_post);
    
     let usersById       = post && `postUpVoters${post.id}`;
     let apiUrl          = post && api.getPostUpVotersListApi(post.id);
-    let linkName = post.upvotes > 1 && `${post.upvotes} Upvoters` || `${post.upvotes} Upvoter`;
+    let linkName = post.upvotes > 1 && `${post.upvotes} Upvoters`
+                                    || `${post.upvotes} Upvoter`;
 
     let state = {
             post,
@@ -66,6 +73,7 @@ export const PostComponent = props => {
         obj         : post, 
         byId        : postById || postListById,
         currentUser,
+        isAuthenticated, 
     };
 
 
@@ -75,8 +83,9 @@ export const PostComponent = props => {
         obj               : post,
         isPost            : true,
         currentUser,
-        byId        : postById,
+        byId        : `newPostComments${post.id}`,
         className   : 'btn-sm edit-comment-btn',
+        isAuthenticated,
     };
 
     let createBookmarkProps = {
@@ -85,7 +94,7 @@ export const PostComponent = props => {
         byId              : `bookmarkedPosts`,
         isPost            : true,
         currentUser,  
-        isAuthenticated   : props['isAuthenticated']
+        isAuthenticated,
     };
 
     createBookmarkProps = GetModalLinkProps.props(createBookmarkProps)

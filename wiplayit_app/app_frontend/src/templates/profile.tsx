@@ -834,24 +834,27 @@ export const UserComponentSmall = props => {
     let timeStamp = timeCreated && timeCreated.getTime();
 
     const getTimeState = new GetTimeStamp({timeStamp});
-    let menDiff        = getTimeState.menutes();
-    let hourDiff       = getTimeState.hours();
-    let dayDiff        = getTimeState.days();
-    let weekDiff       = getTimeState.weeks();
-    
-
+    let secondDiff     = parseInt(`${getTimeState.seconds()}`)  
+    let menDiff        = parseInt(`${getTimeState.menutes()}`);
+    let hourDiff       = parseInt(`${getTimeState.hours()}`);
+    let dayDiff        = parseInt(`${getTimeState.days()}`);
+    let weekDiff       = parseInt(`${getTimeState.weeks()}`);
+  
     let dateCreated;
     let dateOptions;
 
-    const getLocaleDateString=(dateOptions)=>{
+    const getLocaleDateString = (dateOptions:object)=>{
        return timeCreated.toLocaleDateString('en-GB', dateOptions)
     }
 
-    let month = getLocaleDateString({'month':'short'}) 
-    let day   = getLocaleDateString({day : 'numeric'})
-    let year  = getLocaleDateString({year : 'numeric'})
+    let month = getLocaleDateString({month : 'short'}) 
+    let day   = getLocaleDateString({day   : 'numeric'})
+    let year  = getLocaleDateString({year  : 'numeric'})
+    
+    if (secondDiff <= 59) {
+        dateCreated = `Now`;
 
-    if (menDiff <= 59) {
+    }else if (menDiff <= 59) {
         dateCreated = `${menDiff} menutes ago`
 
     }else if(hourDiff <= 23){
@@ -864,8 +867,7 @@ export const UserComponentSmall = props => {
     }else{
         let yearCreated = timeCreated.getFullYear();
         let currentYear = currentdate.getFullYear()
-        
-
+    
         if (yearCreated === currentYear) {
             dateCreated = month + ' ' + day; 
         }else{

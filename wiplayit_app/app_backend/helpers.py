@@ -164,7 +164,10 @@ def permission_checker(user=None):
 
 def has_perm(user, perm, instance ):
 
-	checker = permission_checker(user)
-	return checker.has_perm(perm, instance)
+	if perm and user:
+		checker = permission_checker(user)
+		return checker.has_perm(perm, instance)
+
+	return False
 
 

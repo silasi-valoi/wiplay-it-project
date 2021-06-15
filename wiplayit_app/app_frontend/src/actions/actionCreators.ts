@@ -2,6 +2,7 @@ import  * as types  from 'actions/types';
 
 
 export const createActionPending = (params:object):object => {
+    console.log(params, 'PENDING')
     
     return{
         type : params['actionType'].PENDING,
@@ -12,10 +13,8 @@ export const createActionPending = (params:object):object => {
     }
 };
 
-
-
 export const createActionSuccess = (params:object):object => {
-    console.log(params)
+    console.log(params, 'success')
     
     return{
         type : params['actionType'].SUCCESS,
@@ -27,8 +26,8 @@ export const createActionSuccess = (params:object):object => {
     };
 };
 
-
 export const createActionError = (params:object):object => {
+    console.log(params, 'ERROR')
     
     let error =  params['error'].detail; 
 
@@ -43,13 +42,8 @@ export const createActionError = (params:object):object => {
     }
 };
 
-
-
-
-
 export const updateActionPending = (params:object):object => {
-    
-
+    console.log(params, 'PENDING')
     return {
         type : params['actionType'].PENDING,
         byId : params['byId'],
@@ -60,10 +54,8 @@ export const updateActionPending = (params:object):object => {
     }
 };
 
-
-
-
 export const updateActionSuccess = (params:object): object => {
+    console.log(params, 'SUCCESS')
     
     return{
         type : params['actionType'].SUCCESS,
@@ -76,8 +68,8 @@ export const updateActionSuccess = (params:object): object => {
    };
 };
 
-
 export const updateActionError = (params:object):object => {
+    console.log(params, 'ERROR')
        
     return {
         type : params['actionType'].ERROR,
@@ -97,7 +89,6 @@ export const HandleAlertMessage = (message:any):object =>({
     }
 });
 
-
 export const ModalSubmitPending = (modalName:string):object => ({
     type : "MODAL_SUBMIT_PENDING",
     byId : modalName,
@@ -106,8 +97,8 @@ export const ModalSubmitPending = (modalName:string):object => ({
     }
 });
 
-
 export const ModalSubmitSuccess = (params:object):object => {
+    console.log(params, 'ModalSubmitSuccess')
           
     return{
         type : "MODAL_SUBMIT_SUCESS",
@@ -122,9 +113,6 @@ export const ModalSubmitSuccess = (params:object):object => {
     };
 };
 
-
-
-
 export const ModalSubmitError = (params:object):object => {
         
     return{
@@ -138,7 +126,6 @@ export const ModalSubmitError = (params:object):object => {
     };
 };
 
-
 export const getAboutInfoPending = ():object => {
 
     return{
@@ -148,7 +135,6 @@ export const getAboutInfoPending = ():object => {
         }
     }
 };
-
 
 export const getAboutInfoSuccess = (data:object):object => {
 
@@ -160,7 +146,6 @@ export const getAboutInfoSuccess = (data:object):object => {
         }
     }
 };
-
 
 export const getAboutInfoError = (error:string):object => {
 
@@ -184,7 +169,6 @@ export const getIndexPending = ():object => {
     }
 };
 
-
 export const getIndexError = (error:string):object => {
     
     return{
@@ -197,12 +181,10 @@ export const getIndexError = (error:string):object => {
     }
 };
 
-
 export const getIndexSuccess = (data:object) => {
         
     return {
-        type   : types.GET_INDEX['SUCCESS'],
-   
+        type: types.GET_INDEX['SUCCESS'],
         payLoad : {
             isLoading : false,
             isSuccess : true,
@@ -210,7 +192,6 @@ export const getIndexSuccess = (data:object) => {
         }
     };
 };
-
 
 export const getQuestionPending = (byId:string):object => {
    
@@ -223,13 +204,12 @@ export const getQuestionPending = (byId:string):object => {
     }
 };
 
-
-
 export const getQuestionSuccess = (byId:string, question:object):object => {
    
     let userAnswer        = getUserAnswer(question['answers']);
     let userHasAnswer     = userAnswer?true:false;
-    let questionHasAnswer = question['answers'].length && true ||false;
+    let answers           = question['answers']
+    let questionHasAnswer = answers && answers.length && true || false;
    
     return{
         type: types.GET_QUESTION['SUCCESS'],
@@ -239,13 +219,11 @@ export const getQuestionSuccess = (byId:string, question:object):object => {
             questionHasAnswer,
             userAnswer,
             userHasAnswer,
-            isLoading         : false,
+            isLoading   : false,
 
       }
    };
 };
-
-
 
 export const getQuestionError = (byId:string, error:string):object => ({
     type         : types.GET_QUESTION['ERROR'],
@@ -255,10 +233,6 @@ export const getQuestionError = (byId:string, error:string):object => ({
       isLoading : false,
     }
 });
-
-
-
-
 
 export const getPostPending = (byId:string) => {
    
@@ -276,10 +250,7 @@ export const getPostPending = (byId:string) => {
     }
 };
 
-
-
 export const getPostSuccess = (byId:string ,post:object):object => {
-   
       
     return{
         type : types.GET_POST['SUCCESS'],
@@ -292,8 +263,6 @@ export const getPostSuccess = (byId:string ,post:object):object => {
     };
 };
 
-
-
 export const getPostError = (byId:string, error:string) => ({
     type : types.GET_POST['ERROR'],
     byId,
@@ -302,10 +271,6 @@ export const getPostError = (byId:string, error:string) => ({
        isLoading : false,
     }
 });
-
-
-
-
 
 export const getUserProfilePending = (byId:string):object => {
   
@@ -317,8 +282,6 @@ export const getUserProfilePending = (byId:string):object => {
         }
     };
 };
-
-
 
 export const getUserProfileSuccess = (byId:string, userProfile:object):object => {
       
@@ -332,8 +295,6 @@ export const getUserProfileSuccess = (byId:string, userProfile:object):object =>
     };
 };
 
-
-
 export const getUserProfileError = (byId:string, error:string) => ({
     type : types.GET_USER_PROFILE['ERROR'],
     byId,
@@ -343,19 +304,12 @@ export const getUserProfileError = (byId:string, error:string) => ({
     }
 });
 
-
-
-
-
-
 export const deleteQuestionPending = (id :number):object => ({
   type:  types.DELETE_QUESTION['PENDING'],
   payLoad: {
     id
   }
 });
-
-
 
 
 export const deleteQuestionSuccess= ({ success }) => ({
@@ -365,16 +319,12 @@ export const deleteQuestionSuccess= ({ success }) => ({
   }
 });
 
-
-
 export const deleteQuestionError = ({error}) => ({
   type:  types.DELETE_QUESTION['ERROR'],
   payLoad: {
     error,
   }
 });
-
-
 
 export const getQuestionListSuccess = (byId:string, questionList:[]):object => {
     
@@ -388,8 +338,6 @@ export const getQuestionListSuccess = (byId:string, questionList:[]):object => {
    }
 };
 
-
-
 export const getQuestionListPending = (byId:string):object => ({
 	type: types.GET_QUESTION_LIST['PENDING'],
     byId,
@@ -398,8 +346,6 @@ export const getQuestionListPending = (byId:string):object => ({
       
     }
 });
-
-
 
 export const getQuestionListError = (byId:string, error:string):object =>({
 	type: types.GET_QUESTION_LIST['ERROR'],
@@ -410,8 +356,6 @@ export const getQuestionListError = (byId:string, error:string):object =>({
     }
 
 });
-
-
 
 export const getPostListSuccess = (byId:string, postList:[]):object => {
     return{
@@ -424,8 +368,6 @@ export const getPostListSuccess = (byId:string, postList:[]):object => {
    }
 };
 
-
-
 export const getPostListPending = (byId:string):object => ({
     type: types.GET_POST_LIST['PENDING'],
     byId,
@@ -434,8 +376,6 @@ export const getPostListPending = (byId:string):object => ({
         
     }
 });
-
-
 
 export const getPostListError = (byId:string, error:string):object =>({
     type: types.GET_POST_LIST['ERROR'],
@@ -446,8 +386,6 @@ export const getPostListError = (byId:string, error:string):object =>({
     }
 
 });
-
-
 
 export const getAnswerListSuccess = (byId:string, answerList:object[]):object => {
 
@@ -461,8 +399,6 @@ export const getAnswerListSuccess = (byId:string, answerList:object[]):object =>
     };
 };
 
-
-
 export const getAnswerListPending = (byId:string):object => ({
    type: types.GET_ANSWER_LIST['PENDING'],
    byId,
@@ -470,8 +406,6 @@ export const getAnswerListPending = (byId:string):object => ({
       isLoading: true,
    }
 });
-
-
 
 export const getAnswerListError = (byId:string, error:string):object =>({
     type: types.GET_ANSWER_LIST['ERROR'],
@@ -482,9 +416,6 @@ export const getAnswerListError = (byId:string, error:string):object =>({
     }
 
 });
-
-
-
 
 export const getCommentListSuccess = (byId:string, comments:[]):object => {
    
@@ -498,8 +429,6 @@ export const getCommentListSuccess = (byId:string, comments:[]):object => {
     };
 };
 
-
-
 export const getCommentListPending = (byId:string):object => {
   
   return{
@@ -511,8 +440,6 @@ export const getCommentListPending = (byId:string):object => {
   };
 };
 
-
-
 export const getCommentListError = (byId:string, error:string) =>({
    type: types.GET_COMMENT_LIST['ERROR'],
    byId,
@@ -523,10 +450,6 @@ export const getCommentListError = (byId:string, error:string) =>({
 
 });
 
-
-
-
-
 export const getReplyListPending = (actionType:any, byId:string) => ({
    type    : actionType.PENDING,
    byId,
@@ -535,9 +458,6 @@ export const getReplyListPending = (actionType:any, byId:string) => ({
    },
    
 });
-
-
-
 
 export const getReplyListSuccess = (actionType:any, byId:string, replyList:[]):object => {
     return{
@@ -550,7 +470,6 @@ export const getReplyListSuccess = (actionType:any, byId:string, replyList:[]):o
    };
 };
 
-
 export const getReplyListError = (actionType:any,byId:string, error:string):object =>({
    type    : actionType.ERROR,
    byId,
@@ -560,9 +479,6 @@ export const getReplyListError = (actionType:any,byId:string, error:string):obje
    }
 });
 
-
-
-
 export const getReplyChildListPending = (actionType:any, byId:string):object => ({
     type: actionType.PENDING,
     byId,
@@ -571,9 +487,6 @@ export const getReplyChildListPending = (actionType:any, byId:string):object => 
       showLink  : false,
     }
 });
-
-
-
 
 export const getReplyChildListSuccess = (actionType:any, byId:string, replyList:[]):object => {
 
@@ -588,7 +501,6 @@ export const getReplyChildListSuccess = (actionType:any, byId:string, replyList:
     }
 };
 
-
 export const getReplyChildListError = (actionType:any, byId:string, error:string):object =>({
     type: actionType,
     byId,
@@ -600,11 +512,12 @@ export const getReplyChildListError = (actionType:any, byId:string, error:string
 
 });
 
-
-
-
 export const handleError  = (error?:string):object => {
     console.log(error)
+    if (!error) {
+        error = 'Something wrong happened.'
+    }
+    
     return {
         type: types.SERVER['ERROR'],
         payLoad: {
@@ -612,7 +525,6 @@ export const handleError  = (error?:string):object => {
         }
     };
 };
-
 
 export const authenticationPending = (
                 isSocialAuth:boolean=false, 
@@ -625,7 +537,6 @@ export const authenticationPending = (
         isTokenRefresh, 
     }
 });
-
 
 export const authenticationSuccess = (data:object, 
                                       isSocialAuth:boolean=false,
@@ -640,7 +551,6 @@ export const authenticationSuccess = (data:object,
         }
     };
 };
-
 
 export const authenticationError = (
                             error:object, 
@@ -661,9 +571,6 @@ export const authenticationError = (
     };
 };
 
-
-
-
 export const getCurrentUserSuccess = (user:object):object => {
     //console.log('current user is this: ', user)
     return {
@@ -675,8 +582,6 @@ export const getCurrentUserSuccess = (user:object):object => {
     };
 };
 
-
-
 export const getCurrentUserPending = ():object => {
     
     return {
@@ -686,8 +591,6 @@ export const getCurrentUserPending = ():object => {
         }
     };
 };
-
-
 
 export const getUserListSuccess = (byId:string, users:[]):object => {
     
@@ -701,8 +604,6 @@ export const getUserListSuccess = (byId:string, users:[]):object => {
     }
 };
 
-
-
 export const getUserListPending = (byId:string):object => ({
     type: types.GET_USER_LIST['PENDING'],
     byId,
@@ -710,8 +611,6 @@ export const getUserListPending = (byId:string):object => ({
         isLoading : true,
     }
 });
-
-
 
 export const getUserListError = (byId:string, error:string):object =>({
     type: types.GET_USER_LIST['ERROR'],
@@ -723,7 +622,6 @@ export const getUserListError = (byId:string, error:string):object =>({
 
 });
 
-
 export const getCurrentUserError = (error:object):object => {
     console.log(error)
     return {
@@ -734,7 +632,6 @@ export const getCurrentUserError = (error:object):object => {
         }
     };
 };
-
 
 export const getCommentLindData = (byId:string, comments:object[]):object => {
       
@@ -755,9 +652,6 @@ export const getCommentLindData = (byId:string, comments:object[]):object => {
         }
     };
 };
-
-
-
 
 export const getRepliesLindData = (props:object) => {
    var replies:object[] = props['replies'];
@@ -780,9 +674,6 @@ export const getRepliesLindData = (props:object) => {
    };
 };
 
-
-
-
 export const getReplyChildLindData = (props:object) => {
    var reply:object = props['reply'];
    var byId:string = props['byId'];
@@ -803,7 +694,6 @@ export const getReplyChildLindData = (props:object) => {
     };
 };
 
-
 export const showModal = (byId:string, isOpening:boolean):object =>{
     
     return {
@@ -816,7 +706,6 @@ export const showModal = (byId:string, isOpening:boolean):object =>{
    };
 };
 
-
 export const getAdminPending = ():object => {
     
     return {
@@ -826,7 +715,6 @@ export const getAdminPending = ():object => {
         }
     };
 };
-
 
 export const getAdminSuccess = (data:object):object => {
 
@@ -840,7 +728,6 @@ export const getAdminSuccess = (data:object):object => {
     };
 };
 
-
 export const getAdminError = (error:object):object => {
     
     return {
@@ -852,8 +739,6 @@ export const getAdminError = (error:object):object => {
     };
 };
 
-
-
 export const sendMessagePending = ():object => {
     
     return {
@@ -863,7 +748,6 @@ export const sendMessagePending = ():object => {
         }
     };
 };
-
 
 export const sendMessageSuccess = (data:object):object => {
     let successMessage = 'Message has succefully been sent';
@@ -879,7 +763,6 @@ export const sendMessageSuccess = (data:object):object => {
     };
 };
 
-
 export const sendMessageError = (error:string):object => {
     
     return {
@@ -894,10 +777,10 @@ export const sendMessageError = (error:string):object => {
 export const getUserAnswer = (answerList:[]):any => {
     let cacheEntities:object = JSON.parse(localStorage.getItem('@@CacheEntities')); 
     let currentUser:object =  cacheEntities['currentUser'];
-    currentUser = currentUser['user'];
+    currentUser = currentUser && currentUser['user'];
     var answer  = undefined; 
       
-    if (answerList.length) {
+    if (currentUser && answerList && answerList.length) {
         answerList.map( (item, index) => {
 
             if (item['author']['id'] === currentUser['id']) {

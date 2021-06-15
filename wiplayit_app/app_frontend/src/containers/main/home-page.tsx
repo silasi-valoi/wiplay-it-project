@@ -65,20 +65,15 @@ class HomePage extends Component<any, any> {
         //console.log(error, info);
     }
 
-    componentWillUnmount() {
-        this.isMounted = false;
-        this.unsubscribe();
-    };
-
     onIndexUpdate = () =>{
  
         const onStoreChange = () => {
             let storeUpdate   = store.getState();
             let {entities }   = storeUpdate;
             let index:object = entities['index']
-                     
-            if(index){
-                console.log(index)
+
+            if(index && Object.keys(index)){
+                
                 let state = {
                     isReloading : index['isLoading'],
                     error       : index['error']
@@ -114,79 +109,77 @@ class HomePage extends Component<any, any> {
         if(!posts[postListById])return false;
 
         return true;
-    }
+    };
+        
+
+    getTimeState(timeStamp:number){
+        const timeState = new GetTimeStamp({timeStamp});
+        return parseInt(`${timeState.menutes()}`)
+    };
+
+    checkDataExist(data:object){
+        if (data['questions'] 
+            || data['users'] 
+            || data['answers']
+            || data['posts']) {
+
+            return true;
+        }
+        return false;
+    };
+
+    componentWillUnmount() {
+        this.isMounted = false;
+        this.unsubscribe();
+    };
+
+    getIndexData(){
+        console.log('Fetching index data from api')
+        store.dispatch<any>(getIndex()); 
+    };
     
+    componentDidMount() {
+        this.isMounted = true;
+        this.onIndexUpdate();
+        
+        let cacheEntities = this.props['cacheEntities']
+        let storeEntities:object = this.props['entities']
+        let index     =  storeEntities['index'];
+        let cachedIndex  = cacheEntities?.index; 
+        let checkDataExist  = this.checkDataExist;
+              
+        if (checkDataExist(cachedIndex)) {
+            let menDifference = this.getTimeState(cachedIndex.timeStamp);
+            if (menDifference <= 2) {
+                return this.updateIndexEntities(cachedIndex);
+            }
+        }
+             
+        if(checkDataExist(index)) {
+            return this.updateIndexEntities(index);
+        }
+        
+        this.getIndexData();
+    };
+      
+    reLoader =()=>{
+        if (this.isMounted) {
+            this.setState({isReloading : true})
+        }
+        this.getIndexData();
+    };
+
     _checkData(data:object):boolean {
         if (!data) return false;
 
         if(checkType.isObject(data)){
             data = Object.keys(data)
         }
-
         return data && data['length'] || false;
     }
 
-    getTimeState(time){
-        const getTimeState = new GetTimeStamp({time});
-        return getTimeState.menutes()
-
-    }
-
-    checkDataExist(data){
-        
-        if (!data) return false;
-
-        let {questions,
-             answers,
-             posts,
-             users} = data;
-
-        if (questions || users || answers || posts) {
-            return true;
-
-        }else{
-            return false;
-        }
-
-    }
-    
-    componentDidMount() {
-        this.isMounted = true;
-        this.onIndexUpdate();
-        window.addEventListener("beforeunload",(event)=>{
-            return store.dispatch<any>(getIndex()); 
-              
-        });
-        
-        let cacheEntities = this.props['cacheEntities']
-        let index     = this.props['entities'];
-        let cachedIndex  = cacheEntities?.index; 
-        let checkDataExist  = this.checkDataExist ; 
-                
-        if (!checkDataExist(index) && checkDataExist(cachedIndex)) {
-                        
-            let menDifference = this.getTimeState(cachedIndex.timeStamp);
-            if (menDifference <= 5) {
-                return this.updateIndexEntities(cachedIndex);
-            }
-        }
-
-        store.dispatch<any>(getIndex());
-              
-        if(!checkDataExist(index)) {
-            console.log('Fetching data from api')
-            store.dispatch<any>(getIndex());
-        }
-    };
-      
-    reLoader =()=>{
-        this.setState({isReloading : true})
-        return store.dispatch<any>(getIndex());
-    };
-
     updateIndexEntities(index){
         let {questions, posts, answers, users} =  index;
-
         const checkData = this._checkData; 
 
         checkData(questions) && this.dispatchQuestions(questions);
@@ -274,12 +267,9 @@ export const IndexComponent = props => {
 
 
 export const Questions = props => {
-   
-    let { questionListById, entities } = props;
-
-    let {questions}    = entities
-    questions          = questions && questions[questionListById];
-
+    let {questionListById, entities} = props;
+    let {questions} = entities
+    questions = questions && questions[questionListById];
     let questionList = questions && questions.questionList;
     
     return (

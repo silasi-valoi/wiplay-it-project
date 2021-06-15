@@ -29,6 +29,7 @@ class QuestionPage extends Component {
             isQuestionBox : true, 
             pageName      : "Question", 
             questionById  : '',
+            question      : null,
             isNewQuestion : false,
             isReloading   : false,
         };
@@ -58,11 +59,15 @@ class QuestionPage extends Component {
             let question   = entities['question'];
 
             let questionById  = this.state['questionById'];
-             question           = question && question[questionById]
-                     
+                                
             //console.log(errors) 
             if (this.isMounted && question){
-                this.setState({isReloading : question.isLoading, error: question.error})
+                this.setState({
+                        question,
+                        isReloading : question.isLoading,
+                        error: question.error
+                    });
+
                 delete question.error;  
             }
                       
@@ -75,60 +80,55 @@ class QuestionPage extends Component {
     componentDidMount() {
         this.isMounted = true;
         this.onQuestionUpdate();
-                      
-             let { slug, id }  =  this.props['match'].params;
-        let {state}       =  this.props['location']; 
-        let questionById  = `question${id}`;
+        let {slug, id}  =  this.props['match'].params;
+        let questionById = `question${id}`;
 
-        this.setState({questionById, id})
-        
-        if (state && state.recentlyCreated) {
-            let question = state.question;
-            this.dispatchToStore(questionById, question)
-            return; 
+        this.setState({questionById})
+                        
+        let cache = this.props['cacheEntities'];
+        let questionCache = cache['question'];
+        questionCache = questionCache[questionById]
+        let cacheExpired:boolean = this.questionCacheExpired(questionCache);
+
+        if(!cacheExpired){
+            console.log( questionCache,'Question found from cachedEntyties')
+            
+            return this.dispatchToStore(questionById, questionCache.question);
         }
 
-        let { question } = this.props['entities'];
-        question = question && question[questionById]
-        !question && this.updateQuestionStore(id);
+        let {question} = this.props['entities'];
+        let questionData = question[questionById]
+
+        if (questionData && questionData.question) {
+            return
+        }
+
+        console.log('Fetching question data from the server')
+        store.dispatch<any>(getQuestion(id));
       
     };
 
-    updateQuestionStore(id){
-        let questionById = `question${id}`;
-        let question     = this.props['cacheEntities'].question;
-        console.log(question)
+    questionCacheExpired(questionCache:object):boolean {
 
-        if (!question || question && !question[questionById]){
-            console.log('No question and Fetching question data from the server')
-            return store.dispatch<any>(getQuestion(id));
+        if (questionCache) {
+            let timeStamp = questionCache['timeStamp'];
+            const getTimeState = new GetTimeStamp({timeStamp});
+            let menutes = parseInt(`${getTimeState.menutes()}`);
+            console.log(menutes);
+            return menutes >= 1
         }
 
-        let timeStamp = question[questionById]?.timeStamp;
-        const getTimeState = new GetTimeStamp({timeStamp});
-                                      
-        if (getTimeState.menutes() >= 5) {
-            console.log('Cache expired and Fetching question data from the server')
-            return store.dispatch<any>(getQuestion(id));
-        }
+        return true;
+    };
 
-        this.setState({questionById })
-        console.log( question,'Question found from cachedEntyties')
-        this.dispatchToStore(questionById,  question[questionById].question)
-         
-        
-    }
-
-    dispatchToStore(questionById:string, question){
+    dispatchToStore(questionById:string, question:object){
         if (questionById && question) {
             store.dispatch<any>(action.getQuestionPending(questionById));
             store.dispatch<any>(action.getQuestionSuccess(questionById, question));
         }
 
     } 
-   
-
-   
+       
     componentDidCatch(error, info) {
         // You can also log the err or to an error reporting service
         console.log(error, info);
@@ -140,7 +140,7 @@ class QuestionPage extends Component {
         return store.dispatch<any>(getQuestion(id));
     };
     
-    getProps() {
+    getProps():object {
         return {
             ...this.props,
             ...this.state,
@@ -149,12 +149,9 @@ class QuestionPage extends Component {
     };
 
     render() {
-
         let props = this.getProps();
-       
         let questionById = props['questionById'];
-        let entities = props['entities'];
-        let {question} = entities;
+        let question = props['entities']['question'];
 
         question = question && question[questionById]
       
@@ -193,7 +190,7 @@ export const Questions = props => {
     let {question, answers} = entities;
     question = question && question[questionById];
     if(question && question.isLoading) return null;
-
+    
     question = question && question.question;
     if (!question) return null;
 

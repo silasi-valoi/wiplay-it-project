@@ -90,8 +90,6 @@ class AnswerCommentView(BaseApiView):
 class AnswerCommentDetailView(AnswerCommentView):
 	serializer_class = AnswerCommentReadSerializer		
 
-	
-		
 
 class AnswerReplyView(BaseApiView):
 	queryset         = AnswerReply.objects.all()

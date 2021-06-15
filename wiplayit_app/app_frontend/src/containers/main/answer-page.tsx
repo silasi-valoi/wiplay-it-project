@@ -16,6 +16,7 @@ class AnswerContainer extends Component {
         super(props);
 
         this.state = {
+            pageName    : "Answer",
             isAnswerBox : true,
             question    : undefined,
             answer      : undefined,      
@@ -24,7 +25,7 @@ class AnswerContainer extends Component {
 
 
     componentDidMount() {
-       // let { match,location, entities }  =  this.props;
+        console.log(this.props)
 
         let { slug, id }  = this.props['match'].params;
         let {state}       = this.props['location']; 
@@ -33,7 +34,7 @@ class AnswerContainer extends Component {
        
         let answerListById   = question && `newAnswers${question.id}`;
 
-        this.setState({ answerListById, question});
+        this.setState({answerListById, question});
 
         answers = answers[answerListById]
        
@@ -47,15 +48,17 @@ class AnswerContainer extends Component {
 
     render() { 
         let props = {...this.props, ...this.state}
+        console.log(props)
         
         let {answers}    = props['entities'];
         let question:object = props['question'];
-        let answerListById:string = props['entities']
-        let questionPath = question && `/question/${question['slug']}/${question['id']}/`;
+        let answerListById:string = props['entities'];
         answers          = answers   && answers[answerListById];
+        let linkPath = question && `/question/${question['slug']}/${question['id']}/`;
         
         let linkProps:object = {
-                linkPath: { pathname: questionPath,state:{question}},  
+                linkPath,
+                state: {question},  
         } 
               
         return(
@@ -235,7 +238,7 @@ export const Answers = (props, answerList, isNewAnswers=false) => {
     return(
         <div className="answer-container">
             {answerList?.map((answer, index) => {
-                let answerProps = { answer, isNewAnswers };
+                let answerProps = {answer, isNewAnswers };
                 answerProps = {...props, ...answerProps}; 
       
                 return ( 

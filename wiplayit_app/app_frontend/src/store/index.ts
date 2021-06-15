@@ -84,21 +84,20 @@ const persistStore = () => (next) => (reducer, initialState, enhancer) => {
         let _cacheMerge;
 
         for(var entitieKey in storeEntities){
+            storeData = storeEntities[entitieKey] || {};
+            cacheData = cacheEntities[entitieKey] || {};
 
-            storeData = storeEntities && storeEntities[entitieKey] || {};
-            cacheData = cacheEntities && cacheEntities[entitieKey] || {};
+            if(   entitieKey === 'userAuth'     
+               || entitieKey === 'currentUser'  
+               || entitieKey === 'index'          
+               || entitieKey === 'admin'           
+               || entitieKey === 'about'               
+               || entitieKey === 'modal' ) {
 
-            //console.log(entitieKey)
-            if( entitieKey === 'userAuth'     ||
-                entitieKey === 'currentUser'  ||
-                entitieKey === 'index'        ||  
-                entitieKey === 'admin'        ||   
-                entitieKey === 'about'       ||        
-                entitieKey === 'modal' ) {
                    
                 cacheData = cacheData || {};
                 let storeDataKeys = storeData && Object.keys(storeData);
-                
+                               
                 if (storeDataKeys && storeDataKeys.length) {
                     _cacheMerge = {...cacheData, ...storeData}
                     cacheEntities[entitieKey] = _cacheMerge;
@@ -113,15 +112,17 @@ const persistStore = () => (next) => (reducer, initialState, enhancer) => {
                      entitieKey === 'post'        ||   
                      entitieKey === 'comments'    ||     
                      entitieKey === 'replies'
-                     ){
-
-                _cacheMerge = UpdateKeyedLocalCache(storeData, cacheData)
-                cacheEntities[entitieKey] = Object.assign(cacheData, _cacheMerge)
+                    ){
+              
+                if (Object.keys(storeData)) {
+                    _cacheMerge = UpdateKeyedLocalCache(storeData, cacheData)
+                    cacheEntities[entitieKey] = Object.assign(cacheData, _cacheMerge)
+                }
 
             }
-        } 
-
-        localStorage.setItem('@@CacheEntities',JSON.stringify(cacheEntities));  
+        }
+      
+        localStorage.setItem('@@CacheEntities', JSON.stringify(cacheEntities));  
     })
 
 

@@ -102,9 +102,6 @@ export default class Axios {
             if (tokenKey) {
                 tokenKey =`JWT ${tokenKey}`;
                 instance.defaults.headers.common['Authorization'] = tokenKey;
-
-            }else{
-                return undefined
             }
         }
      

@@ -18,7 +18,7 @@ import {handleSubmit,
         authenticate }  from 'dispatch/index';
 
 import  * as action  from 'actions/actionCreators';
-import { closeModals}   from  '../modal/helpers';
+import { closeModals}   from  'containers/modal/helpers';
 import {NavigationBarBottom} from 'templates/navBar';
 import { AlertComponent } from 'templates/partials';
 import * as checkType from 'helpers/check-types'; 
@@ -111,39 +111,31 @@ export function MainAppHoc(Component) {
             //console.log(state, props)
             return null
         }
-
         
         componentWillUnmount() {
             this.unsubscribe();
             this.isMounted = false;
-            
-        }
+            window.removeEventListener('onpopstate', this._closeModal)
+        };
 
         componentDidUpdate(prevProps, nextProps) {
-        }
+        };
+
+        _closeModal(){
+            window.addEventListener('onpopstate', this._closeModal)            
+        };
                 
         componentDidMount() {
             this.isMounted = true;
             this.onStoreUpdate() //Subscribe on store change 
-             
             let { entities } = this.props;
-            
-            window.onpopstate = (event) => {
-                closeModals();
-            }
-
-            window.addEventListener("beforeunload",(event)=>{
-                let { modal } = entities;
-        
-            });
-
+            window.addEventListener('onpopstate', this._closeModal)
            
             let currentUser = this._SetCurrentUser();
-                              
             if (!currentUser) {
                 store.dispatch<any>(getCurrentUser());
             }
-        }
+        };
         
         onStoreUpdate = () => {
             if (!this.isMounted) return;
@@ -254,7 +246,7 @@ export function MainAppHoc(Component) {
                        
             if (modal['created'] === true) {
                 delete modal['created'];
-                this.closeModal(modal)
+                closeModals(true)
                 displaySuccessMessage(this, modal['successMessage']);
                 let data = modal['data']
                                
@@ -264,22 +256,26 @@ export function MainAppHoc(Component) {
                     post     && this.handleNewPost(modal);
                     question && this.handleNewQuestion(modal);
                     answer   && this.handleNewAnswer(modal);
-                }, 100);
+                }, 500);
             }
 
         }
 
-        handleUpdateSuccess(modal){
+        handleUpdateSuccess(modal:object){
             if (!modal) return;
             if (!Object.keys(modal).length) return;
-                       
-            if (modal.updated === true) {
-                delete modal.updated;
-                this.closeModal(modal)
-                displaySuccessMessage(this, modal.successMessage);
-                let {data, objName, modalName} = modal;
-                             
-                objName   === 'UserProfile'  && this.handleUserProfileUpdate(data.user);
+                                  
+            if (modal['updated'] === true) {
+                delete modal['updated'];
+
+                closeModals(true)
+                displaySuccessMessage(this, modal['successMessage']);
+
+                let data:object = modal['data'];
+                            
+                if(data['objName']   === 'UserProfile' && data){
+                    this.handleUserProfileUpdate(data['user']);
+                }
             }
             
         };
@@ -290,33 +286,50 @@ export function MainAppHoc(Component) {
 
         };
 
-        handleNewQuestion =(params)=> {
-            let data = params.data;
-            let { question } = data
-            let path   = question && `/question/${question.slug}/${question.id}/`;
-            let state : {question, recentlyCreated : true}
-         
-            question && history.push(path, state);
+        handleNewQuestion =(params:object)=> {
+            let data:object = params['data'];
+            let question:object = data && data['question'];
+
+            if (question) {
+                let path:string = `/question/${question['slug']}/${question['id']}/`;
+                let state:object = {
+                    question,
+                    recentlyCreated : true
+                };
+                
+                history.push(path, state);
+            }
         };
 
         handleNewPost =(params:object)=> {
-            let data       = params['data'];
-            let {post}     = data
-            let path   = post && `/post/${post.title}/${post.id}/`;
-            let state : {post, recentlyCreated : true}
-         
-            post && history.push(path, state);
+            let data:object = params['data'];
+            let post:object = data && data['post'];
 
+            if (post) {
+                let path:string = `/post/${post['slug']}/${post['id']}/`;
+                let state:object = {
+                    post, 
+                    recentlyCreated : true
+                }
+                history.push(path, state);
+            }
         };
 
         handleNewAnswer =(params:object)=> {
-            let data     = params['data'];
-            let question = params['obj'];
-            let {answer} = data;
-            let path   = answer && `/answer/${answer.id}/`;
-            let state : {answer, question, recentlyCreated : true}
+            let data:object     = params['data'];
+            let question:object = params['obj'];
+            let answer:object = data && data['answer'];
+
+            if (answer) {
+                let path:string =  `/answer/${answer['id']}/`;
+                let state:object = {
+                    answer, 
+                    question,
+                    recentlyCreated : true
+                };
          
-            answer && history.push(path, state);
+                history.push(path, state);
+            }
         };
 
         clearItemFromStore =(item)=> {
@@ -332,7 +345,8 @@ export function MainAppHoc(Component) {
                 Object.keys(entitie).forEach(k => {
 
                     if (k === item && entities[key][k]) {
-                        console.log(k, item,entities[key[k]] )
+                        console.log(k, item)
+                        console.log(cacheEntities[key][k], entities[key[k]])
                         delete cacheEntities[key][k];
                         delete entities[key][k];
                     }
@@ -385,6 +399,7 @@ export function MainAppHoc(Component) {
 
             if (isLoggedOut || isTokenRefresh) {
                 this.clearItemFromStore("user");
+                this.clearItemFromStore('loginAuth')
             }
 
             if (isLoggedOut) {
@@ -536,7 +551,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         getQuestionList      : (id)         => dispatch(getQuestionList(id)),
         getPostList          : (id)         => dispatch(getPostList(id)),
         getQuestion          : (id)         => dispatch(getQuestion(id)),
-        getPost              : (id)         => dispatch(getPost(id)),
+        getPost              : (id:number)  => dispatch(getPost(id)),
         getCommentList       : (comment)    => dispatch(getCommentList(comment)),
         getReplyList         : (props)      => dispatch(getReplyList(props)),
         getReplyChildrenList : (reply)      => dispatch(getReplyChildrenList(reply)),

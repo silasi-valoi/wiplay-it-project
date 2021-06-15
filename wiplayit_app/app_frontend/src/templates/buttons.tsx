@@ -365,7 +365,7 @@ export const OpenEditorBtn = props => {
         return `${Edit}${objName}`;
     };
     linkName   = linkName || getButtonName();
-    
+        
     return(
         <button className={`modal-editor-btn ${className}`}
                 onClick={()=> OpenModalEditor(props)}>
@@ -394,9 +394,12 @@ const OpenModalEditor=(props)=>{
         modalName : 'editor',
         isModal   : true, 
     };
+   
+    //Preventing html element from being send to a redux actions
+     delete modalProps.children
 
     if (optionsModal && optionsModal.modalIsOpen) {
-        window.history.back();
+        closeModals(true)
 
         return setTimeout(()=> {
             Modal(modalProps) ; 

@@ -175,7 +175,7 @@ export default  class AppEditor extends Component{
                                                              
                 if (modal && modal['editor']) {
                     modal = modal['editor']
-                    this.setState({ submitting : modal.submitting });
+                    this.setState({submitting : modal.submitting});
 
                     if (modal.error) {
                                      
@@ -201,21 +201,21 @@ export default  class AppEditor extends Component{
         this.unsubscribe();
     };
 
+    addEventListeners(){
+        let editorsBoxElem    = document.getElementById('editors-box');
+        editorsBoxElem.addEventListener('scroll', this.handleEditorScroll)
+        window.addEventListener('resize', this.handleResize)
+    };
+
     
     componentDidUpdate(prevProps, nextProps) {
-        
-       //console.log()
+    
     }
 
     componentDidMount(){
         this.isMounted = true;
         this.onEditorUpdate();
-                
-        let editorsBoxElem    = document.getElementById('editors-box');
-        
-        editorsBoxElem.addEventListener('scroll', this.handleEditorScroll)
-
-        window.addEventListener('resize', this.handleResize)
+        this.addEventListeners();
         
         let isPut:boolean = this.props['isPut'];
         let objName:string = this.props['objName'];
@@ -390,9 +390,6 @@ export default  class AppEditor extends Component{
         this.setState({editorState, onLinkInput:false});
     };
 
-    sendMediaContent(){}
-
-
     getFormData = () =>{
         let objName = this.props['objName'];
         let form    =  this.state['form'];
@@ -468,15 +465,12 @@ export default  class AppEditor extends Component{
     }
 
     handleFocus =()=> {
-       
         this.setState({editorIsFocused : true, onFocus:true});
-        console.log('Handle Focus', this.state)
         this['editor'].focus();
     }
 
     handleBlur =()=> {
         this.setState({editorIsFocused : false});
-        console.log('Handle Blur', this.state)
     }
 
     handleResize =(event)=> {
@@ -505,7 +499,7 @@ export default  class AppEditor extends Component{
         if (!editorsBoxElem) return;
     }
 
-    handleScroll=()=>{
+    handleScroll=(e):React.UIEventHandler<HTMLDivElement> => {
         if (!this.matchDesktopMedia()) return;
         
         let editorsBoxElem = document.getElementById('editors-box');
@@ -522,18 +516,19 @@ export default  class AppEditor extends Component{
             
         if (_contentHeight >= _overlay) {
             this.setScrollHeight(editorsBoxElem.clientHeight);
+            return e;
         }
 
-    }
+        return e;
+    };
    
-
-    setScrollHeight =(scrollHeight=undefined, override=false)=> {
+    setScrollHeight =(scrollHeight=undefined, override=false):void => {
         if (this.state['onScroolStyles'] && !override) return
                 
         let onScroolStyles = {
                 height : `${scrollHeight}px`,
              }; 
-        this.setState({onScroolStyles});
+       return this.setState({onScroolStyles});
     }
 
     matchSmallScreenMedia(){
@@ -571,7 +566,8 @@ export default  class AppEditor extends Component{
             self: this,
             ...this.state,
         } 
-    }
+    };
+
     scroolIcon =(e)=>{
         console.log(e)
     }
@@ -583,11 +579,12 @@ export default  class AppEditor extends Component{
 
         let showAlertMessageStiles = props['hasErrors']?{ display : 'block'}:
                                                      { display : 'none' };
-        //onScroll={this.handleScroll()}
-
+        
         return (
-            <div className="editor-container" id="editor-container"
-                >
+            <div 
+                className="editor-container" 
+                id="editor-container" 
+                onScroll={(event) => this.handleScroll(event)}>
                 <fieldset style={onSubmitStyles} 
                       disabled={props['submitting']} >
                     <EditorCommponent {...props}/>
@@ -688,6 +685,7 @@ const PureDraftEditor =(props)=>{
     return(
         <div className="editors-page">
             <div style={onScroolStyles}
+
                  onClick={(e)=> handleFocus(e)}
                  id="editors-box" 
                  className="editors-box pure-draft-editor">
@@ -697,3 +695,11 @@ const PureDraftEditor =(props)=>{
     )
 }
 
+/*
+Type 'object' is not assignable to type 'UIEventHandler<HTMLDivElement>'.
+  Type '{}' provides no match for the signature 
+  '(event: UIEvent<HTMLDivElement, UIEvent>): void'.
+
+(JSX attribute)
+ React.DOMAttributes<HTMLDivElement>.onScroll?: React.UIEventHandler<HTMLDivElement>
+*/

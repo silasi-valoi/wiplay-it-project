@@ -53,7 +53,9 @@ export const AnswersComponent = props => {
 
     let usersById =  `answerUpVoters${answer.id}`;
     let apiUrl    =  api.getAnswerUpVotersListApi(answer.id);
-    let linkName  =  answer.upvotes > 1 && `${answer.upvotes} Upvoters` || `${answer.upvotes} Upvoter`;
+    let linkName  =  answer.upvotes > 1
+                     && `${answer.upvotes} Upvoters` 
+                     || `${answer.upvotes} Upvoter`;
    
     let state = {
           answer,
@@ -171,7 +173,6 @@ export const AnswersComponent = props => {
             </div>
             <div className="">
                <ButtonsBox {...btnsList}/>   
-               
             </div>
         </div>
     );       

@@ -30,7 +30,7 @@ const checkOnlineStatus = async () => {
 
 
 export function sendMessage(params:object):Function {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     let opts = {}
     const Api    = _GetApi(useToken,{timeout:120000});
     
@@ -67,7 +67,7 @@ export function sendMessage(params:object):Function {
 
                 }else if(error.request){
                     console.log(error.request)
-                    error = 'Looks like you lost connection, please try again.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.handleError(error));
                     dispatch(action.sendMessageError(error));
 
@@ -116,7 +116,7 @@ export function getAboutInfo(options?:object) {
                     dispatch(action.getAboutInfoError(error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getAboutInfoError(error));
 
                 }else{
@@ -129,7 +129,7 @@ export function getAboutInfo(options?:object) {
 
 
 export function getIndex(options?:object):Function {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken, {requestFor:'index'});
     
     if(!Api){
@@ -169,7 +169,7 @@ export function getIndex(options?:object):Function {
                     dispatch(action.getIndexError(error.detail));
                 }else if(error.request){
                     console.log(error.request)
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getIndexError(error));
                 }else{
                     console.log(error)
@@ -219,7 +219,7 @@ export function getUserList(props) {
                     dispatch(action.getUserListError(usersById, error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getUserListError(usersById, error));
 
                 }else{
@@ -232,7 +232,7 @@ export function getUserList(props) {
 
 
 
-export function getQuestionList(questionListById) {
+export function getQuestionList(questionListById:string) {
     let useToken:boolean = true;
     const Api  = _GetApi(useToken);  
     if(!Api){
@@ -264,7 +264,7 @@ export function getQuestionList(questionListById) {
                     dispatch(action.getQuestionListError(questionListById, error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getQuestionListError(questionListById, error));
 
                 }else{
@@ -278,9 +278,9 @@ export function getQuestionList(questionListById) {
 
 
 
-export function getPostList(postListById) {
+export function getPostList(postListById:string) {
 
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);  
 
     if(!Api){
@@ -311,7 +311,7 @@ export function getPostList(postListById) {
                     dispatch(action.getPostListError(postListById, error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getPostListError(postListById, error));
 
                 }else{
@@ -324,8 +324,8 @@ export function getPostList(postListById) {
 
 
 
-export function getQuestion(id) {
-    let useToken:boolean = false;
+export function getQuestion(id:number) {
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken); 
 
     if(!Api){
@@ -352,16 +352,19 @@ export function getQuestion(id) {
                     dispatch(action.getQuestionSuccess( questionById, response.data))
 
             }).catch(error => {
-                    console.log(error)
+                    
                 if (error.response) {
+                    console.log(error.response)
                     error = error.response.data;
                     dispatch(action.getQuestionError( questionById, error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    console.log(error.request)
+                    error = 'The server took to long to respond.';
                     dispatch(action.getQuestionError(questionById, error));
 
                 }else{
+                    error = 'Something wrong happened.';
                     dispatch(action.handleError());
                 }
             });
@@ -371,8 +374,8 @@ export function getQuestion(id) {
 
 
 
-export function getPost(id) {
-    let useToken:boolean = false;
+export function getPost(id:number) {
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);  
 
     if(!Api){
@@ -406,7 +409,7 @@ export function getPost(id) {
                     dispatch(action.getPostError(postById ,error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getPostError(postById ,error));
 
                 }else{
@@ -421,7 +424,7 @@ export function getPost(id) {
 
 
 export function getUserProfile(id:number, apiUrl?:string) {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);
     apiUrl    = !apiUrl && api.getProfileApi(id) || apiUrl;
     
@@ -458,7 +461,7 @@ export function getUserProfile(id:number, apiUrl?:string) {
       		        dispatch(action.getUserProfileError(profileById, error.detail));
 
                 }else if(error.request){
-                    error = 'Something wrong happened.';
+                    error = 'The server took to long to respond.';
                     dispatch(action.getUserProfileError(profileById, error));
 
                 }else{
@@ -469,35 +472,33 @@ export function getUserProfile(id:number, apiUrl?:string) {
     };
 };
 
-
-export function getCommentList(byId) {
+export function getCommentList(byId:string) {
     
     return dispatch => {
         dispatch(action.getCommentListPending(byId))
 	}
 };
 
-
-
-export function getReplyList(props) {
-   return dispatch => {
-      dispatch(action.getReplyListPending(props.actionType, props.byId ))
-   }
+export function getReplyList(params:object) {
+    return dispatch => {
+        dispatch(action.getReplyListPending(params['actionType'], params['byId']))
+    }
 };
 
-
-
-export function getReplyChildrenList(props) {
-    let {actionType, byId, apiUrl, children } = props;
+export function getReplyChildrenList(params:object) {
+    
+    let actionType = params['actionType'];
+    let byId:string = params['byId'];
+    let children = params['children'];
  
-    if (children && children.length) {
+    if (children && children['length']) {
         return dispatch => {
             dispatch(action.getReplyChildListPending(actionType, byId));
             dispatch(action.getReplyChildListSuccess(actionType, byId, children));
         }
         
     }
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api    = _GetApi(useToken);  
 
     if(!Api){
@@ -508,7 +509,7 @@ export function getReplyChildrenList(props) {
 
     return dispatch => {
         dispatch(action.getReplyChildListPending(actionType, byId))
-	    Api.get(apiUrl)
+	    Api.get(params['apiUrl'])
         .then(response =>{
             dispatch(action.getReplyChildListSuccess(actionType, byId, response.data))
         })
@@ -548,24 +549,21 @@ export function getCurrentUser():Function {
 	
 };
 
-const UserIsConfirmed =(currentUser)=> {
-    return currentUser && currentUser.is_confirmed;
+const UserIsConfirmed =(currentUser:object)=> {
+    return currentUser && currentUser['is_confirmed'];
 
 }
 
-export const Delete = (params)=>{
-    let apiUrl = params.apiUrl;
+export const Delete = (params:object)=>{
+    let apiUrl = params['apiUrl'];
     const Api  = _GetApi(true); 
-    if (!Api) {
-        return dispatch =>{ dispatch(action.handleError()) };
-    }
-
+   
     return dispatch => {
         
         Api.delete(apiUrl, {})
             .then(response => {
                 console.log(response, params) 
-                let bookmarks = removeBookmark(params.obj, params.bookmarkType)
+                let bookmarks = removeBookmark(params['obj'], params['bookmarkType'])
          
                 dispatch(action.getIndexSuccess(bookmarks))
                 
@@ -587,14 +585,14 @@ export const Delete = (params)=>{
     };
 }; 
 
-const removeBookmark =(bookmarkObj, bookmarkType)=>{
+const removeBookmark =(data:object, bookmarkType:string)=>{
     let cache = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
     let index = cache?.index
     
     let bookmarks = index?.bookmarks || []
     let bookmarksCache = bookmarks[bookmarkType] || []
     bookmarks[bookmarkType] = bookmarksCache.filter((bookmark)=> {
-                                     return bookmark.id !== bookmarkObj.id;
+                                     return bookmark.id !== data['id'];
                                     })
     
     index['bookmarks'] = bookmarks
@@ -603,20 +601,21 @@ const removeBookmark =(bookmarkObj, bookmarkType)=>{
     return index
 }; 
 
-export  function  handleSubmit(props) {
+export  function  handleSubmit(params:object) {
     
     return async dispatch => {
         let online = await checkOnlineStatus() 
        
-        if (online && props['isPut']) {
-            sendUpdateResquest(props, dispatch);
+        if (online && params['isPut']) {
+           await sendUpdateResquest(params, dispatch);
 
-        }else if(online && props['isPost']){
+        }else if(online && params['isPost']){
 
-            sendPostRequest(props, dispatch);
+           await sendPostRequest(params, dispatch);
+           
         }else if(!online){
             let error:string = 'Your internet connection is offline'
-            dispatch(action.handleError(error));
+           await dispatch(action.handleError(error));
         }  
     }          
 
@@ -635,42 +634,34 @@ function sendPostRequest(params:object, dispatch:Function){
         byId: params['byId'] || "newObject", 
     };
         
-    isModal && dispatch(action.ModalSubmitPending(modalName))
-    !isModal && dispatch(action.createActionPending(createProps ))
+    isModal && dispatch(action.ModalSubmitPending(modalName));
+    dispatch(action.createActionPending(createProps));
 
     Api.post(params['apiUrl'], params['formData']).then(response => {
-        console.log(response)
         createProps['data'] = prepPayLoad(objName, response.data); 
-        params['isModal'] && dispatch(action.ModalSubmitSuccess(createProps))
+        createProps['successMessage'] = BuildAlertMessage(createProps);
+
+        isModal && dispatch(action.ModalSubmitSuccess(createProps));
         dispatch(action.createActionSuccess(createProps));
-                            
-        let alertMessage = {
-            textMessage : BuildAlertMessage(createProps),
-            messageType : 'success'
-        }
-        isModal && dispatch(action.HandleAlertMessage(alertMessage))
-              
+                 
     }).catch(error => {
                                 
         if (error.response && error.response.data) {
-            console.log(error)
             createProps['error'] = error.response.data;
             isModal  && dispatch(action.ModalSubmitError(createProps))
-            !isModal && dispatch(action.createActionError(createProps));
+            dispatch(action.createActionError(createProps));
               
         }else if(error.request){
-            console.log(error.request)
-            error = 'Something wrong happened.';
+            error = 'The server took to long to respond.';
             createProps['error'] = error;
             isModal && dispatch(action.handleError(error));
                     
         }else{
-            console.log(error)
             dispatch(action.handleError());
             createProps['error'] = 'Something wrong happened.'
         }
 
-        !isModal && dispatch(action.createActionError(error));
+        dispatch(action.createActionError(error));
         isModal && dispatch(action.ModalSubmitError(createProps))
     });
     
@@ -690,18 +681,12 @@ function sendUpdateResquest(params:object, dispatch:Function){
     }
      
     Api.put(params['apiUrl'], formData).then(response => {
-                
         updateProps['data'] = prepPayLoad(objName, response.data);
+        updateProps['successMessage'] = BuildAlertMessage(updateProps)
+
         isModal && dispatch(action.ModalSubmitSuccess(updateProps));
         dispatch(action.updateActionSuccess(updateProps));
-
-        let alertMessage:object = {
-            textMessage : BuildAlertMessage(updateProps),
-            messageType : 'success'
-        }
-
-        isModal && dispatch(action.HandleAlertMessage(alertMessage))
-            
+       
     }).catch(error => {
         if (error.response) {
             console.log(error.response)
@@ -709,21 +694,19 @@ function sendUpdateResquest(params:object, dispatch:Function){
             updateProps['error'] = error.detail;
 
             isModal  && dispatch(action.ModalSubmitError(updateProps));
-            !isModal && dispatch(action.updateActionError(updateProps));
+            dispatch(action.updateActionError(updateProps));
 
         }else if(error.request){
-            console.log(error.request)
-                    
-            error = 'Something wrong happened.';
+            error = 'The server took to long to respond.';
             updateProps['error'] = error;
-            !isModal && dispatch(action.updateActionError(updateProps));
+            dispatch(action.updateActionError(updateProps));
             isModal && dispatch(action.ModalSubmitError(updateProps));
 
-            !isModal && dispatch(action.handleError(error));
+            dispatch(action.handleError(error));
 
         }else{
             console.log(error)
-            !isModal && dispatch(action.handleError());
+            dispatch(action.handleError());
             updateProps['error'] = 'Something wrong happened.'
             isModal && dispatch(action.ModalSubmitError(updateProps));
         }
@@ -831,7 +814,7 @@ export function authenticate(params:object):Function {
                 }
                 else if (error.request)  {
                     console.log(error.request)
-                    _error = 'Something wrong happened. Please try again';
+                    error = 'The server took to long to respond.';
                 
                     dispatch(
                         action.authenticationError(
@@ -990,6 +973,7 @@ export function getAdmin():Function {
 
 
 const prepPayLoad = (objName:string, data:object):object =>{
+    
 	switch(objName){
         case 'Question':
             return {question : data}
@@ -1026,13 +1010,13 @@ const BuildAlertMessage = (params:object):string =>{
     const isUpdating:boolean = params['isUpdating'] ;
 
     let action = isCreating && 'created' || isUpdating && 'updated';
-    let alertMessage = `${objName} successfully ${action}`
+    let alertMessage = `Your ${objName} has successfully been ${action}`
 
     if(objName === 'AnswerBookmark'){
-        alertMessage = 'Answer successfully added to bookmarks'
+        alertMessage = 'Answer successfully added to your bookmarks'
     }
     else if(objName === 'PostBookmark'){
-        alertMessage = 'Post successfully added to bookmarks'
+        alertMessage = 'Post successfully added to your bookmarks'
     }
 
    return alertMessage;

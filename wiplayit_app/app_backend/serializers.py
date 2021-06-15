@@ -199,15 +199,16 @@ class QuestionSerializer(BaseQuestionSerializer):
 	answer_count      =  serializers.SerializerMethodField()
 	
 	def get_user_is_following(self, obj):
+		self.update_serializer_obj_perms('question_perms')
 		perms = self.get_obj_permissions('followers_perms')
+		
 		if self.current_user().is_authenticated:
 			return has_perm(self.current_user(), perms, obj)
 
 		return False
 		
-		
-	
 	def get_user_has_answer(self, obj):
+
 		if self.current_user().is_authenticated:
 			return obj.answers.filter(author=self.current_user()).exists()
 		return 	False
@@ -329,7 +330,7 @@ class IndexSerializer(BaseSerializer):
 		}
 	
 	def get_questions(self, obj):
-		questions = Question.objects.all()
+		questions = Question.objects.exclude(author=self.current_user())
 		self.update_serializer_obj_perms('question_perms')		       
 		return QuestionSerializer(questions, context=self.context, many=True).data
 		

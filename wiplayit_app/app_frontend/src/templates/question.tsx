@@ -27,8 +27,6 @@ export const QuestionComponent = props => {
           currentUser, 
           isAuthenticated}    = props;
 
-
-
     let optionsBtnStyles = {
         fontSize   : '8px',
         background : 'white',
@@ -43,14 +41,11 @@ export const QuestionComponent = props => {
         usersIsFor : 'questionFollowers', 
     }
 
-    
-
     let getUserAnswer = ()=>{
             let questionEntitie  = props.entities.question;
             questionEntitie  = questionEntitie[questionById];
             return questionEntitie?.userAnswer;
     }
-
 
     let usersById =  question && `questionFollowers${question.id}`;
     let apiUrl    = question && api.getQuestionFollowersListApi(question.id);
@@ -82,7 +77,6 @@ export const QuestionComponent = props => {
         if (question.user_has_answer) {
             return `answers${question.id}`
         }
-
         return `newAnswers${question.id}`
     }
 
@@ -139,7 +133,7 @@ export const QuestionComponent = props => {
         linkPath: `/question/${question.slug}/${question.id}/`,
         state:{question},
     }
-   
+  
     return(
         <div key={question.id}>
             <div className="question-contents">

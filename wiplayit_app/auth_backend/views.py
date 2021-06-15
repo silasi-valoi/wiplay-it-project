@@ -133,6 +133,14 @@ class CustomRegisterView(RegisterView):
 class CustomLoginView(LoginView):
 	serializer_class = CustomLoginSerializer
 
+	def process_login(self):
+		django_login(
+        	self.request,
+        	self.user,
+        	backend='django.contrib.auth.backends.ModelBackend'
+        )
+		
+
 	def get_response(self):
 		if getattr(settings, 'REST_USE_JWT', False):
 			response_data = jwt_response_payload_handler(self.token, self.user, self.request)

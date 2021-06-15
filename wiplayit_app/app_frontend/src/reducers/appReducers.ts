@@ -4,31 +4,33 @@ import  * as types  from 'actions/types';
 
 const helper   = new Helper();
 
-const updateStateEntyties = (
-         stateEntintieKey:string, params:object, state:object ):object => {
-            const byId:string = params['byId'];
-            const payLoad:object = params['payLoad'];
-            let oldState:object = state;
-            let newState:object = {};
-            let stateEntintie:object = oldState[stateEntintieKey];
+const updateStateEntyties = (stateEntintieKey:string, 
+                             params:object, 
+                             state:object ):object => {
+
+    const byId:string = params['byId'];
+    const payLoad:object = params['payLoad'];
+    let oldState:object = state;
+    let newState:object = {};
+    let stateEntintie:object = oldState[stateEntintieKey];
                                       
-            if (stateEntintie && byId) {
-                        
-                if(stateEntintie[byId]){
-                    stateEntintie[byId] = {...stateEntintie[byId], ...payLoad};
+    if (stateEntintie && byId) {
+                      
+        if(stateEntintie[byId]){
+            stateEntintie[byId] = {...stateEntintie[byId], ...payLoad};
                     
-                }else {
-                    let newEntitie = CreateNewEntities(params);
-                    stateEntintie = {...stateEntintie, ...newEntitie}
-                }
+        }else {
+            let newEntitie = CreateNewEntities(params);
+            stateEntintie = {...stateEntintie, ...newEntitie}
+        }
 
-            }else{
-                stateEntintie = {...stateEntintie,...payLoad}
-            }
+    }else{
+        stateEntintie = {...stateEntintie,...payLoad}
+    }
 
-            newState[stateEntintieKey] =  stateEntintie;
-            return {...oldState, ...newState};
-    };
+    newState[stateEntintieKey] =  stateEntintie;
+    return {...oldState, ...newState};
+};
 
 
 const CreateNewEntities = (action:object):object =>{

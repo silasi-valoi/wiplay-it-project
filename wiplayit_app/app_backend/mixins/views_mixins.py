@@ -1,4 +1,4 @@
-
+from rest_framework.permissions import AllowAny
 from rest_framework import  status
 from rest_framework.response import Response
 from guardian.shortcuts import assign_perm, remove_perm
@@ -116,8 +116,8 @@ class UpdateObjectMixin(BaseMixin):
 		data   = dict()
 		request = self.request
 
-		followings_perms = self.permissions.get('followings_perms',None)		
-		followers_perms = self.permissions.get('followers_perms',None)
+		followings_perms = self.permissions.get('followings_perms', None)		
+		followers_perms = self.permissions.get('followers_perms', None)
 		user_is_following = has_perm(request.user, followers_perms, instance)
 
 		if  hasattr(self, 'is_user'):
@@ -148,7 +148,6 @@ class UpdateObjectMixin(BaseMixin):
 			profile['followers']  = instance.profile.followers
 			data['profile'] = profile
 			return data
-
 		
 		if user_is_following:
 			self.unfollow(instance)
@@ -157,9 +156,7 @@ class UpdateObjectMixin(BaseMixin):
 		else:
 			self.follow(instance)
 			self.assign_perm(followers_perms, instance)
-			
-		
-				
+						
 		data['followers']  = instance.followers
 		return data
 		
@@ -298,7 +295,7 @@ class CreateMixin(BaseMixin):
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 		          
 class RetrieveMixin(BaseMixin):
-	pass
+	permission_classes = (AllowAny,)
 	
 	
 	
