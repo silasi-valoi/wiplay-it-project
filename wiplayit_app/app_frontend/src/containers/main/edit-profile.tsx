@@ -526,10 +526,9 @@ export const NavBarTitle = props  => (
 
 
 export class DropImage extends React.Component {
-    public isMounted:boolean = false;
+    private isFullyMounted:boolean = false;
     private subscribe;
     private unsubscribe;
-
  
     constructor(props) {
         super(props);
@@ -542,6 +541,14 @@ export class DropImage extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
+    }
+
+    public get isMounted() {
+        return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+        this.isFullyMounted = value;
     }
 
     componentDidMount(){

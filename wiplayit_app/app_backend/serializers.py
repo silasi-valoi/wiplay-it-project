@@ -330,7 +330,11 @@ class IndexSerializer(BaseSerializer):
 		}
 	
 	def get_questions(self, obj):
-		questions = Question.objects.exclude(author=self.current_user())
+		if self.current_user().is_authenticated:
+			questions = Question.objects.exclude(author=self.current_user())
+		else:
+			questions = Question.objects.all()[:5]
+
 		self.update_serializer_obj_perms('question_perms')		       
 		return QuestionSerializer(questions, context=self.context, many=True).data
 		
@@ -338,14 +342,16 @@ class IndexSerializer(BaseSerializer):
 	def get_answers(self, obj):
 		answers = Answer.objects.all()
 		self.update_serializer_obj_perms('answer_perms')
+		
 		return AnswerReadSerializer(answers, context=self.context, many=True).data
 	
 	
 	def get_posts(self, obj):
-		if not self.current_user().is_authenticated: 
-			return []
+		if self.current_user().is_authenticated: 
+			posts = Post.objects.exclude(author=self.current_user())
+		else:
+			posts = Post.objects.all()[:5]
 
-		posts = Post.objects.exclude(author=self.current_user())
 		self.update_serializer_obj_perms('post_perms')
 
 		return PostReadSerializer(posts, context=self.context, many=True).data

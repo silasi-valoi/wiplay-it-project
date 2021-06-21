@@ -43,7 +43,7 @@ export const createActionError = (params:object):object => {
 };
 
 export const updateActionPending = (params:object):object => {
-    console.log(params, 'PENDING')
+    
     return {
         type : params['actionType'].PENDING,
         byId : params['byId'],
@@ -55,8 +55,7 @@ export const updateActionPending = (params:object):object => {
 };
 
 export const updateActionSuccess = (params:object): object => {
-    console.log(params, 'SUCCESS')
-    
+        
     return{
         type : params['actionType'].SUCCESS,
         byId: params['byId'],
@@ -69,8 +68,7 @@ export const updateActionSuccess = (params:object): object => {
 };
 
 export const updateActionError = (params:object):object => {
-    console.log(params, 'ERROR')
-       
+           
     return {
         type : params['actionType'].ERROR,
         byId : params['byId'],
@@ -98,8 +96,7 @@ export const ModalSubmitPending = (modalName:string):object => ({
 });
 
 export const ModalSubmitSuccess = (params:object):object => {
-    console.log(params, 'ModalSubmitSuccess')
-          
+              
     return{
         type : "MODAL_SUBMIT_SUCESS",
         byId : params['modalName'],

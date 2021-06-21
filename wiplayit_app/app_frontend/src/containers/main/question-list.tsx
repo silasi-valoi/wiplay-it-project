@@ -52,7 +52,7 @@ class  QuestionListPage extends Component  {
             let questions   = entities['questions'];
 
             let questionListById  = this.state['questionListById'];
-             questions           = questions && questions[questionListById]
+             questions = questions && questions[questionListById]
                      
             //console.log(errors) 
             if (this.isMounted && questions){
@@ -83,10 +83,10 @@ class  QuestionListPage extends Component  {
         let questionList = questions && questions.questionList;
 
         if (questionList) {
-            console.log(questionList) 
-            
             store.dispatch<any>(action.getQuestionListPending(questionListById));
-            store.dispatch<any>(action.getQuestionListSuccess( questionListById, questionList));
+            store.dispatch<any>(
+                    action.getQuestionListSuccess( questionListById, questionList)
+                    );
             return
         }
       
@@ -113,7 +113,6 @@ class  QuestionListPage extends Component  {
 
     render() {
         let props = this.getProps();
-        //let style =  {border:'1px solid red',padding:'60px 0 0 0', margin:'100px 0 0 0'}
         var { questions }  = props['entities'];
         let questionListById = this.state['questionListById']; 
         questions  = questions[questionListById];
@@ -175,7 +174,7 @@ const Questions = props => {
     return (
         <div className="question-list-page" id="question-list-page">
             { questionList && questionList.length &&
-                IterateQuestionList(props, questionList)
+                QuestionList(props, questionList)
 
                 ||
                 <div className="">
@@ -195,7 +194,7 @@ const Questions = props => {
 }
 
 
-const IterateQuestionList = (props, questionList:[])=>{
+const QuestionList = (props, questionList:[])=>{
    
     return questionList.map((question:object, index:number)  => {
                        

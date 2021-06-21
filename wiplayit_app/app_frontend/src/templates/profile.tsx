@@ -35,9 +35,8 @@ export const ProfileComponent = props => {
         userProfile,
         profileById} = props;
     
+    userProfile = userProfile && userProfile.user;
     if (!userProfile) return null;
-
-    userProfile = userProfile.user;
          
     let profile  = userProfile.profile;
     let apiUrl   = api.getQuestionFollowersListApi(userProfile?.id);
@@ -117,10 +116,9 @@ export const ProfileComponent = props => {
             ...props
         };
     
+    var followers_text = profile && profile.followers > 1? 'Followers' : 'Follower';  
 
-    var followers_text =  profile && profile.followers > 1? 'Followers' : 'Follower';  
-
-    let UnfollowOrFollowUserBtn =  <FollowUserBtn {...btnsProps}/>;
+    let UnfollowOrFollowUserBtn = <FollowUserBtn {...btnsProps}/>;
    
     let UserList = MatchMediaHOC(UserProfileFollowingList, '(min-width: 980px)')
       
@@ -822,60 +820,19 @@ export const UserActivitiesBtns = props => {
 
 
 
-
+/*
 export const UserComponentSmall = props => {
     let {obj, currentUser} = props;
     let author = obj.author;
     let pathToProfile =  `/profile/${author.id}/${author.slug}/`;
     let state = {currentUser, userProfile:author}
-    let currentdate = new Date();
-
-    let timeCreated = obj && new Date(obj.date_created);
-    let timeStamp = timeCreated && timeCreated.getTime();
-
+   
+    let timeStamp = obj.date_created;
     const getTimeState = new GetTimeStamp({timeStamp});
-    let secondDiff     = parseInt(`${getTimeState.seconds()}`)  
-    let menDiff        = parseInt(`${getTimeState.menutes()}`);
-    let hourDiff       = parseInt(`${getTimeState.hours()}`);
-    let dayDiff        = parseInt(`${getTimeState.days()}`);
-    let weekDiff       = parseInt(`${getTimeState.weeks()}`);
+    let dateCreated = getTimeState.timeSince();
+    console.log(timeStamp , dateCreated)
+    
   
-    let dateCreated;
-    let dateOptions;
-
-    const getLocaleDateString = (dateOptions:object)=>{
-       return timeCreated.toLocaleDateString('en-GB', dateOptions)
-    }
-
-    let month = getLocaleDateString({month : 'short'}) 
-    let day   = getLocaleDateString({day   : 'numeric'})
-    let year  = getLocaleDateString({year  : 'numeric'})
-    
-    if (secondDiff <= 59) {
-        dateCreated = `Now`;
-
-    }else if (menDiff <= 59) {
-        dateCreated = `${menDiff} menutes ago`
-
-    }else if(hourDiff <= 23){
-        dateCreated = `${hourDiff} hours ago`
-        
-    }else if(dayDiff <= 6){
-        dateOptions = {'weekday':'short'}
-        dateCreated = getLocaleDateString(dateOptions)
-
-    }else{
-        let yearCreated = timeCreated.getFullYear();
-        let currentYear = currentdate.getFullYear()
-    
-        if (yearCreated === currentYear) {
-            dateCreated = month + ' ' + day; 
-        }else{
-            dateCreated =  month + ' ' + day + ', ' + year;
-
-        }
-    }
-
     const linkProps = {
         linkPath:`/profile/${author.id}/${author.slug}/`,
         state:{user:author},
@@ -909,7 +866,7 @@ export const UserComponentSmall = props => {
 }; 
 
 
-
+*/
 
 
 

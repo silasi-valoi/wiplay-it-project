@@ -119,12 +119,13 @@ class UpdateObjectMixin(BaseMixin):
 		followings_perms = self.permissions.get('followings_perms', None)		
 		followers_perms = self.permissions.get('followers_perms', None)
 		user_is_following = has_perm(request.user, followers_perms, instance)
+		print(user_is_following)
+		print(hasattr(self, 'is_user'))
 
 		if  hasattr(self, 'is_user'):
 			profile    = dict()
 			
 			if user_is_following:
-				
 				request.user.profile = self.modify_current_user_followings_field(
 															instance.profile,
 															decrem=True
@@ -213,6 +214,7 @@ class UpdateObjectMixin(BaseMixin):
 		
 	def put(self, request, *args, **kwargs):
 	 	instance = self.get_object()
+	 	print(request.data)
 	 		 		 	
 	 	if  request.data.get("followers", False):
 	 		kwargs['data'] = self.update_followers_fields(instance)

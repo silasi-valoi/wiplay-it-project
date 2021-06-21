@@ -27,17 +27,32 @@ export const LinkButton = (props)=>{
     let styles = props['styles'];
 
     return(
-        <a style={styles} href={linkPath} onClick={(event) => pushToRouter(props, event) }>
+        <a style={styles}
+           href={linkPath}
+           onClick={(event) => pushToRouter(props, event) }>
             {props['children']}
         </a>
     );
+};
+
+export const ToggleItemsBtn = (props:object)=>{
+        let getItemsList:Function = props['getItemsList'];
+        let itemsNum:number = props['items']?.length;
+                
+    return(
+        <button type="button"
+                className="btn-sm"
+                onClick={()=> getItemsList(props['itemsById'])}>
+            {itemsNum || ''} {props['itemsName']}
+        </button>
+    )
 };
 
 export const FollowUserBtn = props => {
        
     let {currentUser,
          editObjProps,
-         editfollowersOrUpVoters } = props;
+         editFollowersOrUpVoters } = props;
 
     let obj = editObjProps?.obj;
     
@@ -52,7 +67,7 @@ export const FollowUserBtn = props => {
                 <button 
                     style={styles} type="button" 
                     className="btn-sm follow-user-btn"
-                    onClick={() => editfollowersOrUpVoters(editObjProps)}>  
+                    onClick={() => editFollowersOrUpVoters(editObjProps)}>  
                     
                     {btnText} {obj?.profile.followers }             
                 </button>
@@ -73,7 +88,7 @@ export const UnfollowUserBtn = props => {
     
     return(
         <button type="button"
-                onClick={() => props.editfollowersOrUpVoters(props.editObjProps)}
+                onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
                 className="unfollow-user">
             Follow 
         </button>
@@ -87,7 +102,7 @@ export const FollowQuestionBtn = props => {
     return(
         <button 
             type="button" 
-            onClick={ () => props.editfollowersOrUpVoters(props.editObjProps)}
+            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
             className="btn-sm follow-question-btn" >
 
             <Icon.Rss 
@@ -103,7 +118,7 @@ export const UnfollowQuestionBtn = props => {
 
     return(
         <button type="button"
-                onClick={() =>  props.editfollowersOrUpVoters(props.editObjProps)}
+                onClick={() =>  props.editFollowersOrUpVoters(props.editObjProps)}
                 className="btn-sm  follow-question-btn" >
             <Icon.Rss className="follow-btn" size={20}/> Following - {obj?.followers}
          </button>
@@ -115,7 +130,7 @@ export const UnfollowQuestionBtn = props => {
 export const UpVotePostBtn = props => (     
    
         <button  type="button" 
-            onClick={() => props.editfollowersOrUpVoters(props.editObjProps)}
+            onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
             className="btn-sm  upvote-answer" >
             Upvote <span className="fa fa-arrow-up"></span>
         </button>
@@ -127,7 +142,7 @@ export const DownVotePostBtn = props => (
       
     <button 
         type="button" 
-        onClick={() =>  props.editfollowersOrUpVoters(props.editObjProps)}
+        onClick={() =>  props.editFollowersOrUpVoters(props.editObjProps)}
         className="btn-sm icon-color upvote-answer" >
         Upvoted <span className="fa fa-arrow-up upvote-icon"></span>
     </button>
@@ -139,7 +154,7 @@ export const UpVoteAnswerBtn = props => (
       
         <button
             type="button"
-            onClick={() => props.editfollowersOrUpVoters(props.editObjProps)}
+            onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
                                           className="btn-sm  upvote-answer" >
             Upvote <span className="fa fa-arrow-up"></span>
         </button>
@@ -153,7 +168,7 @@ export const UpVoteAnswerBtn = props => (
 export const DownVoteAnswerBtn = props => (  
     <div>       
         <button type="button"
-            onClick={ () => props.editfollowersOrUpVoters(props.editObjProps)}
+            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
             className="btn-sm icon-color upvote-answer" >
             Upvoted <span className=" fa fa-arrow-up upvote-icon"></span>
         </button>
@@ -165,7 +180,7 @@ export const DownVoteAnswerBtn = props => (
 export const UpVoteCommentBtn = props => (     
     <div>    
         <button  type="button"
-            onClick={ () => props.editfollowersOrUpVoters(props.editObjProps)}
+            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
             className="btn-sm upvote-comment-btn" >
             Upvote 
         </button>
@@ -177,7 +192,7 @@ export const UpVoteCommentBtn = props => (
 export const DownVoteCommentBtn = props => (     
     <div>    
         <button  type="button" 
-            onClick={ () => props.editfollowersOrUpVoters(props.editObjProps)} 
+            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)} 
                       className="btn-sm upvote-comment-btn" >
          Upvoted 
         </button>
@@ -189,7 +204,7 @@ export const UpVoteReplyBtn = props => (
     <div>    
         <button 
             type="button"
-            onClick={ () => props.editfollowersOrUpVoters(props.editObjProps)}
+            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
             className="btn-sm upvote-reply-btn" >
             Upvote 
         </button>
@@ -202,7 +217,7 @@ export const DownVoteReplytBtn = props => (
     <div>    
         <button  
             type="button"
-            onClick={() => props.editfollowersOrUpVoters(props.editObjProps)} 
+            onClick={() => props.editFollowersOrUpVoters(props.editObjProps)} 
             className="btn-sm  icon-color upvote-comment" >
             Upvoted 
         </button>
@@ -229,7 +244,7 @@ export const QuestionOptsModalBtns = props => {
         <button type="button"
                 onClick={() => {
                     closeModals(true)
-                    props.editfollowersOrUpVoters(editObjProps)
+                    props.editFollowersOrUpVoters(editObjProps)
                 }}
                 className="btn-sm">
             <Icon.Rss className="options-menu-icon" size={20}/> 
@@ -435,7 +450,7 @@ export const  OptionModal = props => {
 
     return(
         <button className="btn-sm options-btn" onClick={()=> {  Modal(modalProps) }}>
-            <Icon.MoreHorizontal id="feather-more-horizontal" size={30}/>  
+            <Icon.MoreHorizontal id="feather-more-horizontal" size={22}/>  
         </button>
     )
 }

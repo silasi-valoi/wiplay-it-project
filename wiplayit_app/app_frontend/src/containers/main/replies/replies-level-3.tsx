@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import  AjaxLoader from 'templates/ajax-loader';
+import {AuthorAvatar} from 'templates/partials';
 import  * as action  from 'actions/actionCreators';
 import  * as types  from 'actions/types';
 import {store} from "store/index";
@@ -14,7 +15,7 @@ const api      = new Api();
 
 
 
-class ReplyGreatGrandChildBox extends Component {
+class RepliesLevelTree extends Component {
 
     constructor(props) {
         super(props);
@@ -107,7 +108,7 @@ class ReplyGreatGrandChildBox extends Component {
 };
 
 
-export default ReplyGreatGrandChildBox;
+export default RepliesLevelTree;
 
 
 
@@ -167,46 +168,35 @@ const ViewedReplies = props => {
 
 const Replies = (props:object, replyList:object[], isNewReplies?:boolean) => {
     const childParent:object = props['childParent'];
-    
-    let replyStyles = {
-            border     : 'px solid green',
-            margin     : '15px 22px 10px 75px'
-        };     
-
+   
     return(
         <div>
-            { replyList && replyList.map( (reply, index) => {
+            { replyList && replyList.map((reply, index) => {
                 let replyProps = {
                         reply,
                         byId : props['replyChildById'],
                         index,
                         newRepliesById: props['newChildRepliesById'],
-                        replyStyles,
-                        
+                };
+
+                const authorProps:object  = {
+                    author : reply['author'],
+                    data:reply,
                 };
 
                 let replyChildProps = {...props, reply}
-                //console.log(replyChildProps, childParent.id === reply.parent)
-
-
+               
                 return (
                     <div  key={index} >
-                        { childParent['id'] === reply['parent']?
-                            <div className="reply-great-grand-child-container">
-                                <div className="reply-great-grand-child-contents">
-                              
+                        {childParent['id'] === reply['parent'] &&
+                            <div className={`replies-level-${reply['level']}`}>
+                                <div  className="reply-contents">
+                                    <AuthorAvatar {...authorProps}/>
                                     { Reply( props, replyProps, isNewReplies) }
-
-                                    { reply['has_children']?
-                                        <ReplyGreatGrandChildBox {...replyChildProps}/>
-                                        :
-                                        ''
-                                    }
-                                   
+                                    
                                 </div>
+                                <RepliesLevelTree {...replyChildProps}/>
                             </div>
-                            :
-                            ""
                         } 
                     </div> 
                 ); 

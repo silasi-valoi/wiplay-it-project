@@ -41,16 +41,19 @@ class CommentsBox extends Component {
             
         var parent       = post   && post || answer && answer;
         let comments     = parent && parent.comments;
-        var commentsById = answer && `commentsAnswer${parent.id}` ||
-                           post && `commentsPost${parent.id}`;
+        
+        if(parent){
+            let commentsById = answer && `commentsAnswer${parent.id}`
+                              || post && `commentsPost${parent.id}`;
                            
-        let newCommentsById = answer && `newAnswerComments${parent.id}` 
-                                || post && `newPostComments${parent.id}`;
+            let newCommentsById = answer && `newAnswerComments${parent.id}` 
+                                  || post && `newPostComments${parent.id}`;
 
-        this.setState({commentsById, newCommentsById, parent});
-                           
-        if (comments && comments.length) {
-            store.dispatch<any>(action.getCommentLindData(commentsById, comments));
+            this.setState({commentsById, newCommentsById, parent});
+                                   
+            if (comments && comments.length) {
+                store.dispatch<any>(action.getCommentLindData(commentsById, comments));
+            }
         }
     };
 
@@ -76,7 +79,10 @@ class CommentsBox extends Component {
             
         
         return (
-            <div>
+            <div className="comment-page">
+                {newComments || oldComments &&
+                    <p className="comments-title">Comments</p>
+                }
                 <div>
                     { newComments?
                         <NewComments {...props}/>
@@ -101,40 +107,6 @@ class CommentsBox extends Component {
 export default CommentsBox;
 
 
-export const CommentsLink = props => {
-   var byId = props.commentsById;
-   var comments    = props.entities.comments;
-   comments = comments[byId]
-   let styles ={
-      border         : "px solid red",
-      fontSize       : "11px",
-      margin         : 0,
-      padding        : 0,
-      display        : 'flex',
-      listStyleType  : 'none', 
-   }
-  
-
-   let commentCountStyles ={
-      fontSize : "11px",
-      margin   : '10px',
-   }
-  
-   var linkData = comments.linkData;
-
-    return (
-     <div  onClick={ () => props.getCommentList(byId) } className="comments-link">
-        <Links {...linkData}/>
-         <ul style={styles}>
-            <li  style={commentCountStyles}>Click to View More Comments</li>
-            <li  style={commentCountStyles}>
-               {linkData.numOfComments}  Comments
-            </li>
-         </ul>
-     </div>
-   )
-}
-
 const NewComments = props => {
    let {entities, newCommentsById} = props;
    let comments = entities.comments[newCommentsById]; 
@@ -150,31 +122,39 @@ const NewComments = props => {
 
 
 const OldComments = props => {
-   let {entities, commentsById, parent} = props;
-   let comments = entities.comments[commentsById]; 
+    let {entities, commentsById, parent} = props;
+    let comments = entities.comments[commentsById]; 
+    let linkData = comments.linkData;
 
-   let commentList = comments.commentList 
+
+    let commentList = comments.commentList 
                    && comments.commentList.length 
                    && comments.commentList;
+     const commentProps:object = {
+        ...props, 
+        comment:linkData.comment,
+    }
 
-   return(
+    return(
         <div>
-            {comments.showLink?
-                <CommentsLink {...props}/>
-                :
+            {comments.showLink &&
+                <CommentsComponent {...commentProps}/>
+                ||
+
                 <div>
-                    { comments.isLoading?
+                    { comments.isLoading &&
                         <div className="spin-loader-box">
                             <AjaxLoader/>
                         </div>
-                        :
+
+                        ||
                         <div>
-                          { Comments(props, commentList)}
+                            {Comments(props, commentList)}
                         </div>
+                       
                     }
                 </div>
             }
-
         </div>
     )
 
@@ -188,20 +168,16 @@ const Comments = (props, commentList) => {
     return (
         <div>
             { commentList && commentList.map( (comment, index) => {
-                let commentProps = {comment, index};  
-                Object.assign(commentProps, props);
-                //console.log(commentProps)
-
+                let commentProps = {
+                        ...props,
+                        comment,
+                        index
+                    };  
+                              
                 return(
                     <div  key={index} >
-                        { parent.id === comment.answer || parent.id === comment.post?
-                            <div className="comment-container">
-                                <div className="comment-contents">
-                                    <CommentsComponent {...commentProps}/>
-                                </div>
-                            </div>  
-                            :
-                            ""
+                        {parent.id === comment.answer || parent.id === comment.post &&
+                            <CommentsComponent {...commentProps}/>
                         } 
                     </div>
                 )
@@ -213,24 +189,3 @@ const Comments = (props, commentList) => {
 
 
 
-
-
-export const Links = props => {
-   let storedState = JSON.parse(props.comment.comment);
-   const editorState = helper.convertFromRaw(storedState);
-     
-    return (
-        <div  className="comment-box" id="comment-box">
-            <div className="user-box">
-            
-            </div>
-    
-            <div className="comment">
-                <Editor
-                    blockRendererFn={pageMediaBlockRenderer}
-                    editorState={editorState} 
-                    readOnly={true} /> 
-            </div>
-        </div>
-    )  
-}

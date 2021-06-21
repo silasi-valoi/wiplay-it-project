@@ -115,21 +115,22 @@ export function MainAppHoc(Component) {
         componentWillUnmount() {
             this.unsubscribe();
             this.isMounted = false;
-            window.removeEventListener('onpopstate', this._closeModal)
+            
         };
 
         componentDidUpdate(prevProps, nextProps) {
         };
 
-        _closeModal(){
-            window.addEventListener('onpopstate', this._closeModal)            
-        };
+       
                 
         componentDidMount() {
             this.isMounted = true;
             this.onStoreUpdate() //Subscribe on store change 
             let { entities } = this.props;
-            window.addEventListener('onpopstate', this._closeModal)
+           
+            window.onpopstate = (event) => {
+                closeModals();
+            }
            
             let currentUser = this._SetCurrentUser();
             if (!currentUser) {
@@ -197,7 +198,8 @@ export function MainAppHoc(Component) {
         };
 
         handleAuth = (userAuth:object) =>{
-            this.setState({userAuth});  
+
+            userAuth && this.setState({userAuth});  
             this.confirmLogout(userAuth);
             this.confirmLogin(userAuth);
             this.handlePasswordChangeSuccess(userAuth);
@@ -439,7 +441,7 @@ export function MainAppHoc(Component) {
             window.location.reload();
         }
      
-        editfollowersOrUpVoters = (params:object) =>{
+        editFollowersOrUpVoters = (params:object) =>{
             let isAuthenticated:boolean = this.state.isAuthenticated;
 
             if(!isAuthenticated){
@@ -447,7 +449,7 @@ export function MainAppHoc(Component) {
             }
            
             this.setState({isUpdating:true})
-            params = this._getFormData(params);
+            params['formData'] = this._getFormData(params);
             this.props.submit(params); 
         };
 
@@ -474,19 +476,23 @@ export function MainAppHoc(Component) {
         _getFormData = (params:object) =>{
             let obj = params['obj'];
             let objName:string = params['objName'];
-
+           
             switch(objName){
                 case 'Question':
+                    let questionFollowers = obj.followers
+                    return helper.createFormData(
+                                            {followers : questionFollowers}
+                                        );
+                   
                 case 'UserProfile':
                 case 'UsersList':
-                    var followers = obj.followers || obj.profile && obj.profile.followers;
-                    params['formData'] = helper.createFormData({ followers });
-                    return params;
-
+                    let userFollowers = obj.profile.followers;
+                    return helper.createFormData(
+                                            {followers:userFollowers}
+                                        );
                 default:
-                    var upvotes       = obj.upvotes; 
-                    params['formData'] = helper.createFormData({upvotes});
-                    return params; 
+                    let upvotes  = obj.upvotes; 
+                    return helper.createFormData({upvotes});
             }
 
         };
@@ -497,7 +503,7 @@ export function MainAppHoc(Component) {
                 ...this.props,
                 logout                  : this.logout.bind(this),
                 loginUser               : this.loginUser.bind(this),
-                editfollowersOrUpVoters : this.editfollowersOrUpVoters.bind(this),
+                editFollowersOrUpVoters : this.editFollowersOrUpVoters.bind(this),
                 addBookmark             : this.addBookmark.bind(this),
                 reloadPage              : this.reloadPage.bind(this),
                 pushToRouter            : this.pushToRouter.bind(this),
@@ -552,7 +558,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         getPostList          : (id)         => dispatch(getPostList(id)),
         getQuestion          : (id)         => dispatch(getQuestion(id)),
         getPost              : (id:number)  => dispatch(getPost(id)),
-        getCommentList       : (comment)    => dispatch(getCommentList(comment)),
+        getCommentList       : (byId)    => dispatch(getCommentList(byId)),
         getReplyList         : (props)      => dispatch(getReplyList(props)),
         getReplyChildrenList : (reply)      => dispatch(getReplyChildrenList(reply)),
         submit               : (props )     => dispatch(handleSubmit(props)), 

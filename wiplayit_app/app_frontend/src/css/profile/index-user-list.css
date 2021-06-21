@@ -49,6 +49,8 @@
     border        : 1px solid  #D5D7D5;
     margin        : 5px 8px; 
     max-width     : 150px;
+    position: relative;
+    z-index: 1000;
 }
 
 

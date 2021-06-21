@@ -115,15 +115,13 @@
         font-weight : bold;
 
     }
-
-    
+   
     #editors-box  .DraftEditor-root {
         background-color: #fffef7;
         margin:auto;
         padding:20px;
         font-size: 18px;
         min-height: 100px;
-        border: px solid blue;
         font-family: 'calibri', sans-serif;
     }
 

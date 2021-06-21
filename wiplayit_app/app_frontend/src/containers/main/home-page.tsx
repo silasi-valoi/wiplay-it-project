@@ -73,19 +73,16 @@ class HomePage extends Component<any, any> {
             let index:object = entities['index']
 
             if(index && Object.keys(index)){
-                
-                let state = {
-                    isReloading : index['isLoading'],
-                    error       : index['error']
-                }
-                this.setState({...state});
+                let isReloading:boolean = index['isLoading'];
+                let error:string = index['error'];
+                this.setState({isReloading});
 
                 if (index['isSuccess']) {
                     index['isSuccess'] = false;
                     this.updateIndexEntities(index);
 
-                }else if(index['error']){
-                    this.setState({error:index['error']})
+                }else if(error){
+                    this.setState({error})
                     delete index['error'];
                 }
             }

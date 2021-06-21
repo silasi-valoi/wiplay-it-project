@@ -9,7 +9,7 @@ import PasswordConfirmationPage from 'containers/authentication/password-confirm
 import { ModalOptionsMenu } from "templates/buttons";
 import {EditProfile, DropImage} from "../main/edit-profile";
 import UserListBox from "containers/users/modal-user-list"; 
-import { NavBarMenuModalItems} from "templates/navBar";
+import {NavBarMenuModalItems} from "templates/navBar";
 import AppEditor  from 'containers/draft-js-editor/editor';
 import {ModalOpener} from 'containers/modal/modal-conf'
 

@@ -1,32 +1,4 @@
 
-.author-box {
-    border  : px solid  #A33F0B; 
-    display : flex;
-}
-
-.author-img-box {
-    border  : px solid blue;
-}
-
-.author-properties-box {
-    border  : px solid black;
-    margin  : 0 0 0 4px; 
-}
-
-.author-name-box {
-    font-size   : 10px;
-    color       : black;
-    font-weight : bold;
-    font-family : 'Kanit';
-    margin-top  : 8px; 
-}
-
-.time-created {
-    border    : px solid red;
-    font-size : 10px;
-    color     : grey;
-    font-family : 'Open Sons Condensed';
-}
 
 .edit-credential-btn-box button {
   font-size   : 14px;

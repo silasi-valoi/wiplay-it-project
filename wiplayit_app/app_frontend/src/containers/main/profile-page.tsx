@@ -17,11 +17,13 @@ import { UnconfirmedUserWarning, PageErrorComponent } from "templates/partials";
 import * as checkType from 'helpers/check-types'; 
 import {store} from "store/index";
 import GetTimeStamp from 'utils/timeStamp';
+import {cacheExpired} from 'utils/helpers';
+import Api from 'utils/api';
 import  AjaxLoader from "templates/ajax-loader";
 
 
 
-
+const api = new Api();
 
 
 class UserProfileContainer extends Component {
@@ -71,7 +73,7 @@ class UserProfileContainer extends Component {
                 this.setErrors(userProfile); 
                 
                 this.setState({userProfile})
-                this._dispatchUserProfileItems(userProfile['user']);
+                this._dispatchUserProfileAnswers(userProfile['user']);
             }
         };
         this.unsubscribe = store.subscribe(onStoreChange);
@@ -116,7 +118,7 @@ class UserProfileContainer extends Component {
                         
         let entities    = this.props['entities'];
         let { slug, id }           = this.props['match'].params;
-        let { users, userProfile}  = entities; 
+        let {users, userProfile}  = entities; 
         let  profileById           = `userProfile${id}`;
         this.setState({profileById, id})
                
@@ -141,65 +143,57 @@ class UserProfileContainer extends Component {
             return
 
         }
-
-        return store.dispatch<any>(getUserList({usersById}))
+        
+        let apiUrl = api.getUserListApi();
+        return store.dispatch<any>(getUserList({usersById, apiUrl}))
         
     }
-
-    updateWithCacheData(params){
-        if(!this.isMounted) return;
+    
+    getUserProfileCache(profileById:string){
         let cacheEntities = this.props['cacheEntities'];
-        let { profileById, id }      = params;
-        let usersById            = this.state['usersById'];
-        let { userProfile, users }   = cacheEntities
+        let {userProfile, users}   = cacheEntities;
+        return userProfile[profileById]
 
-        userProfile = userProfile && userProfile[profileById];
-                
-        if (userProfile && userProfile.user) {
-            let timeStamp      = userProfile.timeStamp;
-            const getTimeState = new GetTimeStamp({timeStamp});
-               
-            if (getTimeState.menutes() >= 1) {
-                this.setState({userProfile})
-                return this._dispatchUserProfileItems(userProfile.user);
-            }
-        }
+    }
+
+    updateWithCacheData(params:object){
+        let profileById = params['profileById'];
+        let usersById = this.state['usersById'];
      
-        store.dispatch<any>(getUserProfile(id));
+        const userProfile = this.getUserProfileCache(profileById);
+        let _cacheExpired:boolean = cacheExpired(userProfile);
+
+        if (!_cacheExpired) { 
+            this.setState({userProfile});
+            this._dispatchUserProfileAnswers(userProfile.user);
+            
+        } else {
+            let id  = params['id'];
+            store.dispatch<any>(getUserProfile(id));
+        }
     };
 
-    _dispatchUserProfileItems(userProfile){
-        if(!this.isMounted) return;
-        let answers      = this.props['cacheEntities'].answers;
+    _dispatchUserProfileAnswers(userProfile){
+        let userAnswers = userProfile && userProfile['answers'];
+        
+        if (userAnswers && userAnswers.length) {
+            var byId =`usersAnswers${userProfile.id}`;
+            let entities = this.props['entities'];
+            let answers  = entities.answers[byId];
+            let _cacheExpired:boolean = cacheExpired(answers);
 
-        if (userProfile && userProfile.answers && userProfile.answers.length) {
-            var byId         =`usersAnswers${userProfile.id}`;
-            
-            var usersAnswers      = userProfile.answers;
-            let  answersBtnStyles = this._userActivitesStyle();
-            let userItemsStyles   = {answersBtnStyles};
-            this.setState({userItemsStyles})
-
-            if (usersAnswers) {
+            if (!answers && !_cacheExpired) {
+                
+                let  answersBtnStyles = this._userActivitesStyle();
+                let userItemsStyles   = {answersBtnStyles};
+                this.setState({userItemsStyles})
 
                 ///console.log(usersAnswers, answers)
                 store.dispatch<any>(action.getAnswerListPending(byId));
-                store.dispatch<any>(action.getAnswerListSuccess(byId, usersAnswers));
+                store.dispatch<any>(action.getAnswerListSuccess(byId, userAnswers));
             }
         }
 
-    }
-
-    _userProfileAnswerParams = (userProfile)=>{
-        if (userProfile) {
-
-            return  {
-                component      :  UserAnswers,
-                byId           : `usersAnswers${userProfile.id}`,
-                data           :  userProfile.answers,
-                items          : 'isUsersAnswers',
-            }  
-        }
     }
 
     _userActivitesStyle = ()=>{

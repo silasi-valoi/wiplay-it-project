@@ -12,12 +12,11 @@ import {
 
 import { GetModalLinkProps } from "templates/component-props";
 
-import {ButtonsBox, Styles} from "templates/partials";
+import {ButtonsBox,AuthorAvatar,AuthorDetails} from "templates/partials";
 import Api from 'utils/api';
 import  * as types  from 'actions/types';
 import Helper from 'utils/helpers';
-import RepliesBox from "containers/main/replies/reply-page";
-import { UserComponentSmall } from "templates/profile";
+import RepliesLevelZero from "containers/main/replies/replies-level-0";
 import { Editor } from "draft-js";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 
@@ -45,12 +44,17 @@ export const CommentsComponent = props => {
         currentUser, 
         isAuthenticated,
         isNewComments, } = props;
+
+    if (!comment) {
+        return null;
+    }
        
     let editorState = helper.convertFromRaw(comment.comment)  
 
     let pathToUpvoters;
 
-    let commentRepliesById = isAnswerBox && `answerReplies${comment.id}` || `postReplies${comment.id}`;
+    let commentRepliesById = isAnswerBox && `answerReplies${comment.id}` 
+                                         || `postReplies${comment.id}`;
     
     let state = {
             comment,
@@ -65,12 +69,14 @@ export const CommentsComponent = props => {
         
        pathToUpvoters =  `/post/comment/${comment.id}/upvoters/`;
     }
-    let usersById =  comment && isAnswerBox && `answerCommentUpVoters${comment.id}` ||
-                    comment &&  `postCommentUpVoters${comment.id}`;
+    let usersById = isAnswerBox && `answerCommentUpVoters${comment.id}` 
+                                || `postCommentUpVoters${comment.id}`;
 
-    let apiUrl    = comment && isAnswerBox && api.getAnswerCommentUpVotersListApi(comment.id) ||
-                    comment && api.getPostCommentUpVotersListApi(comment.id);
-    let linkName  = comment.upvotes > 1 && `${comment.upvotes} Upvoters` || `${comment.upvotes} Upvoter`;
+    let apiUrl = isAnswerBox && api.getAnswerCommentUpVotersListApi(comment.id) 
+                             || api.getPostCommentUpVotersListApi(comment.id);
+
+    let linkName  = comment.upvotes > 1 && `${comment.upvotes} Upvoters`
+                                        || `${comment.upvotes} Upvoter`;
 
     let byId = isNewComments && newCommentsById || commentsById;
 
@@ -84,47 +90,48 @@ export const CommentsComponent = props => {
         };
    
     let editObjProps = {
-        objName     : 'Comment',
-        isPut       : true,
-        obj         : comment, 
         byId,
         currentUser,
         isAuthenticated,
+        objName     : 'Comment',
+        isPut       : true,
+        obj         : comment, 
+        actionType : types.UPDATE_COMMENT,
+        apiUrl : answer && api.updateAnswerCommentApi(comment.id) ||
+                 post && api.updatePostCommentApi(comment.id),
     };
-
-
+        
 
     let createObjProps = {
+        currentUser,
+        isAuthenticated,
         objName           : 'Reply',
         obj               : comment,
         isPost            : true,
-        currentUser,
-        isAuthenticated,
         byId              : `newCommentsReplies${comment.id}`,
         className         : 'btn-sm edit-reply-btn',
+        actionType        :  types.CREATE_COMMENT,
+        editorPlaceHolder : `Add Comment...,`,
+        apiUrl : answer && api.createAnswerCommentApi(answer.id) || 
+                post && api.createPostCommentApi(post.id), 
     };
-
-    editObjProps = GetModalLinkProps.props(editObjProps);
-    createObjProps = GetModalLinkProps.props(createObjProps);
     
     let EditorModalBtn     = <OpenEditorBtn {...createObjProps}/>; 
     
     let CommentUpVotersBtn = comment.upvotes !== 0 && 
                              <OpenUsersModalBtn {...commentUpvotersProps}/>; 
     
-
-
     
     let btnsProps = {
-            ...props,
-            createObjProps,
-            editObjProps,
-            btnStyles:optionsBtnStyles,
-            btnText : 'More', 
+        ...props,
+        createObjProps,
+        editObjProps,
+        btnStyles:optionsBtnStyles,
+        btnText : 'More', 
     }; 
 
          
-    let upvoteBtn =  props.comment.upvoted? <DownVoteCommentBtn {...btnsProps}/>
+    let upvoteBtn =  comment.upvoted? <DownVoteCommentBtn {...btnsProps}/>
                : <UpVoteCommentBtn {...btnsProps}/>
 
    
@@ -134,40 +141,38 @@ export const CommentsComponent = props => {
         btn1         :  upvoteBtn,
         btn2         :  EditorModalBtn,
         btn3         :  <OpenOptionlBtn {...btnsProps}/>,
-        Styles       : Styles,
-      } 
+    } 
 
-      const userProps  = {
-                obj    : comment,
-                time   : 'Commented',
-                currentUser ,
-
-            };
+    const authorProps:object  = {
+            author : comment.author,
+            data   : comment,
+        };
 
     
 
     return(
-      
-        <div  className="comment-box" id="comment-box">
-            <div className="autor-details-box comment-detail-box">
-                <UserComponentSmall {...userProps}/>
-            </div>
-    
-            <div className="comment">
-                <Editor
-                   blockRendererFn={pageMediaBlockRenderer}
-                   editorState={editorState} 
-                   readOnly={true}
-
-                />
-            </div>
-
-            <ButtonsBox {...btnsList}/>
+        <div className="comment-container">
             
-            <RepliesBox {...props}/>
+            <div className="comment-contents">
+                <AuthorAvatar {...authorProps}/>
+                <div className="comment-contents-box">
+                    <div  className="comment-box" id="comment-box">
+                        <AuthorDetails {...authorProps}/>
+                      
+                        <div className="comment-body">
+                            <Editor
+                                blockRendererFn={pageMediaBlockRenderer}
+                                editorState={editorState} 
+                                readOnly={true}
+                            />
+                        </div>
+                    </div>
+                    <ButtonsBox {...btnsList}/>
+                </div>
+            </div>
             
+            <RepliesLevelZero {...props}/>
         </div>
-                               
     );
 };
 

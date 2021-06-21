@@ -191,14 +191,14 @@ export const MobileModalNavBar = props  => {
     
     let DoneBtn = ()=>(
             <div className="submit-btn-box">
-                <button  type="button" 
-                        onClick={()=> window.history.back()}
-                        className="btn modal-custom-back-btn">
-                    Done
-                </button>
+                <ModalCloseBtn> 
+                    <span className="btn modal-custom-back-btn">
+                        Done
+                    </span>
+                </ModalCloseBtn> 
             </div>
         )
-    
+       
     return (
         <div id="modal-navbar-container" className="fixed-top">
             <div className="modal-navbar-box"> 

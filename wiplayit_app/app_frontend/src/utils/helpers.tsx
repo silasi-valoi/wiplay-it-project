@@ -3,6 +3,8 @@ import {history} from 'App';
 import {convertToRaw, convertFromRaw, EditorState} from 'draft-js';
 import {decorator} from 'containers/draft-js-editor/plugins';
 import * as checkType from 'helpers/check-types'; 
+import GetTimeStamp from 'utils/timeStamp';
+
 
 //let Print = (data:any) => console.log(data);
 
@@ -54,7 +56,7 @@ export default class Helper {
         let contentState = contents;
 
         if (contents?.length) {
-
+            
             for (var i = contents.length - 1; i >= 0; i--) {
                 let carecter = contents[i];
             
@@ -73,7 +75,7 @@ export default class Helper {
             contentState  = JSON.parse(contentState);
         }
 
-        contentState      = contentState && convertFromRaw(contentState);
+        contentState  = contentState && convertFromRaw(contentState);
         return contentState && 
                             EditorState.createWithContent(contentState, decorator);
     };
@@ -205,7 +207,7 @@ export const displaySuccessMessage =(self, message:string)=> {
     displayAlertMessage(self, successMessage)
 };
 
-export const displayErrorMessage =(self, message:string)=>{
+export const displayErrorMessage =(self, message:string) => {
     let errorMessage:object = {textMessage:message, messageType:'error'}
     displayAlertMessage(self, errorMessage)
 };
@@ -236,7 +238,17 @@ export const pushToRouter = (params:object, event?:React.MouseEvent<HTMLAnchorEl
             history.push(params['linkPath'], params['state'])
         }, 500)
     }
-
-    
-            
 };
+
+
+export const cacheExpired = (cache:object):boolean => {
+    if (!cache) {
+        return true;    
+    }
+
+    let timeStamp = cache['timeStamp'];
+    const getTimeState = new GetTimeStamp({timeStamp});
+    let menutes = parseInt(`${getTimeState.menutes()}`);
+    return menutes >= 1
+    
+}

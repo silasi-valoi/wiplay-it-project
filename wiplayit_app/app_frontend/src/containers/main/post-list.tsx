@@ -58,12 +58,18 @@ class  PostListPage extends Component  {
             let storeUpdate    = store.getState();
             let {entities }    = storeUpdate;
             let postListById =  this.state['postListById'];
-            let posts          =  entities['posts'][postListById];
+            let posts          =  entities['posts'];
+            let postListData = posts[postListById];
 
-            if (this.isMounted && posts) {
-                this.setState({
-                            isReloading : posts.isLoading,
-                            error : posts.error} ) 
+            if (Object.keys(postListData)) {
+                let isReloading = postListData['isLoading'];
+                this.setState({isReloading}); 
+
+                let error = postListData['error'];
+                if (error) {
+                    this.setState({error})
+                    delete postListData['error']
+                }
             }
             
         };
@@ -89,7 +95,6 @@ class  PostListPage extends Component  {
         let postList = posts && posts.postList;
 
         if (postList) {
-            console.log(posts)
             store.dispatch<any>(action.getPostListPending(postListById));
             store.dispatch<any>(action.getPostListSuccess( postListById ,postList));
             return
@@ -114,35 +119,60 @@ class  PostListPage extends Component  {
 
     render() {
         let props = this.getProps();
-        //let style =  {border:'1px solid red',padding:'60px 0 0 0', margin:'100px 0 0 0'}
         var posts  = props['entities'].posts;
-        console.log(posts)
         posts  = posts[props['postListById']];
-        console.log(props, posts)
-
+        let postList = posts && posts.postList;
+        
         return (
             <div>
                 <PartalNavigationBar {...props}/>
                 <NavigationBarBigScreen {...props} /> 
                  <NavigationBarBottom {...props}/>
-                
-                { posts &&
-                    <div className="app-box-container post-list-page" id="post-list-page">
-                        <UnconfirmedUserWarning {...props}/>
+                <div className="app-box-container">
+                    <div className="page-contents">
+                    <UnconfirmedUserWarning {...props}/>
                         
-                        { posts.isLoading && 
-                            <div  className="page-spin-loader-box partial-page-loader">
-                                <AjaxLoader/>
-                            </div>
-                        }
+                    { posts && posts.isLoading && 
+                        <div  className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
 
-                        { posts.error && posts.error &&
-                            <PageErrorComponent {...props}/>
-                        }
-                          
-                       <Posts {...props}/>
+                    { posts && posts.error &&
+                        <PageErrorComponent {...props}/>
+                    }
+                       
+                    
+                    { postList && postList.map(( post, index )  => {
+    
+                        return (
+                            <div key={post.id} 
+                                 className="post-list-page" id="post-list-page">
+                                <div className="post-container">
+                                    <div className="post-contents">
+                                        <PostComponent {...{...props, post}}/>
+                                    </div>
+                                </div>
+                        </div>
+                    )})
+                    
+            
+                    ||
+                
+                    <div className="">
+                        <ul className="empty-post-list-box">
+                           <li className="">
+                                No Posts Yet
+                            </li>
+                        </ul>
+
+                        <div className="post-list-create-box">
+                            <OpenEditorBtn {...createPostProps}/>
+                        </div>
                     </div>
                 }
+                </div>
+            </div>
             </div>
         );
     };
@@ -174,13 +204,22 @@ const Posts = props => {
     let postList = posts && posts.postList;
   
     return (
-        <div>
-            { postList && postList.length &&
-                IteratePostList(props, postList)
-
+        <div className="post-list-page" id="post-list-page">
+            {postList && postList.map(( post, index )  => {
+    
+                return (
+                    <div key={post.id}>
+                        <div className="post-container">
+                            <div className="post-contents">
+                                <PostComponent {...{...props, post}}/>
+                            </div>
+                        </div>
+                    </div>
+                )})
+            
                 ||
-                <div className="">
 
+                <div className="">
                     <ul className="empty-post-list-box">
                         <li className="">
                             No Posts Yet
@@ -192,7 +231,7 @@ const Posts = props => {
                     </div>
                 </div>
             }
-      
+    
         </div>        
     );
 };
@@ -200,12 +239,16 @@ const Posts = props => {
 
 
 
-const IteratePostList = (props, postList=[])=>{
+const PostList = (props, postList=[])=>{
     return postList.map(( post, index )  => {
     
         return (
             <div key={post.id}>
-                <PostComponent {...{...props, post}}/>
+                <div className="post-container">
+                    <div className="post-contents">
+                        <PostComponent {...{...props, post}}/>
+                    </div>
+                </div>
             </div>
         )
     })

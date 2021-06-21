@@ -197,16 +197,13 @@ export default  class AppEditor extends Component{
     componentWillUnmount() {
         this.isMounted = false;
         window.removeEventListener('resize', this.handleResize);
-        window.removeEventListener('scroll', this.handleEditorScroll);
         this.unsubscribe();
     };
 
     addEventListeners(){
         let editorsBoxElem    = document.getElementById('editors-box');
-        editorsBoxElem.addEventListener('scroll', this.handleEditorScroll)
         window.addEventListener('resize', this.handleResize)
     };
-
     
     componentDidUpdate(prevProps, nextProps) {
     
@@ -216,50 +213,51 @@ export default  class AppEditor extends Component{
         this.isMounted = true;
         this.onEditorUpdate();
         this.addEventListeners();
+        console.log(this.props)
         
         let isPut:boolean = this.props['isPut'];
         let objName:string = this.props['objName'];
-        let obj:object = this.props['obj'];
+        let data:object = this.props['obj'];
                    
         if (isPut) {
 
             this.setState({contentIsEmpty:false})          
             if (objName === 'About') {
-                this.updateDraftEditor(obj['about_text']);
-                this.updateTextAreaForm(obj['about_title']);
+                this.updateDraftEditor(data['about_text']);
+                this.updateTextAreaForm(data['about_title']);
             }
 
             if ( objName === 'Post') {
-                this.updateDraftEditor(obj['add_post']);
-                this.updateTextAreaForm(obj['add_title']);
+                this.updateDraftEditor(data['add_post']);
+                this.updateTextAreaForm(data['add_title']);
             }
 
             if (objName === 'Question') {
-                this.updateTextAreaForm(obj['add_question']);
+                this.updateTextAreaForm(data['add_question']);
             }
 
             else if (objName === 'Answer') {
-                this.updateDraftEditor(obj['add_answer']);
+                this.updateDraftEditor(data['add_answer']);
             }
 
             else if (objName === 'Comment') {
-                this.updateDraftEditor(obj['comment'])
+                this.updateDraftEditor(data['comment'])
             }
 
             else if (objName === 'Reply') {
-                this.updateDraftEditor(obj['reply'])
+                this.updateDraftEditor(data['reply'])
             }
             
         }
     };
 
-    updateDraftEditor(value){
-        const editorState  = helper.convertFromRaw(value);
+    updateDraftEditor(editorContents:string){
+        const editorState = helper.convertFromRaw(editorContents);
 
         setTimeout(()=> {
             this.setState({editorState});
             this.modifyEditorSize();
-        }, 1000);
+        }, 500);
         
     };
 
@@ -274,9 +272,7 @@ export default  class AppEditor extends Component{
     blockStyleFn(contentBlock) {
        const type = contentBlock.getType();
        console.log(contentBlock) 
-  
-    }
-
+    };
 
     onURLChange(e) {
         e.preventDefault();
@@ -325,7 +321,6 @@ export default  class AppEditor extends Component{
         editorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
         this.setState({editorState});
     }
-
    
     addBold(e){
         e.preventDefault();
@@ -465,11 +460,13 @@ export default  class AppEditor extends Component{
     }
 
     handleFocus =()=> {
+        if (!this.matchSmallScreenMedia()) return;
         this.setState({editorIsFocused : true, onFocus:true});
         this['editor'].focus();
     }
 
     handleBlur =()=> {
+        if (!this.matchSmallScreenMedia()) return;
         this.setState({editorIsFocused : false});
     }
 
@@ -482,7 +479,7 @@ export default  class AppEditor extends Component{
             this.setScrollHeight(clientHeight, true);
         }
     }
-
+    
     modifyEditorSize =()=> {
         let editorsBoxElem = document.getElementById('editors-box');
         let overlay      = document.getElementById('modal-overlay');
@@ -493,13 +490,8 @@ export default  class AppEditor extends Component{
 
         this.setScrollHeight(editorHeight, true);  
     }
-
-    handleEditorScroll =()=>{
-        let editorsBoxElem = document.getElementById('editors-box');
-        if (!editorsBoxElem) return;
-    }
-
-    handleScroll=(e):React.UIEventHandler<HTMLDivElement> => {
+    
+    handleScroll=(e?:any):React.UIEventHandler<HTMLDivElement> => {
         if (!this.matchDesktopMedia()) return;
         
         let editorsBoxElem = document.getElementById('editors-box');
@@ -516,38 +508,37 @@ export default  class AppEditor extends Component{
             
         if (_contentHeight >= _overlay) {
             this.setScrollHeight(editorsBoxElem.clientHeight);
-            return e;
         }
 
         return e;
     };
    
-    setScrollHeight =(scrollHeight=undefined, override=false):void => {
+    setScrollHeight =(scrollHeight:number, override?:boolean):void => {
         if (this.state['onScroolStyles'] && !override) return
                 
         let onScroolStyles = {
-                height : `${scrollHeight}px`,
-             }; 
-       return this.setState({onScroolStyles});
+            height : `${scrollHeight}px`,
+        };
+        return this.setState({onScroolStyles});
     }
 
-    matchSmallScreenMedia(){
+    matchSmallScreenMedia():boolean{
        return window.matchMedia("(max-width: 980px)").matches;
     }
 
-    matchDesktopMedia(){
+    matchDesktopMedia():boolean{
         return window.matchMedia("(min-width: 980px)").matches;
     }
 
-    matchTabletMedia(){
+    matchTabletMedia():boolean{
         return window.matchMedia("(min-width: 760px)").matches
     }
 
 
-    getProps() {
-        let currentContent   = this.state['editorState'].getCurrentContent();
-        let editorContents   = currentContent && convertToRaw(currentContent) || {};
-        editorContents       =  JSON.stringify(editorContents);
+    getProps():object {
+        let currentContent  = this.state['editorState'].getCurrentContent();
+        let editorContents  = currentContent && convertToRaw(currentContent) || {};
+        editorContents      =  JSON.stringify(editorContents);
     
         return {
             ...this.props,
@@ -562,7 +553,7 @@ export default  class AppEditor extends Component{
             textAreaProps     : this.getTextAreaProps(), 
             handleScroll      : this.handleScroll, 
             handleBlur        : this.handleBlur,
-            handleFocus      : this.handleFocus,
+            handleFocus       : this.handleFocus,
             self: this,
             ...this.state,
         } 
@@ -581,10 +572,10 @@ export default  class AppEditor extends Component{
                                                      { display : 'none' };
         
         return (
-            <div 
+            <div onScroll={this.handleScroll()}
                 className="editor-container" 
-                id="editor-container" 
-                onScroll={(event) => this.handleScroll(event)}>
+                id="editor-container" > 
+                
                 <fieldset style={onSubmitStyles} 
                       disabled={props['submitting']} >
                     <EditorCommponent {...props}/>
@@ -642,8 +633,8 @@ export const DesktopEditorComponent =(props)=>{
     );
 };
 
-const Author =(author)=>{
-    let {profile} = author;
+const Author =(author:object)=>{
+    let profile = author['profile'];
 
     return(
         <div className="modal-user-box">
@@ -654,7 +645,7 @@ const Author =(author)=>{
             </div>
             <ul className="editor-username-box">
                 <li className="editor-username" >
-                    {author.first_name}  {author.last_name} 
+                    {author['first_name']}  {author['last_name']} 
                 </li>
             </ul>
         </div>
@@ -685,7 +676,6 @@ const PureDraftEditor =(props)=>{
     return(
         <div className="editors-page">
             <div style={onScroolStyles}
-
                  onClick={(e)=> handleFocus(e)}
                  id="editors-box" 
                  className="editors-box pure-draft-editor">
@@ -694,12 +684,3 @@ const PureDraftEditor =(props)=>{
         </div>
     )
 }
-
-/*
-Type 'object' is not assignable to type 'UIEventHandler<HTMLDivElement>'.
-  Type '{}' provides no match for the signature 
-  '(event: UIEvent<HTMLDivElement, UIEvent>): void'.
-
-(JSX attribute)
- React.DOMAttributes<HTMLDivElement>.onScroll?: React.UIEventHandler<HTMLDivElement>
-*/

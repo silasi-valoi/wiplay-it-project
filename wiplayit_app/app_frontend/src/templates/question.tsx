@@ -10,7 +10,7 @@ import { OpenOptionlBtn,
          LinkButton,
          OpenUsersModalBtn, } from 'templates/buttons';
 
-import {ButtonsBox, Styles } from "templates/partials";
+import {ButtonsBox} from "templates/partials";
 
 import  * as types  from 'actions/types';
 import Api from 'utils/api';
@@ -126,7 +126,6 @@ export const QuestionComponent = props => {
             btn1         : EditorModalBtn,
             btn2         : unfollowOrFollowQuestionBtn,
             btn3         : <OpenOptionlBtn {...btnsProps}/>,
-            Styles       : Styles,
         }
     
     const linkProps = {
@@ -135,23 +134,21 @@ export const QuestionComponent = props => {
     }
   
     return(
-        <div key={question.id}>
-            <div className="question-contents">
-                <div className="question-box ">
-                    <div className="question">
-                        {props.isQuestionBox?
-                            <b className="">
-                                { question.add_question }
-                            </b>
-                            :
-                            <b className="">
-                                <LinkButton {...linkProps}>
-                                    <span>{ question.add_question }</span>
-                                </LinkButton>
-                            </b>
-                        }
-                        <ButtonsBox {...btnsList}/>
-                    </div>
+        <div className="question-contents">
+            <div className="question-box ">
+                <div className="question">
+                    {props.isQuestionBox?
+                        <b className="">
+                            { question.add_question }
+                        </b>
+                        :
+                        <b className="">
+                            <LinkButton {...linkProps}>
+                                <span>{ question.add_question }</span>
+                            </LinkButton>
+                        </b>
+                    }
+                    <ButtonsBox {...btnsList}/>
                 </div>
             </div>
         </div>

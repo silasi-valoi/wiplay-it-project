@@ -4,7 +4,7 @@ import {handleSubmit, getUserList }  from "dispatch/index"
 import { UserList } from "templates/profile";
 import  AjaxLoader from "templates/ajax-loader";
 import {store } from "store/index";
-import { MobileModalNavBar, DesktopModalNavBar } from  "templates/draft-editor";
+import {MobileModalNavBar, DesktopModalNavBar} from  "templates/draft-editor";
 import { PageErrorComponent } from "templates/partials";
 import Helper from 'utils/helpers';
 import {handleModalScroll} from 'containers/modal/helpers';
@@ -54,11 +54,11 @@ class UserListBox extends Component {
         if (!this.isMounted) return;
  
         const onStoreChange = () => {
-            let storeUpdate   = store.getState();
-            let { entities }   = storeUpdate;
-            let users:object    = entities && entities['users'];
-            let usersById     = this.state['usersById'];
-            
+            let storeUpdate  = store.getState();
+            let { entities } = storeUpdate;
+            let users:object = entities && entities['users'];
+            let usersById  = this.state['usersById'];
+                       
             let userList:object[] = users  && users[usersById]
             let error    = userList && userList['error']; 
             let isReloading = userList && userList['isLoading'];
@@ -73,26 +73,18 @@ class UserListBox extends Component {
     componentDidMount() {
         this.isMounted = true;
         this.onUserListUpdate();
-               
-        let apiUrl = this.props;['apiUrl'];
-        let byId = this.props['byId'];
-        let usersById     = this.state['usersById'];
+                  
+        let apiUrl:string = this.props['apiUrl'];
+        let byId:string = this.props['byId'];
+        let usersById:string  = this.state['usersById'];
 
         usersById  = byId   || usersById;
         apiUrl     = apiUrl || api.getUserListApi();
 
-        let storeUpdate  = store.getState();
-        let { entities } = storeUpdate;
-        let users    =  entities['users'];
-
         this.setState({usersById, apiUrl})
-
-        if (!users[usersById]) {
-            store.dispatch<any>(getUserList({usersById, apiUrl}))
-        }else{
-            this.setState({users});
-        }
-                        
+        
+        store.dispatch<any>(getUserList({usersById, apiUrl}))
+                                
     }
 
     editfollowersOrUpVoters = (params) =>{
@@ -105,8 +97,7 @@ class UserListBox extends Component {
 
     handleScroll=()=>{
         if (!this.isMounted) return;
-        console.log('handle Scroll')
-        
+              
         let isDesktopScreenSize = window.matchMedia("(min-width: 980px)").matches;
         let overlay:HTMLElement = document.getElementById('modal-overlay');
         let overlaySize:number;
@@ -133,7 +124,9 @@ class UserListBox extends Component {
         
         if (!onScroolStyles) {
             onScroolStyles =  {height : overlay, overflowY:'scroll'};
-            this.setState({onScroolStyles});
+            setTimeout(()=> {
+                this.setState({onScroolStyles});
+            }, 1000);
         }
 
     }
@@ -149,11 +142,10 @@ class UserListBox extends Component {
     };
 
     reLoader =()=>{
-
         let apiUrl = this.state['apiUrl'];
         let usersById:string = this.state['usersById']; 
         this.isMounted && this.setState({isReloading : true})
-        return store.dispatch<any>(getUserList({usersById, apiUrl}))
+        store.dispatch<any>(getUserList({usersById, apiUrl}))
     };
     
     getProps(){
@@ -178,8 +170,7 @@ class UserListBox extends Component {
 
         users = users && users[usersById];
         onScroolStyles = onScroolStyles || {};
-        console.log(users)
-                 
+                       
         return (
             <div 
                 id="users-modal-container"

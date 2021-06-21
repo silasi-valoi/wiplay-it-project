@@ -10,6 +10,7 @@ import { QuestionComponent} from 'templates/question';
 import {store} from "store/index";
 import { AnswersBox } from 'containers/main/answer-page';
 import GetTimeStamp from 'utils/timeStamp';
+import {cacheExpired} from 'utils/helpers';
 import { UnconfirmedUserWarning, 
          PageErrorComponent } from 'templates/partials';
 import  MainAppHoc from "containers/main/index-hoc";
@@ -29,7 +30,8 @@ class QuestionPage extends Component {
             isQuestionBox : true, 
             pageName      : "Question", 
             questionById  : '',
-            question      : null,
+            error         : '',
+            questionData  : null,
             isNewQuestion : false,
             isReloading   : false,
         };
@@ -43,95 +45,79 @@ class QuestionPage extends Component {
     public set isMounted(value:boolean) {
         this.isFullyMounted = value;
     }
- 
 
     componentWillUnmount() {
         this.isMounted = false;
         this.unsubscribe();
     };
 
-
     onQuestionUpdate = () =>{
  
         const onStoreChange = () => {
-            let storeUpdate  = store.getState();
-            let {entities }  = storeUpdate;
-            let question   = entities['question'];
+            if(!this.isMounted) return;
+            
+            const storeUpdate = store.getState();
+            const {entities} = storeUpdate;
+            const questionStore:object = entities['question'];
+            const questionById:string = this.state['questionById'];
+            const questionData:object = questionStore && questionStore[questionById];
+       
+            if (questionData){
+                
+                let isReloading:boolean = questionData['isLoading'];
+                let error:string = questionData['error'];
 
-            let questionById  = this.state['questionById'];
-                                
-            //console.log(errors) 
-            if (this.isMounted && question){
-                this.setState({
-                        question,
-                        isReloading : question.isLoading,
-                        error: question.error
-                    });
-
-                delete question.error;  
+                this.setState({questionData, isReloading});
+                
+                if (error) {
+                    this.setState({error})
+                    delete questionData['error']; 
+                }
             }
                       
         };
         this.unsubscribe = store.subscribe(onStoreChange);
     };
     
-
+    getQuestionFromCache(questionById:string):object{
+        let cache = this.props['cacheEntities'];
+        let questionCache = cache['question'];
+        questionCache = questionCache[questionById];
+        return questionCache;
+    }
 
     componentDidMount() {
         this.isMounted = true;
         this.onQuestionUpdate();
         let {slug, id}  =  this.props['match'].params;
         let questionById = `question${id}`;
-
-        this.setState({questionById})
+        this.setState({questionById, id})
                         
-        let cache = this.props['cacheEntities'];
-        let questionCache = cache['question'];
-        questionCache = questionCache[questionById]
-        let cacheExpired:boolean = this.questionCacheExpired(questionCache);
+        let questionData = this.getQuestionFromCache(questionById)
+        let _cacheExpired:boolean = cacheExpired(questionData);
 
-        if(!cacheExpired){
-            console.log( questionCache,'Question found from cachedEntyties')
-            
-            return this.dispatchToStore(questionById, questionCache.question);
+        if(!_cacheExpired){
+            return this.setState({questionData});
         }
 
-        let {question} = this.props['entities'];
-        let questionData = question[questionById]
+        let questionStore:object = this.props['entities'].question;
+        questionData = questionStore[questionById];
 
-        if (questionData && questionData.question) {
-            return
+        if (questionData && questionData['question']) {
+            return this.setState({questionData})
         }
-
-        console.log('Fetching question data from the server')
+        
+        // Data might have expired or doesn't exist in store,
+        // So we fech it from api. 
         store.dispatch<any>(getQuestion(id));
       
     };
-
-    questionCacheExpired(questionCache:object):boolean {
-
-        if (questionCache) {
-            let timeStamp = questionCache['timeStamp'];
-            const getTimeState = new GetTimeStamp({timeStamp});
-            let menutes = parseInt(`${getTimeState.menutes()}`);
-            console.log(menutes);
-            return menutes >= 1
-        }
-
-        return true;
-    };
-
-    dispatchToStore(questionById:string, question:object){
-        if (questionById && question) {
-            store.dispatch<any>(action.getQuestionPending(questionById));
-            store.dispatch<any>(action.getQuestionSuccess(questionById, question));
-        }
-
-    } 
        
     componentDidCatch(error, info) {
         // You can also log the err or to an error reporting service
-        console.log(error, info);
+        //console.log(error, info)
+        let errors:string = 'Sorry, something wrong happened'
+        this.setState({error:errors})
     };
 
     reLoader =()=>{
@@ -149,28 +135,28 @@ class QuestionPage extends Component {
     };
 
     render() {
-        let props = this.getProps();
-        let questionById = props['questionById'];
-        let question = props['entities']['question'];
-
-        question = question && question[questionById]
-      
+        const props = this.getProps();
+        const questionData = props['questionData'];
+        if (!questionData) {
+            return null;
+        }
+                      
         return (
             <div>
                 <PartalNavigationBar {...props}/>
                 <NavigationBarBigScreen {...props} />
                 <NavigationBarBottom {...props}/>
-                { question &&
+                {questionData &&
                     <div className="app-box-container app-question-box">
                         <UnconfirmedUserWarning {...props}/>
-                        { question.isLoading &&
+                        { questionData.isLoading &&
                             <div className="page-spin-loader-box partial-page-loader">
                                 <AjaxLoader/>
                             </div>
                         }
                         <PageErrorComponent {...props}/>
 
-                        {!question.isLoading &&
+                        {!questionData.isLoading &&
                            <Questions {...props}/>
                         }
                     </div>
@@ -184,27 +170,19 @@ class QuestionPage extends Component {
 export default  MainAppHoc(QuestionPage);
 
 
-
 export const Questions = props => {
-    var {questionById, entities} = props;
-    let {question, answers} = entities;
-    question = question && question[questionById];
-    if(question && question.isLoading) return null;
-    
-    question = question && question.question;
+    const questionData = props['questionData'];
+    let question = questionData && questionData.question;
     if (!question) return null;
-
-    let questionProps = { question};
-    questionProps = {...props, ...questionProps}; 
+    
+    const questionProps = {...props, question}; 
    
     return (
         <div className="question-page" id="question-page">
-            { question &&
-                <div className="question-container">
-                    <QuestionComponent {...questionProps}/>
-                    <AnswersBox {...questionProps}/>
-                </div>
-            }
+            <div className="question-container">
+                <QuestionComponent {...questionProps}/>
+                <AnswersBox {...questionProps}/>
+            </div>
         </div>
     );
 };

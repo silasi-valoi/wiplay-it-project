@@ -143,14 +143,14 @@ export function entities(state:object=InitialState(), action:object):object {
             
 
         case types.UPDATE_USER_PROFILE['SUCCESS']:
-            let profileToUpdate:object = state['userProfile']['byId'];
+            let userProfileToUpdate:object = state['userProfile'][byId];
+            userProfileToUpdate = userProfileToUpdate && userProfileToUpdate['user']
             let updatedUserProfile:object = payLoad['user'];
-            profileToUpdate        = profileToUpdate['user'];
 
-            let user =  {...profileToUpdate || {}, ...updatedUserProfile || {}}
-            
-            action['payLoad'].user = user;
-
+            let user =  {...userProfileToUpdate || {}, ...updatedUserProfile || {}}
+            payLoad['user'] = user;
+            action['payLoad'] = payLoad;
+           
             return updateStateEntyties('userProfile', action, state);  
 
 
@@ -162,8 +162,6 @@ export function entities(state:object=InitialState(), action:object):object {
             return updateStateEntyties('users', action, state);
 
             
-
-
 
         case types.UPDATE_USER_LIST['SUCCESS']:
                         
@@ -236,9 +234,6 @@ export function entities(state:object=InitialState(), action:object):object {
             return state;
         
 
-
-
-
         case types.GET_POST_LIST['PENDING']:
         case types.GET_POST_LIST['SUCCESS']:
         case types.GET_POST_LIST['ERROR']:
@@ -246,9 +241,6 @@ export function entities(state:object=InitialState(), action:object):object {
         case types.UPDATE_POST['PENDING']:
             return updateStateEntyties('posts', action, state);
             
-                
-         
-
         case types.GET_POST['PENDING']:
         case types.GET_POST['SUCCESS']:
         case types.GET_POST['ERROR']:
@@ -256,8 +248,7 @@ export function entities(state:object=InitialState(), action:object):object {
         case types.UPDATE_POST['PENDING']:
             return updateStateEntyties('post', action, state);
         
-        
-        
+   
 
         case types.UPDATE_POST['SUCCESS']:
             let updatedPost = payLoad['post'];
@@ -313,15 +304,12 @@ export function entities(state:object=InitialState(), action:object):object {
 
 
         case types.UPDATE_ANSWER['SUCCESS']:
-            
             let updatedAnswer = payLoad['answer'];
             let answers:[] = state['answers'][byId].answerList;
             
-            delete updatedAnswer.question;
-
             payLoad['answerList'] = helper.updateReducerListEntynties(answers, updatedAnswer);
             delete payLoad['answer'];
-            return  updateStateEntyties('answers',  {byId, payLoad }, state)|| state;
+            return updateStateEntyties('answers', {byId, payLoad}, state)|| state;
 
 
         case types.CREATE_COMMENT['PENDING']:

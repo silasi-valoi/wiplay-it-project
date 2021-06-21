@@ -131,13 +131,6 @@ export function getAboutInfo(options?:object) {
 export function getIndex(options?:object):Function {
     let useToken:boolean = true;
     const Api  = _GetApi(useToken, {requestFor:'index'});
-    
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
-
     let apiUrl = api.getIndexApi(); 
 
     return async dispatch => {
@@ -162,40 +155,35 @@ export function getIndex(options?:object):Function {
                     console.log(errorResponse)
                     if (errorResponse.status === 500) {
                         error = errorResponse.statusText
-                        return dispatch(action.getIndexError(error));
+                    }else{
+                        error = errorResponse.data.detail;
                     }
 
-                    error = error.response.data;
-                    dispatch(action.getIndexError(error.detail));
                 }else if(error.request){
                     console.log(error.request)
                     error = 'The server took to long to respond.';
-                    dispatch(action.getIndexError(error));
+                    
                 }else{
                     console.log(error)
-                    dispatch(action.handleError());
+                    error = 'Something wrong happened.'
                 }
+              
+                dispatch(action.getIndexError(error));
             }); 
         }
     };
 };
 
+interface UserListProps {
+    apiUrl:string,
+    usersById:string
+};
 
 
-
-export function getUserList(props) {
-    let useToken:boolean = true;
-    const Api  = _GetApi(useToken);
-
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
-
-    let { apiUrl, usersById } = props;
-    apiUrl = !apiUrl && api.getUserListApi() || apiUrl; 
-
+export function getUserList(props:UserListProps) {
+   
+    let {apiUrl, usersById} = props;
+    
     return async dispatch => {
         let online = await checkOnlineStatus();
 
@@ -205,6 +193,8 @@ export function getUserList(props) {
             dispatch(action.getUserListError(usersById, error));
      
         }else{
+            let useToken:boolean = true;
+            const Api  = _GetApi(useToken);
 
             dispatch(action.getUserListPending(usersById))
 
@@ -215,16 +205,16 @@ export function getUserList(props) {
 
                 console.log(error)
                 if (error.response) {
-                    error = error.response.data;
-                    dispatch(action.getUserListError(usersById, error.detail));
-
+                    error = error.response.data.detail;
+                    
                 }else if(error.request){
                     error = 'The server took to long to respond.';
-                    dispatch(action.getUserListError(usersById, error));
-
+                
                 }else{
-                    dispatch(action.handleError());
+                    error = 'Something wrong happened.'
                 }
+
+                dispatch(action.getUserListError(usersById, error));
             }); 
         }
     };
@@ -454,19 +444,20 @@ export function getUserProfile(id:number, apiUrl?:string) {
         	    dispatch(action.getUserProfileSuccess(profileById ,response.data));
             
             }).catch(error => {
-                console.log(error)
-      	
-      	        if (error.response) {
-                    error = error.response.data;
-      		        dispatch(action.getUserProfileError(profileById, error.detail));
-
+                if (error.response) {
+                    console.log(error.response)
+                    error = error.response.data.detail;
+      		    
                 }else if(error.request){
+                    console.log(error.request)
                     error = 'The server took to long to respond.';
-                    dispatch(action.getUserProfileError(profileById, error));
-
+                
                 }else{
-                    dispatch(action.handleError());
+                    console.log(error)
+                    error = 'Something wrong happened.'
                 }
+
+                dispatch(action.getUserProfileError(profileById, error))
             });
         }
     };
@@ -668,6 +659,7 @@ function sendPostRequest(params:object, dispatch:Function){
 };
 
 function sendUpdateResquest(params:object, dispatch:Function){
+    console.log(params)
     const Api  = _GetApi(true);
 
     let isModal:boolean = params['isModal'];
@@ -681,6 +673,7 @@ function sendUpdateResquest(params:object, dispatch:Function){
     }
      
     Api.put(params['apiUrl'], formData).then(response => {
+        console.log(response)
         updateProps['data'] = prepPayLoad(objName, response.data);
         updateProps['successMessage'] = BuildAlertMessage(updateProps)
 

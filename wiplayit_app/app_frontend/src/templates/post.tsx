@@ -14,13 +14,13 @@ import {
         OpenEditorBtn,
         ChangeImageBtn,
         LinkButton,
+        ToggleItemsBtn,
         OpenUsersModalBtn,} from 'templates/buttons';
 
 import CommentsBox from "containers/main/comment-page";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {Editor} from 'draft-js';
-import {ButtonsBox,Styles} from "templates/partials";
-import { UserComponentSmall } from "templates/profile";
+import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
 
 
 const helper   = new Helper();
@@ -118,20 +118,36 @@ export const PostComponent = props => {
     let UpVoteBtn =  post.upvoted? <DownVotePostBtn {...btnsProps}/>
                : <UpVotePostBtn {...btnsProps}/>
 
+    let comments:object[] = post.comments;
+    let itemsName:string = comments.length > 1  && "Comments" ||
+                        comments.length == 1 && "Comment" || '';
 
-   const btnsList   = { 
-            itemsCounter : PostUpVotersBtn,
+    let itemsProps:object = {
+            itemsName,
+            items: comments,
+            itemsById : `commentsPost${post.id}`,
+            getItemsList : props.getCommentList
+        }
+
+    
+
+    const btnsList   = { 
+            itemsCounter : <ToggleItemsBtn {...itemsProps}/>,
+            authorCounter : PostUpVotersBtn,
             btn1   : UpVoteBtn,
             btn2   : EditorModalBtn,
             btn3   : <OpenOptionlBtn {...btnsProps}/>,
-            Styles : Styles
-         };
+        };
 
    const userProps  = {
             obj   : post,
             currentUser
         };
     
+    const authorProps:object  = {
+            author : post.author,
+            data   : post,
+        };
 
     const linkProps = {
         linkPath: `/post/${post.slug}/${post.id}/`,
@@ -140,18 +156,14 @@ export const PostComponent = props => {
 
     return (
         <div>
-        { editorState?
-            <div className="post-box">
+            {editorState?
+                <div className="post-box">
                     <div className="post"> 
-                        <div className="autor-details-box post-detail-box">
-                            {props.isProfileBox?
-                                ""
-                                :
-                                <UserComponentSmall {...userProps}/>
-                            }
-           
+                        <div className="author-post-detail-box">
+                            <AuthorAvatar {...authorProps}/>
+                            <AuthorDetails {...authorProps}/>           
                         </div>
-                        <ul className="answer-question-box">
+                        <ul className="">
                             { props.isPostBox? 
                                 <li className="post-title">
                                     { post.add_title }

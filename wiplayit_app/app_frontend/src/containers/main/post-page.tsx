@@ -15,10 +15,7 @@ import  * as action  from 'actions/actionCreators';
 import { getPost } from 'dispatch/index';
 import {store} from "store/index";
 import GetTimeStamp from 'utils/timeStamp';
-
-
-
-
+import {cacheExpired} from 'utils/helpers';
 
 
 class  PostPage extends Component  {
@@ -34,6 +31,7 @@ class  PostPage extends Component  {
             isReloading : false,
             pageName    : "Post", 
             postById    : '',
+            postData    : null,
             error       : '',
         };
     };
@@ -50,16 +48,24 @@ class  PostPage extends Component  {
     onPostUpdate = () =>{
 
         const onStoreChange = () => {
+            if(!this.isMounted) return;
 
-            let storeUpdate   = store.getState();
-            let {entities }   = storeUpdate;
-            let postById    =  this.state['postById'];
-            let post          =  entities['post'][postById];
-            if (this.isMounted && post) {
-                this.setState({
-                            isReloading : post['isLoading'],
-                            error : post['error']} ) 
-                delete post['error'];
+            let storeUpdate = store.getState();
+            let {entities} = storeUpdate;
+            let postById =  this.state['postById'];
+            let post =  entities['post'];
+            let postData = post && post[postById];
+
+            if (postData) {
+                
+                let isReloading:string = postData['isLoading'];
+                this.setState({isReloading, postData});
+
+                let error:string = postData['error']; 
+                if (error) {
+                    this.setState({error});
+                    delete postData['error'];
+                }
             }
             
         };
@@ -69,64 +75,43 @@ class  PostPage extends Component  {
 
     componentWillUnmount() {
         this.isMounted = false;
-        //this.unsubscribe();
+        this.unsubscribe();
     };
+
+    getPostFromCache(postById:string):object{
+        let cache = this.props['cacheEntities'];
+        let postCache = cache['post'];
+        postCache = postCache && postCache[postById];
+        return postCache;
+    }
     
     componentDidMount() {
         this.isMounted = true;
         this.onPostUpdate()
-        console.log(this.props)
-
         let entities = this.props['entities'];
-          
         let {slug, id} =  this.props['match'].params;
-        let {state}    =  this.props['location'];
-
         let postById      = `post${id}`;
         this.setState({postById, id})
 
-        if (state && state.recentlyCreated) {
-            let post = state.post;
-            console.log('Post recently created')
-            return this.dispatchToStore(postById, id);
+        let postData = this.getPostFromCache(postById)
+        let _cacheExpired:boolean = cacheExpired(postData);
+
+        if(!_cacheExpired){
+            return this.setState({postData});
         }
 
-        let {post} = entities;
-        post = post && post[postById]
-        !post && this.updatePostStore(postById, id);
+        let postStore:object = this.props['entities'].post;
+        postData = postStore[postById];
 
+        if (postData && postData['question']) {
+            return this.setState({postData})
+        }
+        
+        // Data might have expired or doesn't exist in store,
+        // So we fech it from api. 
+        store.dispatch<any>(getPost(id));
     };
-
-
-    updatePostStore(postById:string, id?:number){
-
-        let cacheEntities  = this.props['cacheEntities'];
-        let post:object  = cacheEntities && cacheEntities['post'];
-        post = post[postById]
-
-        if (post) {
-            let timeStamp:number = post['timeStamp'];
-            const getTimeState:GetTimeStamp = new GetTimeStamp({timeStamp});
-            let menDiff:number = parseInt(`${getTimeState.menutes()}`)
-                                
-            if (menDiff <= 2) {
-                console.log('Post found from cachedEntyties')
-                return this.dispatchToStore(postById, post['post'])
-            }
-        }
-
-        console.log('Fetching post data form the server') 
-        return store.dispatch<any>(getPost(id));
-    }
-
-    dispatchToStore(postById, post){
-        if (postById && post) {
-            store.dispatch<any>(action.getPostPending(postById));
-            store.dispatch<any>(action.getPostSuccess(postById, post));
-        }
-
-    } 
-
+   
     reLoader =()=>{
         let id = this.state['id'];   
         this.isMounted && this.setState({isReloading : true})
@@ -144,37 +129,34 @@ class  PostPage extends Component  {
 
     render() {
         let props = this.getProps();
-        var postById = props['postById'];
-        var post = props['entities']['post'];
-        post = post && post[postById]
-                       
+        const post = props['postData'];
+        if (!post) {
+            return null;
+        }
+                             
         return (
             <div>
                <PartalNavigationBar {...props}/>
                <NavigationBarBigScreen {...props} />
                 <NavigationBarBottom {...props}/>
-                { post &&
-                    <div  className="app-box-container">
-                        <UnconfirmedUserWarning {...props}/>
-                        { post.isLoading &&
-                            <div className="page-spin-loader-box partial-page-loader">
-                                <AjaxLoader/>
-                            </div>
-                        }
+                <div  className="app-box-container">
+                    <UnconfirmedUserWarning {...props}/>
+                    { post.isLoading &&
+                        <div className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
 
-                        { post.error &&
-                            <PageErrorComponent {...props}/>
-                        }
-                        
-                        {!post.isLoading &&
-                            <Post {...props}/>
-                        }
-                    </div>
-                }           
-         </div>
-
-            
-    );                   
+                    { post.error &&
+                        <PageErrorComponent {...props}/>
+                    }
+                      
+                    {!post.isLoading &&
+                        <Post {...props}/>
+                    }
+                </div>
+            </div>
+        );                   
       
     };
    
@@ -185,10 +167,12 @@ export default MainAppHoc(PostPage);
 
 
 export const Post = props => {
-	var postById = props.postById;
-    var postState = props.entities.post[postById];
-    let post      = postState.post;
-    var postProps = {...props, post}
+    const postData = props['postData'];
+    let post      = postData.post;
+    var postProps = {
+            ...props,
+            post
+        }
 
 	return(
         <div className="post-page" id="post-page">

@@ -39,10 +39,7 @@
         padding : 0px 0px 4px; 
         background:  #ffff;
     }
-
-    .post-contents,.question-contents {
-        background : white;
-    }
+    
 
     .index-items-label {
         border-bottom : 1px solid #D5D7D5;
@@ -51,11 +48,6 @@
         color         : #A33F0B;
         font-weight   : bold;
     }
-
-    .post-box, .question-box, .answer-box, .comment-box, .reply-box {
-        padding  : 0 10px;
-        border   : px solid green;
-    } 
   
     .empty-question-list-box,
     .empty-post-list-box {
@@ -92,12 +84,6 @@
         border-top    : 10px solid  #D5D7D5;
     }
 
-    .autor-details-box {
-        border  : px solid green;
-        display : flex;
-        margin  : 0 6px ; 
-    }
-
     .post-box {
     } 
     .post-title, .question {
@@ -122,12 +108,6 @@
 }
 
 
-.answer-container {
-  border: px solid red;
-  position: relative;
-  overflow: hidden;
-
-}
 
 
 .comment-box {
@@ -136,14 +116,10 @@
 }
 
 
-.comment-contents, .comments-link {
+comment-contents, .comments-link {
   background       : #F7F7F7;
   border-bottom    : 1px solid  #E8E8E8;
   border-top-width : small;
-  padding          : 14px 0;
-     
-      
-
 }
 
 .answer-contents {
@@ -165,7 +141,7 @@
 
 .answer, .post-body {
    font-size : 13px;
-   margin    : 0 10px;
+  
 }
 
  
@@ -178,20 +154,16 @@
 .reply, .comment  {
     font-size : 12px;
     border    : px solid blue;
-    margin    : 0 10px;
- 
-}
+} 
 
-  
-
-.reply-contents {
+.reply-conten {
   border: px solid black; 
   background:  #f7f7f7;
 }
 
 
 .edit-reply-btn,.upvote-comment {
-   background  :  #f7f7f7;
+   /*background  :  #f7f7f7;*/
    font-size   :   12px !important;
    color       :   #4A4A4A;
 }

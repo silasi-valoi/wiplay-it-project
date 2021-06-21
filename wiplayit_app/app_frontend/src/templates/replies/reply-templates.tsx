@@ -11,223 +11,14 @@ import { UpVoteReplyBtn,
          ChangeImageBtn,
          OpenUsersModalBtn,} from 'templates/buttons';
 
-import {ButtonsBox} from "templates/partials";
+import {ButtonsBox, AuthorAvatar,AuthorDetails} from "templates/partials";
 import Api from 'utils/api';
 import  * as types  from 'actions/types';
-import ReplyChildrenBox from "containers/main/replies/reply-children-page";
-import ReplyGrandChildrenBox from "containers/main/replies/reply-grand-children-page";
-import ReplyGreatGrandChildBox from "containers/main/replies/reply-great-grand-child-page";
 import Helper from 'utils/helpers';
 import { GetModalLinkProps } from "templates/component-props";
-import { UserComponentSmall } from "templates/profile";
 
 const api      = new Api();
 const helper   = new Helper();
-
-export const RepliesComponent = props => {
-  // console.log(props.replyState)
-
-   let replyStyles = {
-         border     : 'px solid black',
-         margin     : '15px 22px',
-   }
-   
-   var replies   =   props.entities.replies;
-   replies =  replies[props.repliesById];
-   return(
-      <div>
-   
-         { replies.replyList.map( (reply, index) => { 
-            let replyProps = {
-               reply,
-               byId : props.repliesById,
-               index,
-               replyStyles,
-               props
-            }
-                         
-         return (
-            <div key={index} >
-                { props.comment.id === reply.comment?
-                    <div  className="reply-container">
-                        <div  className="reply-contents"> 
-                            <Reply {...replyProps}/>
-                            <ReplyChildrenBox {...replyProps}/>
-                        </div>
-
-                    </div>
-
-               :""
-
-               }
-            </div>
-         )
-
-         }
-
-         )}
-
-      </div>
-
-
-   )
-}
-
-
-
-
-
-export const ReplyChildernComponent = props => {
-    //console.log(props)
-
-    let replyStyles = {
-             
-               border     : 'px solid blue',
-               margin     : '15px 22px 10px  38px',
-    };
-     
-    var replies   =   props.entities.replies;
-    replies =  replies[props.replyChildrenById];
-
-    return(
-        <div>
-
-         { replies.replyList.map( (reply, index) => {
-            let replyProps = {
-               reply,
-               byId : props.replyChildrenById,
-               index,
-               replyStyles,
-               props
-            }
-            
-            return (
-
-               <div  key={index} >
-                    { props.childParent.id === reply.parent?
-
-                    <div className="reply-child-container">
-                  
-                     <div className="reply-child-contents"> 
-                        <Reply {...replyProps}/>
-                     </div>
-
-                     { reply.has_children?
-                           <ReplyGrandChildrenBox {...replyProps}/>
-        
-                           :
-                           ''
-                     }
-
-                  </div>
-
-                  : ""
-                  } 
-               </div> 
-              ) 
-            }
-
-         )}
-
-      </div>
-
-   )
-}
-
-
-
-
-export const ReplyGrandChildernComponent = props => {
- 
-  let replyStyles = {
-            border    : 'px solid red',
-            margin    : '15px 22px 10px 60px',
-         }
-
-   var replies   =   props.entities.replies;
-   replies =  replies[props.grandChildById];
-   return(
-         <div >
-
-            { replies.replyList.map( (reply, index) => {
-               let replyProps = {
-                  reply,
-                  byId : props.grandChildById, 
-                  index,
-                  replyStyles,
-                  props
-               }
-               
-            return(  
-               <div  key={index}>
-                  { props.grandChildParent.id === reply.parent?
-                     <div className="reply-grand-child-container">
-                        <div className="reply-grand-child-contents"> 
-                           <Reply {...replyProps }/>
-                        </div>
-                        { reply.has_children?
-                           <ReplyGreatGrandChildBox {...replyProps} />
-                              :
-                           ''
-                        }
-
-                     </div>
-                     :
-
-                     ""
-                  }
-
-               </div> 
-            )
-            }
-
-           )}
-
-         </div>
-
-        
-   )
-}
-
-
-
-
-export const ReplyGreatGrandChildComponent = props => {
-    console.log(props)
-
-    let replyStyles = {
-             
-              border     : 'px solid green',
-              margin     : '15px 22px 10px 75px'
-            }
-
-    var replies   =  props.entities.replies;
-    replies       =  replies[props.byId];
-    var replyList =  replies.replyList;
-
-    return(
-         <div>
-            {replyList.map( (reply, index) => {
-               let replyProps = {reply,index,replyStyles,props}
-                
-                return(
-
-                    <div  key={index}>
-                        {props.greatGrandChildParent?.id === reply?.parent &&
-                            <div className="reply-great-grand-child-container">
-                                <div className="reply-great-grand-child-contents"> 
-                                    <Reply {...replyProps}/>
-                                </div>
-                            </div>
-                        }
-                    </div>  
-                )
-            })}
-        </div>
-    )
-}
-
-
 
 
 export const Reply = (props, replyProps=undefined, isNewReply=false) => {
@@ -286,7 +77,8 @@ export const Reply = (props, replyProps=undefined, isNewReply=false) => {
     let apiUrl    = reply && isAnswerBox && api.getAnswerReplyUpVotersListApi(reply.id) ||
                     reply && api.getPostReplyUpVotersListApi(reply.id);
 
-    let linkName = reply.upvotes > 1 && `${reply.upvotes} Upvoters` || `${reply.upvotes} Upvoter`;
+    let linkName = reply.upvotes > 1 && `${reply.upvotes} Upvoters`
+                                     || `${reply.upvotes} Upvoter`;
 
     byId = isNewReply && newRepliesById || byId;
 
@@ -359,28 +151,29 @@ export const Reply = (props, replyProps=undefined, isNewReply=false) => {
             currentUser,
     };
 
+    const authorProps:object  = {
+            author : reply.author,
+            data   : reply,
+        };
+
     return (
-         <div style={ replyStyles}  className="reply-box" id="reply-box">
-            <div className="autor-details-box">
-                <UserComponentSmall {...userProps}/>
-            </div>
-
-         
-            <div className="reply">
-               <Editor
-                 blockRendererFn={pageMediaBlockRenderer}
-                 editorState={editorState} 
-                 readOnly={true} />
-            </div>
-            
-            
-          <ButtonsBox {...btnsList}/>
-
-
-         </div>
-    
-   )
-}
+        <div className="replies-container">
+            <div className="reply-box" id="reply-box">
+                <div className="autor-details-box">
+                    <AuthorDetails {...authorProps}/>
+                </div>         
+                <div className="reply-body">
+                    <Editor
+                        blockRendererFn={pageMediaBlockRenderer}
+                        editorState={editorState} 
+                        readOnly={true} />
+                </div>
+                
+           </div>
+           <ButtonsBox {...btnsList}/>
+       </div>
+    );
+};
 
 
 
@@ -395,7 +188,7 @@ export const RepliesLink = (props:object) => {
       border        : "px solid #D5D7D5",
       display       : 'flex',
       flexDirection : 'row',
-      margin        : '10px 60px',
+      margin        : '5px 0',
       padding       : '2px 2px 2px 7px',
       borderRadius  : '20px',
       background    : '#EEEEEE'

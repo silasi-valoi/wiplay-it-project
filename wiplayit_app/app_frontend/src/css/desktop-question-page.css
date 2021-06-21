@@ -5,11 +5,42 @@
  
 @media (min-width:980px) {
 
+    .page-contents, #home-page-contents {
+        width    : 42%;
+        margin   : 25px 29%;
+    }
+
     #page-error-box, #answer-page,     
-    #home-page-contents, .question-page, .post-page,
-    .question-list-page, .post-list-page {
-        width      : 42%;
-        margin     : 30px 29%;  
+    .question-page, .post-page,
+    .question-list-page  {
+        width    : 42%;
+        margin   : 30px 29%; 
+        border   : 1px solid #D5D7D5; 
+        border-radius : 15px;
+        z-index  : 500;
+        position : relative;
+        padding: 10px;  
+    }
+    
+    .index-questions, 
+    .index-answers, 
+    .index-posts, 
+    .index-user-list,
+    .post-list-page {
+        background : #ffff;
+        margin   : 15px 0; 
+        border   : 1px solid #D5D7D5; 
+        border-radius : 10px;
+        z-index  : 800;
+        position : relative;
+        padding: 10px;  
+    
+    }
+
+
+
+    .answer-container, .question-container, .post-container {
+        background : #ffff;
     }
 
     .question-list-page, .post-list-page ,
@@ -17,12 +48,7 @@
         background : #ffff; 
         border     : px solid  #D5D7D5;  
     }
-
-    
-    .post-box, .question-box, .answer-box, .comment-box, .reply-box {
-        border-bottom : 0.5px solid #E8E8E8;
-        padding    : 0px 10px;
-    } 
+     
     
     .page-error-box {
        padding-top: 5%;
@@ -34,7 +60,6 @@
         font-size : 16px;  
         justify-content: center;
         display: flex;
-
     }  
 
     .post-list-create-box,
@@ -46,7 +71,6 @@
 
     }
 
-
     .post-list-create-box button,
     .question-list-create-box button  {
         border     : px solid  red; 
@@ -57,27 +81,25 @@
 
     }
 
-    .post ,.question {
+    .post, .question {
         border      : px solid black;
         font-size   : 13px;
         font-family : 'Ropa Sans';
         font-weight : bold;
     }
 
-    .post-title,  .comment-box {
+    .post-title, .comment-box {
         border-bottom : px solid blue; 
+        padding:  0 7px;
     }
 
-    .main-post  {
-        border:px solid red;
+    .post-body {
         width: 100%;
         font-size: 17px;
+        padding : 3px 7px;
     }
 
     .index-questions, .index-answers, .index-posts {
-        border     : 1px solid #D5D7D5;
-        background : #ffff;
-        margin     : 10px 0;
     }
 
     .index-items-label {
@@ -87,151 +109,67 @@
         font-family    : 'Cabin'; 
     }
 
-    .answer-container, .question-container, .post-container {
-        background : #ffff;
-    }
-
     .answer-list-container {
         border : px solid blue;
     }
+    
 
-    .reply-container,.comment-container {
-        background    : #f9f9f9;
-        border-bottom : 1px solid  #D5D7D5;
+    .replies-level-0 {
+        border  : px solid black;
+        margin-left: 5%;
+    }
+    .replies-level-1 {
+        margin-left: 5%;
     }
 
-    .reply-container {
+    .replies-level-2 {
+        margin-left: 5%;
+    }
+
+    .replies-level-3 {
+        margin-left: 8%;
+    }
+
+    .comment-page {
+        border : px solid blue;
+    }
    
-    }
-
     .create-answer {
         box-shadow: none;
         background-color: white;
     }     
 
-    .autor-details-box {
-        margin  : 0 6px;
-        border  : px solid green;
-        display : flex;
+    .answer-box {
+        border-bottom:1px solid #D5D7D5;
+       /*background-color:#f0eeed;*/
+    }
+   
+    .number-answers-box {
+        border-bottom :  1px solid #D5D7D5;
+        padding: 0 12px;
+    } 
+
+    .number-of-answers {
+        padding-left:6px ;
+        margin-top:7px;
+    } 
+
+    .comments-link:hover {
+        cursor:pointer;
+    }
+
+    .answer {
+        border      : px solid black;
+        margin-left : 8px; 
+        font-size   : 15px;
     }
 
 
-
-.answer-box {
-  border-bottom:1px solid #D5D7D5;
-  /*background-color:#f0eeed;*/
-}
-
-.comment-box {
-   border  : px solid black; /*#D5D7D5;*/
-   padding : 0px 10px;
-}
-
-.answer-contents, .post-contents,.question-contents {
-    border-top : px solid #D5D7D5;
-    
-}
-
-
-.number-answers-box {
-   border-bottom :  1px solid #D5D7D5;
-   padding: 0 12px;
-} 
-
-.number-of-answers {
-    padding-left:6px ;
-    margin-top:7px;
-    
-} 
-
-.comment-contents {
-      border-bottom : px solid  #D5D7D5;
-      background    : #f9f9f9;
-      border        : px solid red;
-     
-}
-
-.comments-link:hover {
-    cursor:pointer;
-}
-
-.answer {
-    border      : px solid black;
-    margin-left : 8px; 
-    font-size   : 15px;
-}
-
-
-.answer-dropdown {
-  padding-right: 34px; 
-}
-.reply, .comment {
-    border:px solid red; 
-    font-size: 13px;
-    margin-left : 8px; 
-    width: auto;
-}
-
+    .answer-dropdown {
+        padding-right: 34px; 
+    }
     
 
-.reply-contents {
-      border:px solid green;
-      background:     #f9f9f9;
-      
-}
-
-  .child-reply p {
-    border: px solid blue;
-    margin:  0px 14px 0px 70px;
-    line-height: 1.2;
-    font-size: 13px;
-  }
-.child-user-box {
-  padding: 0px 70px;
-  border: px solid red;
-}
-.reply-user-box {
-   padding: 0px 40px;
-}
-.reply-dropdown {
-  border: px solid blue;
-  padding-right: 34px;
-   
-}
-
-.comment p {
-  margin:0px 14px 0px 18px;
-  line-height: 1.2;
-  width:auto;
-  font-size: 13px;
-}
-
-.question-followers-box {
-     
-}
-
-
-.question-relation {
-  border:2px solid #D5D7D5;
-}
-.answer-relation {
-    border-bottom:px solid #D5D7D5;
-
-}
-.post-relation {
-    border-bottom:4px solid #D5D7D5;
-
-  }
-
-.comment-relation {
-    /*border: 1px solid #D5D7D5;*/
-    padding-left: px;
-}
-
-.reply-relation {
- /* border: 1px solid #D5D7D5;*/
- 
-}
 
 .following,.question-followers {
       border:px solid black;  
@@ -288,24 +226,15 @@
     width: 100px;
     height:100px;
     margin: 20px 15px 10px 20px;
-   
-    
 }
+
 
 .img-container-sm {
     border: 1px solid #D5D7D5;/*#F9F7F7;*/
     border-radius: 50px;
     width: 30px;
     height:30px;
-    
-}
-
-.profile-photo {
-    /*border: 1px solid black; /*#F9F7F7;*/
-    border-radius: 100%;
-    width: 100%;
-    height:100%;
-    object-fit: cover;
+    border: 1px solid red;
     
 }
 

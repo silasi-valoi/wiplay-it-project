@@ -1,26 +1,27 @@
 import React from 'react';
 import * as Icon from 'react-feather';
-import {OpenAuthModalBtn} from "templates/buttons";
+import {OpenAuthModalBtn, LinkButton} from "templates/buttons";
 import * as checkType from 'helpers/check-types'; 
+import GetTimeStamp from 'utils/timeStamp';
+
 import {validateEmail,
         validatePhoneNumber} from 'containers/authentication/utils';
 
 export const ButtonsBox = props => {
-    let styles = props && props.Styles;
-    styles     = styles && styles.contents;
-  	styles     = !styles && Styles.contents || styles;
-    
+             
     return (
         <div className="contents-nav-container">
 
-            <div className="items-counter-box">
-               <ul className="items-counter-box">
-                    <li  className="items-btn-box">
-                        {props.itemsCounter || null}
-                    </li>
-               </ul>
-            </div>
+            <ul className="items-counter-box">
+                <li  className="items-btn-box">
+                    {props.authorCounter || null}
+                </li>
 
+                <li  className="items-btn-box">
+                    {props.itemsCounter || null}
+                </li>
+            </ul>
+            
             <ul  className="contents-nav-box" > 
                 <li className="btn-box1">
                     {props?.btn1}
@@ -39,18 +40,53 @@ export const ButtonsBox = props => {
 
 };
 
-
-export const Styles = {
-    contents : {
-        display      : 'flex',
-        border       : 'px solid red',
+const AuthorLinkProps = (author:object):object => {
+    return{
+        linkPath:`/profile/${author['id']}/${author['slug']}/`,
+        state:{user:author},
     }
+}
+
+export const AuthorAvatar = (props:object) => {
+    const author:object = props['author']
+    const linkProps = AuthorLinkProps(author);
+    const profile = author && author['profile'];
+
+    return(
+        <ul className="author-img-box" >
+            <li className="author-img">
+                <LinkButton {...linkProps}>
+                    <img alt="" src={profile.profile_picture} className=""/> 
+                </LinkButton>
+            </li>
+        </ul>
+    )
+}
+
+export const AuthorDetails = (props:object)=>{
+    let author:object = props['author'];
+    let data:object = props['data']
+    let timeStamp:string = data['date_created']
+    const linkProps = AuthorLinkProps(author);
+
+    const getTimeState = new GetTimeStamp({timeStamp});
+    let dateCreated = getTimeState.timeSince();
+
+    return(
+        <ul className="author-details-box">
+            <li className="author-name-box">
+                <LinkButton {...linkProps}>
+                    {author['first_name']} {author['last_name']}
+                </LinkButton>
+            </li>
+            <li className="time-created">{dateCreated}</li>
+        </ul>
+    )
 }
 
 
 export const PageErrorComponent = props => {
     let {error, isReloading } = props;
-    
     if (isReloading || !error || !checkType.isString(error)) return null;
    
     return(
@@ -80,7 +116,7 @@ export const PageErrorComponent = props => {
 
 
 export const AlertComponent =(props)=> {
-    let { message,alertBoxStyles }      = props;
+    let {message, alertBoxStyles} = props;
     let textMessage  = message?.textMessage  
     let messageType = message?.messageType;
      

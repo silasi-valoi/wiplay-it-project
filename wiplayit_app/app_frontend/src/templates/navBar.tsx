@@ -8,9 +8,11 @@ import { SubmitBtn,
          OpenUsersModalBtn,
          ModalCloseBtn,
          OpenEditorBtn  } from "templates/buttons";
-import { ModalManager, Modal}   from  "containers/modal/modal-container";
+import { Modal}   from  "containers/modal/modal-container";
 import { GetModalLinkProps } from "templates/component-props";
 import { store } from "store/index";
+import { closeModals}   from  'containers/modal/helpers';
+
 import { showModal } from 'actions/actionCreators';
 import { history } from "App"
 import * as Icon from 'react-feather';
@@ -149,16 +151,16 @@ export const RedirectMenuLinks = props => {
     let {pathname, state} = props;
 
     let storeUpdate  = store.getState();
-    let { entities } = storeUpdate;
+    let {entities} = storeUpdate;
     let modal     = entities['modal'];
     let navigationMenuModal = modal && modal['navigationMenu'];
-    let location:object = history.location;
-
-    let currentPath = location['pathname'];
-
+        
     if (navigationMenuModal && navigationMenuModal.modalIsOpen ) {
-        window.history.back() 
+        closeModals(true)
     }
+
+    let location:object = history.location;
+    let currentPath = location['pathname'];
     
     if (pathname != currentPath) {
         setTimeout(()=> {
@@ -217,10 +219,7 @@ export const NavBarMenuModalItems = props =>{
                 </ul>
 
                 <button type='button' 
-                        onClick={()=>{
-                            window.history.back();
-                            ModalManager.close('navigationMenu')
-                        }}
+                        onClick={()=> closeModals(true)}
 
                         className="btn-sm nav-bar-menu-close-btn">
                     <span className="dismiss-nav-bar-menu-icon">&times;</span>

@@ -15,9 +15,8 @@ import { Editor } from "draft-js";
 import  * as types  from 'actions/types';
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import Helper from 'utils/helpers';
-import {ButtonsBox, Styles } from "templates/partials";
+import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
 import Api from 'utils/api';
-import { UserComponentSmall } from "templates/profile";
 
 
 const api      = new Api();
@@ -131,15 +130,12 @@ export const AnswersComponent = props => {
             btn1   : UpVoteBtn,
             btn2   : EditorModalBtn,
             btn3   : <OpenOptionlBtn {...btnsProps}/>,
-            Styles : Styles
         };
 
-    const userProps  = {
-            obj   : answer,
-            time   : 'Answered',
-            currentUser,
+    const authorProps:object  = {
+            author : answer.author,
+            data   : answer,
         };
-
 
     let question = answer.question;
     
@@ -150,8 +146,9 @@ export const AnswersComponent = props => {
                                         
     return (
         <div className="answer-box">     
-            <div className="autor-details-box answer-detail-box">
-                <UserComponentSmall {...userProps}/>
+            <div className="autor-answer-detail-box">
+                <AuthorAvatar {...authorProps}/>
+                <AuthorDetails {...authorProps}/>
             </div>
 
             { !isQuestionBox  &&
