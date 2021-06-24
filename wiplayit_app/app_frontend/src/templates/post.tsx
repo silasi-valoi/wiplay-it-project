@@ -164,7 +164,7 @@ export const PostComponent = props => {
                             <AuthorDetails {...authorProps}/>           
                         </div>
                         <ul className="">
-                            { props.isPostBox? 
+                            {props.isPostBox? 
                                 <li className="post-title">
                                     { post.add_title }
                                 </li>

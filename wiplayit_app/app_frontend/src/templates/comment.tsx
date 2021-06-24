@@ -45,10 +45,11 @@ export const CommentsComponent = props => {
         isAuthenticated,
         isNewComments, } = props;
 
-    if (!comment) {
+    if (!comment || !comment.comment) {
         return null;
     }
-       
+
+
     let editorState = helper.convertFromRaw(comment.comment)  
 
     let pathToUpvoters;
@@ -137,7 +138,7 @@ export const CommentsComponent = props => {
    
               
     const btnsList  = {
-        itemsCounter :  CommentUpVotersBtn,
+        authorCounter :  CommentUpVotersBtn,
         btn1         :  upvoteBtn,
         btn2         :  EditorModalBtn,
         btn3         :  <OpenOptionlBtn {...btnsProps}/>,
@@ -148,7 +149,12 @@ export const CommentsComponent = props => {
             data   : comment,
         };
 
-    
+    const replyProps = {
+        ...props,
+        parent : comment,
+        parentId : comment.id,
+                 
+    };
 
     return(
         <div className="comment-container">
@@ -171,7 +177,7 @@ export const CommentsComponent = props => {
                 </div>
             </div>
             
-            <RepliesLevelZero {...props}/>
+            <RepliesLevelZero {...replyProps}/>
         </div>
     );
 };

@@ -631,13 +631,13 @@ export const getCurrentUserError = (error:object):object => {
 };
 
 export const getCommentLindData = (byId:string, comments:object[]):object => {
-      
+          
     return {     
         type   : 'GET_COMMENT_LINK_DATA',
         byId,
         payLoad : {
 
-            showLink         : true,
+            showLink         : comments.length > 1,
             commentList      : comments,
             isLoading        : false,
             error            : '',
@@ -651,41 +651,43 @@ export const getCommentLindData = (byId:string, comments:object[]):object => {
 };
 
 export const getRepliesLindData = (props:object) => {
-   var replies:object[] = props['replies'];
-   var reply = replies[0];
-   var byId = props['byId'];
-
-   return {
-      type      : props['actionType'],
-      byId,
-      payLoad : {
-         replyList  : replies,
-         error      : '',
-         showLink   : true,
-         isLoading  : false,
-         linkData   : {
-            reply        : reply,
-            totalReplies : replies.length,
-         }
-      },
-   };
-};
-
-export const getReplyChildLindData = (props:object) => {
-   var reply:object = props['reply'];
+   console.log(props)
+   const replies:object[] = props['replies'];
+   var reply:object = replies[0];
    var byId:string = props['byId'];
    
     return {
-        type        : props['actionType'],
+        type      : props['actionType'],
         byId,
         payLoad : {
-            replyList    : reply['children'],
+            replyList  : replies,
+            showLink   : replies.length > 1,
+            isLoading  : false,
+            linkData   : {
+                reply : reply,
+                totalReplies : replies.length,
+            }
+        },
+    };
+};
+
+export const getReplyChildLindData = (props:object) => {
+   let reply:object = props['reply'];
+   let replyList:object[] = reply['children'];
+   let byId:string = props['byId'];
+   console.log(props)      
+   
+    return {
+        type   : props['actionType'],
+        byId,
+        payLoad : {
+            replyList,
             error        : '',
-            showLink     : reply['has_children'],
+            showLink     : replyList['length'] > 1,
             isLoading    : false,
             linkData  : {
                 reply        : reply,
-                totalReplies : reply['child_count'],
+                totalReplies : replyList['length'],
             },
         },
     };

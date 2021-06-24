@@ -41,7 +41,7 @@ export const ToggleItemsBtn = (props:object)=>{
                 
     return(
         <button type="button"
-                className="btn-sm"
+                className="btn-sm items-counter-btn"
                 onClick={()=> getItemsList(props['itemsById'])}>
             {itemsNum || ''} {props['itemsName']}
         </button>

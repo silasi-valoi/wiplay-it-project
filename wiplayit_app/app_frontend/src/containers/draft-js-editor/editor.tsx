@@ -515,11 +515,24 @@ export default  class AppEditor extends Component{
    
     setScrollHeight =(scrollHeight:number, override?:boolean):void => {
         if (this.state['onScroolStyles'] && !override) return
-                
-        let onScroolStyles = {
-            height : `${scrollHeight}px`,
-        };
-        return this.setState({onScroolStyles});
+
+        // The modal editor as reached a bottom of the page
+        // So a height is set on modlal container to maintain its 
+        // Full view.
+            
+        // Because everytime a user type a carecter on a form, a react
+        // State is updated. So to prevent this warning:
+
+        // "Warning: Cannot update during an existing state transition
+        // (such as within `render`).Render methods should be a pure function 
+        // of props and state."
+
+        // Delay for 1 second before call setState.
+        setTimeout(()=> {
+            let onScroolStyles = {height : `${scrollHeight}px`};
+            this.setState({onScroolStyles});
+        }, 500);
+        
     }
 
     matchSmallScreenMedia():boolean{

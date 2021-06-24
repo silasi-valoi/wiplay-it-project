@@ -129,6 +129,8 @@ export function MainAppHoc(Component) {
             let { entities } = this.props;
            
             window.onpopstate = (event) => {
+                // Everytime a browser back button id hit, 
+                // We close a if an of the modals are open 
                 closeModals();
             }
            

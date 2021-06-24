@@ -1,1 +1,1 @@
-{"status":"done","error":"unknown-error","message":"[tsl] ERROR in /home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_frontend/src/containers/users/modal-user-list.tsx(128,61)\n      TS1005: ')' expected.","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/app_frontend/app.bundle.js"}]}}
+{"status":"done","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/app_frontend/app.bundle.js"}]}}

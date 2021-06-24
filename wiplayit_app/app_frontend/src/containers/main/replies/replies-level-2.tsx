@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import  AjaxLoader from 'templates/ajax-loader';
 import {AuthorAvatar} from 'templates/partials';
-import {Reply,GrandChildRepliesLink  } from 'templates/replies/reply-templates';
+import {Reply, ChildrenRepliesLink} from 'templates/replies/reply-templates';
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
 import RepliesLevelTree from "containers/main/replies/replies-level-3";
@@ -24,11 +24,10 @@ class RepliesLevelTwo extends Component {
 
    componentDidCatch(error, info) {
       // You can also log the error to an error reporting service
-      console.log(error, info);
+      //console.log(error, info);
    }
 
     componentDidMount() {
-        //console.log(this.props)
         let answer = this.props['answer'];
         let reply = this.props['reply']
         let post = this.props['post']
@@ -73,8 +72,6 @@ class RepliesLevelTwo extends Component {
         let newReplies  =  replies && replies[newChildRepliesById];
 
         let repliesList =  replies && replies[replyChildById]; 
-
-        //console.log(props, repliesList,newReplies ,replyChildById,newChildRepliesById )
       
         return (
             <div>
@@ -120,13 +117,20 @@ const NewAddedReplies = props => {
 const ViewedReplies = props => {
     let {entities, replyChildById } = props;
     let replies = entities.replies[replyChildById]; 
-    let replyList =  replies && replies.replyList && replies.replyList.length && replies.replyList;  
-
+    let replyList =  replies && replies.replyList
+                     && replies.replyList.length && replies.replyList;  
+    let reply = replies && replies.linkData.reply;
+    
     return(
         <div>
             { replies.showLink?
-                <GrandChildRepliesLink {...props}/>
+                <div  className={`replies-level-${reply['level']}`}>
+                    { Replies(props, [reply], false) }
+                    <ChildrenRepliesLink {...props}/>
+                </div>
+
                 :
+
                 <div>
                     { replies.isLoading?
                         <div className="spin-loader-box">
@@ -150,6 +154,8 @@ const Replies = (props:object, replyList:object[], isNewReplies?:boolean) => {
     return(
         <div>
             { replyList && replyList.map( (reply, index) => {
+                if(childParent['id'] !== reply['parent']) null;
+                
                 let replyProps = {
                         reply,
                         byId : props['replyChildById'],
@@ -166,17 +172,10 @@ const Replies = (props:object, replyList:object[], isNewReplies?:boolean) => {
                 let replyChildProps = {...props, reply}
                
                 return (
-                    <div  key={index} >
-                        {childParent['id'] === reply['parent'] &&
-                            <div className={`replies-level-${reply['level']}`}>
-                                <div  className="reply-contents">
-                                     <AuthorAvatar {...authorProps}/>
-                                    { Reply( props, replyProps, isNewReplies) }
-                                    
-                                </div>
-                                <RepliesLevelTree {...replyChildProps}/>
-                            </div>
-                        } 
+                    <div  key={index} 
+                          className={`reply-container replies-level-${reply['level']}`}>
+                        { Reply( props, replyProps, isNewReplies) }
+                        <RepliesLevelTree {...replyChildProps}/>
                     </div> 
                 ); 
             })}

@@ -82,7 +82,6 @@
     }
 
     .post, .question {
-        border      : px solid black;
         font-size   : 13px;
         font-family : 'Ropa Sans';
         font-weight : bold;
@@ -90,13 +89,11 @@
 
     .post-title, .comment-box {
         border-bottom : px solid blue; 
-        padding:  0 7px;
     }
 
     .post-body {
         width: 100%;
         font-size: 17px;
-        padding : 3px 7px;
     }
 
     .index-questions, .index-answers, .index-posts {
@@ -160,7 +157,6 @@
 
     .answer {
         border      : px solid black;
-        margin-left : 8px; 
         font-size   : 15px;
     }
 

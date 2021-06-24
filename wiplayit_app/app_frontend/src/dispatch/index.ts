@@ -471,12 +471,14 @@ export function getCommentList(byId:string) {
 };
 
 export function getReplyList(params:object) {
+    console.log(params)
     return dispatch => {
         dispatch(action.getReplyListPending(params['actionType'], params['byId']))
     }
 };
 
 export function getReplyChildrenList(params:object) {
+    console.log(params)
     
     let actionType = params['actionType'];
     let byId:string = params['byId'];
@@ -489,15 +491,10 @@ export function getReplyChildrenList(params:object) {
         }
         
     }
+    /*
     let useToken:boolean = true;
     const Api    = _GetApi(useToken);  
-
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
-
+  
     return dispatch => {
         dispatch(action.getReplyChildListPending(actionType, byId))
 	    Api.get(params['apiUrl'])
@@ -507,7 +504,7 @@ export function getReplyChildrenList(params:object) {
         .catch(error => {
             dispatch(action.getReplyChildListError(actionType, byId, error))
         }) 
-    }
+    }*/
 };
 
 

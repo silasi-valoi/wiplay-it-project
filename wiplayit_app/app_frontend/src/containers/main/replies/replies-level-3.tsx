@@ -5,7 +5,7 @@ import  * as action  from 'actions/actionCreators';
 import  * as types  from 'actions/types';
 import {store} from "store/index";
 
-import {Reply } from 'templates/replies/reply-templates';
+import {Reply,ChildrenRepliesLink} from 'templates/replies/reply-templates';
 import Api from 'utils/api';
 
 
@@ -57,7 +57,7 @@ class RepliesLevelTree extends Component {
 
     componentDidCatch(error, info) {
         // You can also log the error to an error reporting service
-        console.log(error, info);
+        //console.log(error, info);
     } 
 
     componentDidUpdate(nextProps, prevState) {
@@ -138,17 +138,18 @@ const ViewedReplies = props => {
             byId      : replyChildById,
             children  : replyList,
         };     
-
+    let reply = replies && replies.linkData.reply;
+    
     return(
         <div>
             { replies.showLink?
-                <div onClick={ () => props.getReplyChildrenList( linkProps ) }> 
-                    <ul>
-                        <li>Click to view More</li>
-                            <li>{ replies.linkData.totalReplies }</li>
-                        </ul>
-                </div>            
+                 <div  className={`replies-level-${reply['level']}`}>
+                    { Replies(props, [reply], false) }
+                    <ChildrenRepliesLink {...props}/>
+                </div>
+
                 :
+
                 <div>
                     { replies.isLoading?
                         <div className="spin-loader-box">
@@ -172,33 +173,25 @@ const Replies = (props:object, replyList:object[], isNewReplies?:boolean) => {
     return(
         <div>
             { replyList && replyList.map((reply, index) => {
+                if(childParent['id'] !== reply['parent']) null;
+
                 let replyProps = {
                         reply,
                         byId : props['replyChildById'],
                         index,
                         newRepliesById: props['newChildRepliesById'],
                 };
-
-                const authorProps:object  = {
-                    author : reply['author'],
-                    data:reply,
-                };
-
                 let replyChildProps = {...props, reply}
                
                 return (
-                    <div  key={index} >
-                        {childParent['id'] === reply['parent'] &&
-                            <div className={`replies-level-${reply['level']}`}>
-                                <div  className="reply-contents">
-                                    <AuthorAvatar {...authorProps}/>
-                                    { Reply( props, replyProps, isNewReplies) }
+                    <div  key={index} 
+                          className={`replies-level-${reply['level']}`}>
+                        
+                            { Reply( props, replyProps, isNewReplies) }
                                     
-                                </div>
-                                <RepliesLevelTree {...replyChildProps}/>
-                            </div>
-                        } 
-                    </div> 
+                        
+                        <RepliesLevelTree {...replyChildProps}/>
+                    </div>
                 ); 
             })}
         </div>

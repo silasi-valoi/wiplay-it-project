@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import  AjaxLoader from 'templates/ajax-loader';
 import {AuthorAvatar} from 'templates/partials';
-import {Reply, ChildRepliesLink } from 'templates/replies/reply-templates';
+import {Reply, ChildrenRepliesLink} from 'templates/replies/reply-templates';
 import  * as action  from 'actions/actionCreators';
 import {store} from 'store/index';
 import RepliesLevelTwo from 'containers/main/replies/replies-level-2';
@@ -17,34 +17,37 @@ class RepliesLevelOne extends Component {
         this.state = {
             isReplyChildBox    : true,
             childParent        : '',
-            replyChildById  : '',
-            newChildRepliesById: '',
+            repliesById  : '',
+            newRepliesById: '',
         };
     };
 
     componentDidCatch(error, info) {
        // You can also log the error to an error reporting service
-       console.log(error, info);
+       //console.log(error, info);
     }
 
     componentDidMount() {
-         
         let answer = this.props['answer'];
         let reply = this.props['reply']
         let post = this.props['post']
 
         if (reply) {
-                        
-            let replyChildById  = post && `postReplyChild${reply.id}` 
-                                  || answer && `answerReplyChild${reply.id}`; 
+            let repliesById  = post && `postRepliesLevel-1-${reply.id}` 
+                                  || answer && `answerRepliesLevel-1-${reply.id}`; 
             
-            let newChildRepliesById  =  `newReplies${reply.id}`; 
+            let newRepliesById  =  `newRepliesLevel-1-${reply.id}`; 
 
-            this.setState({replyChildById, newChildRepliesById, childParent:reply});
-            var props = {
+            this.setState({
+                repliesById,
+                newRepliesById,
+                parent:reply}
+            );
+
+            const props = {
                     actionType : 'GET_REPLY_CHILD_LINK_DATA',
                     reply,
-                    byId: replyChildById,
+                    byId: repliesById,
             }
             reply.has_children && store.dispatch(action.getReplyChildLindData(props)); 
         }
@@ -63,38 +66,30 @@ class RepliesLevelOne extends Component {
     render() { 
         let props      = this.getProps();
         const entities = props['entities'];
-        const replyChildById = props['replyChildById'];
-        const newChildRepliesById = props['newChildRepliesById'];
-       
-
-        
-        const replies   =  entities && entities.replies;
-        let newReplies  =  replies  && replies[newChildRepliesById];
-
-        let repliesList =  replies  && replies[replyChildById];
-       
-        //console.log(props,replies, newReplies, newChildRepliesById, replyChildById)
+        const byId = props['repliesById'];
+        const newRepliesById = props['newRepliesById'];
                
+        const replies   =  entities && entities.replies;
+        let newReplies  =  replies  && replies[newRepliesById];
+
+        let repliesList =  replies  && replies[byId];
+            
         return (
             <div>
-                <div>
-                    {newReplies && newReplies.replyList?
-                        <NewAddedReplies {...props}/>
-                        :
-                        ""
-                    }
-                </div>
-
-                <div>
-                    { repliesList?
-                        <ViewedReplies {...props}/>
-                        :
-                        ""
-                    }
-                </div>
+                { newReplies && newReplies.replyList &&
+                    <div>
+                        {NewReplies(props, newReplies)}
+                    </div>
+                }
+                         
+                { repliesList &&
+                    <div>
+                        { OldReplies(props, repliesList)}
+                    </div>
+                }
             </div>  
-       );
-   };
+        );
+    };
 };
 
 
@@ -104,32 +99,42 @@ export default RepliesLevelOne;
 
 
 
-const NewAddedReplies = props => {
-   let {entities, newChildRepliesById} = props;
-   let replies = entities.replies[newChildRepliesById]; 
-   let isNewReplies = true;
+const NewReplies = (props:object, replies:object) => {
+    let isNewReplies = true;
+    let replyList:Object[] = replies['replyList'];  
 
-   let replyList = replies.replyList && replies.replyList.length && replies.replyList;  
-   return Replies(props, replyList, isNewReplies);
+    return Replies(props, replyList, isNewReplies);
 };
 
 
-const ViewedReplies = props => {
-    let {entities, replyChildById } = props;
-    let replies = entities.replies[replyChildById]; 
+const OldReplies = (props:object, replies:object) => {
+    if (!replies) {
+        return null;
+    }
+    
+    let replyList = replies['replyList'];
+    let reply =   replies['linkData'].reply;
+    
+    //console.log(replies)
 
-    let replyList =  replies && replies.replyList && replies.replyList.length && replies.replyList;  
     return(
         <div>
-            { replies.showLink?
-                <ChildRepliesLink {...props}/>
-                :
+            { replies['showLink'] &&
+                <div  className={`replies-level-${reply['level']}`}>
+                    { Replies(props, [reply], false) }
+                    { ChildrenRepliesLink(props, replies) }
+                </div>
+
+                ||
+
                 <div>
-                    { replies.isLoading?
+                    { replies['isLoading'] &&
                         <div className="spin-loader-box">
                             <AjaxLoader/>
                         </div>
-                        :
+
+                        ||
+
                         <div>
                           { Replies(props, replyList)}
                         </div>
@@ -143,45 +148,27 @@ const ViewedReplies = props => {
 
 
 const Replies = (props, replyList:object[], isNewReplies=false) => {
-    let { 
-        replyChildById,
-        newChildRepliesById,
-        childParent,
-                    } = props;
-
-    let replyStyles = {
-            border     : 'px solid blue',
-            margin     : '15px 22px 10px  38px',
-    };     
+    let {repliesLevelOneById, newRepliesLevelOneById, parent} = props;
 
     return(
         <div>
-            { replyList && replyList.map( (reply, index) => {
+            {replyList && replyList.map( (reply, index) => {
+                let isReplyChild = parent && parent['id'] === reply['parent']
+                if (!isReplyChild) return null;
+
                 let replyProps = {
                         reply,
-                        byId : props.replyChildById,
-                        index,
-                        newRepliesById : newChildRepliesById,
-                                               
-                }
-                let replyChildProps = {...props, reply}
-                const authorProps:object  = {
-                    author : reply['author'],
-                    data:reply,
-                };
-              
+                        byId : repliesLevelOneById,
+                        newRepliesById : newRepliesLevelOneById,
+                    }
+
+                let replyChildProps = {...props, reply};
+             
                 return (
-                    <div  key={index} >
-                        {childParent.id === reply['parent'] &&
-                            <div  className={`replies-level-${reply['level']}`}>
-                                <div  className="reply-contents">
-                                    <AuthorAvatar {...authorProps}/>
-                                    {Reply( props, replyProps, isNewReplies) }
-                                   
-                                </div>
-                                <RepliesLevelTwo {...replyChildProps}/>
-                            </div>
-                        } 
+                    <div key={index} 
+                         className={`reply-container replies-level-${reply['level']}`}>
+                        {Reply(props, replyProps, isNewReplies) }
+                        <RepliesLevelTwo {...replyChildProps}/>
                     </div> 
                 ); 
             })}

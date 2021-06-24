@@ -15,48 +15,61 @@ const helper   = new Helper();
 
 class CommentsBox extends Component {
 
-   constructor(props) {
-      super(props);
+    constructor(props) {
+        super(props);
 
-      this.state = {
-         isCommentBox    : true,
-         commentsById    : '',
-         newCommentsById : '',
-         parent          : '',
+        this.state = {
+            isCommentBox    : true,
+            commentsById    : '',
+            newCommentsById : '',
+            parent          : '',
+        };
+    };
 
-      };
-   
-   };
-
-   componentDidCatch(error, info) {
-     // You can also log the error to an error reporting service
-     //console.log(error, info);
-   };
-
-   
+    componentDidCatch(error, info) {
+       // You can also log the error to an error reporting service
+       //console.log(error, info);
+    };
 
     componentDidMount() {
         let answer = this.props['answer'];
         let post = this.props['post'];
-            
-        var parent       = post   && post || answer && answer;
-        let comments     = parent && parent.comments;
-        
-        if(parent){
-            let commentsById = answer && `commentsAnswer${parent.id}`
-                              || post && `commentsPost${parent.id}`;
-                           
-            let newCommentsById = answer && `newAnswerComments${parent.id}` 
-                                  || post && `newPostComments${parent.id}`;
 
-            this.setState({commentsById, newCommentsById, parent});
-                                   
-            if (comments && comments.length) {
-                store.dispatch<any>(action.getCommentLindData(commentsById, comments));
+        let isAnswerBox:boolean = this.props['isAnswerBox'];
+        let isPostBox:boolean = this.props['isPostBox'];
+
+        const parent:object = post && post || answer && answer;
+                
+        if(parent){
+            let commentsById:string;
+            let newCommentsById:string;
+            let parentId:number = parent['id']
+
+            if (isAnswerBox) { 
+               commentsById =  `commentsAnswer${parentId}`;
+               newCommentsById = `newAnswerComments${parentId}`; 
+
+            } else if(isPostBox) {
+                commentsById =  `commentsPost${parentId}`;
+                newCommentsById = `newPostComments${parentId}`;
+            }
+
+            this.setState({
+                commentsById, 
+                newCommentsById,
+                parent,
+                parentId
+            });
+         
+            let comments:object[] = parent['comments'];
+            if (comments.length) {
+                
+                store.dispatch<any>(
+                    action.getCommentLindData(commentsById, comments)
+                );
             }
         }
     };
-
 
     componentDidUpdate(nextProps, prevState) {
        
@@ -66,18 +79,16 @@ class CommentsBox extends Component {
         return {...this.props, ...this.state};
     }; 
    
-
-
-   render() { 
+    render() { 
         let props  = this.getProps();
+        
         let commentsById = props['commentsById'];
         let newCommentsById = props['newCommentsById'];
             
         let comments  =  props['entities']['comments'];
         let newComments = comments && comments[newCommentsById]; 
         let oldComments = comments && comments[commentsById]
-            
-        
+                
         return (
             <div className="comment-page">
                 {newComments || oldComments &&
@@ -130,7 +141,7 @@ const OldComments = props => {
     let commentList = comments.commentList 
                    && comments.commentList.length 
                    && comments.commentList;
-     const commentProps:object = {
+    const commentProps:object = {
         ...props, 
         comment:linkData.comment,
     }
@@ -138,7 +149,13 @@ const OldComments = props => {
     return(
         <div>
             {comments.showLink &&
-                <CommentsComponent {...commentProps}/>
+                <div>
+                    <CommentsComponent {...commentProps}/>
+                    <ul className="comments-loader"
+                        onClick={()=> props.getCommentList(commentsById)}>
+                        <li>Click to view {commentList.length - 1} more comments</li>
+                    </ul>
+                </div>
                 ||
 
                 <div>
@@ -162,23 +179,30 @@ const OldComments = props => {
 };
 
 const Comments = (props, commentList) => {
-
-   let {parent} = props;
-                                 
+    let parent:object = props['parent'];
+                                           
     return (
         <div>
-            { commentList && commentList.map( (comment, index) => {
+            {commentList && commentList.map( (comment, index) => {
+                if(parent){
+                    let isParentComment = parent['id'] === comment.answer ||
+                                          parent['id'] === comment.post
+                    if(!isParentComment){
+                        return null;
+                    }
+                    
+                }
+
                 let commentProps = {
-                        ...props,
-                        comment,
-                        index
-                    };  
+                    ...props,
+                    comment,
+                    index
+                };  
                               
                 return(
                     <div  key={index} >
-                        {parent.id === comment.answer || parent.id === comment.post &&
-                            <CommentsComponent {...commentProps}/>
-                        } 
+                        <CommentsComponent {...commentProps}/>
+                         
                     </div>
                 )
             })}
