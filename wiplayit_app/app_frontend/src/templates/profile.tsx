@@ -13,7 +13,6 @@ import{ QuestionComponent } from "templates/question"
 import GetTimeStamp from 'utils/timeStamp';
 
 import { PostComponent } from "templates/post"
-import { GetModalLinkProps } from "templates/component-props";
 import { AnswersComponent  } from "templates/answer";
 
 import { OpenEditorBtn,
@@ -72,10 +71,10 @@ export const ProfileComponent = props => {
             isAuthenticated,
             linkName    : 'Edit',
             currentUser,
+            apiUrl : api.updateProfileApi(userProfile.id),
+            actionType : types.UPDATE_USER_PROFILE,
 
     }
-
-    editObjProps = GetModalLinkProps.props(editObjProps);
 
     const EditProfileLink = ()=>{
         const pathToEditProfile = userProfile  && 
@@ -337,9 +336,10 @@ export const PartialUserList = props => {
             obj        : user, 
             byId       : usersById,
             currentUser,
+            actionType : types.UPDATE_USER_LIST,
+            apiUrl : api.updateProfileApi(user.id),
         }
-
-        editObjProps = GetModalLinkProps.props(editObjProps);
+       
         let btnsProps   = {...props, editObjProps};
       
         let FollowBtn   = MatchMediaHOC(FollowUserBtn, '(min-width: 980px)');
@@ -580,11 +580,13 @@ export const UsersComponent = props => {
             obj        : user, 
             byId       : usersById,
             currentUser,
+            actionType : types.UPDATE_USER_LIST,
+            apiUrl : api.updateProfileApi(user.id),
             
     }
 
-    editObjProps = GetModalLinkProps.props(editObjProps);
-    var btnsProps   = {...props, editObjProps};
+    
+    const btnsProps   = {...props, editObjProps};
     
     const linkProps:object = {
             linkPath:`/profile/${user.id}/${user['slug']}/`,
@@ -815,60 +817,6 @@ export const UserActivitiesBtns = props => {
         </div>
     );
 };
-
-
-
-
-
-/*
-export const UserComponentSmall = props => {
-    let {obj, currentUser} = props;
-    let author = obj.author;
-    let pathToProfile =  `/profile/${author.id}/${author.slug}/`;
-    let state = {currentUser, userProfile:author}
-   
-    let timeStamp = obj.date_created;
-    const getTimeState = new GetTimeStamp({timeStamp});
-    let dateCreated = getTimeState.timeSince();
-    console.log(timeStamp , dateCreated)
-    
-  
-    const linkProps = {
-        linkPath:`/profile/${author.id}/${author.slug}/`,
-        state:{user:author},
-    }
-
-    const profile = author && author['profile'] 
-
-    return (
-        <div className="author-box">
-            <ul className="author-img-box" >
-                <li className="author-img  img-container-sm">
-                    <LinkButton {...linkProps}>
-                        {profile && 
-                            <img alt="" src={profile.profile_picture}
-                                   className="profile-photo"/> 
-                        }
-                    </LinkButton>
-                </li>
-            </ul>
-
-            <ul className="author-properties-box">
-                <li className="author-name-box">
-                    <LinkButton {...linkProps}>
-                        {author?.first_name} {author?.last_name}
-                    </LinkButton>
-                </li>
-                <li className="time-created">{dateCreated}</li>
-            </ul>
-        </div>
-    );
-}; 
-
-
-*/
-
-
 
 
 

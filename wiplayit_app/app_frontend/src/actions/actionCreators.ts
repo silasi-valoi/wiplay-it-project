@@ -55,7 +55,7 @@ export const updateActionPending = (params:object):object => {
 };
 
 export const updateActionSuccess = (params:object): object => {
-        
+
     return{
         type : params['actionType'].SUCCESS,
         byId: params['byId'],
@@ -467,7 +467,7 @@ export const getReplyListSuccess = (actionType:any, byId:string, replyList:[]):o
    };
 };
 
-export const getReplyListError = (actionType:any,byId:string, error:string):object =>({
+export const getReplyListError = (actionType:any, byId:string, error:string):object =>({
    type    : actionType.ERROR,
    byId,
    payLoad : {
@@ -476,38 +476,6 @@ export const getReplyListError = (actionType:any,byId:string, error:string):obje
    }
 });
 
-export const getReplyChildListPending = (actionType:any, byId:string):object => ({
-    type: actionType.PENDING,
-    byId,
-    payLoad: {
-      isLoading : true,
-      showLink  : false,
-    }
-});
-
-export const getReplyChildListSuccess = (actionType:any, byId:string, replyList:[]):object => {
-
-    return{
-        type: actionType.SUCCESS,
-        byId,
-        payLoad: {
-            replyList,
-            isLoading       : false,
-            showLink        : false,
-        }
-    }
-};
-
-export const getReplyChildListError = (actionType:any, byId:string, error:string):object =>({
-    type: actionType,
-    byId,
-    payLoad : {
-        error,
-        isLoading : false,
-        showLink  : true,
-    }
-
-});
 
 export const handleError  = (error?:string):object => {
     console.log(error)
@@ -569,7 +537,7 @@ export const authenticationError = (
 };
 
 export const getCurrentUserSuccess = (user:object):object => {
-    //console.log('current user is this: ', user)
+ 
     return {
         type    : types.GET_CURRENT_USER['SUCCESS'],
         payLoad : {
@@ -651,47 +619,26 @@ export const getCommentLindData = (byId:string, comments:object[]):object => {
 };
 
 export const getRepliesLindData = (props:object) => {
-   console.log(props)
+   //console.log(props)
    const replies:object[] = props['replies'];
-   var reply:object = replies[0];
+   var reply:object =  replies && replies[0];
    var byId:string = props['byId'];
    
     return {
-        type      : props['actionType'],
+        type : props['actionType'],
         byId,
         payLoad : {
             replyList  : replies,
-            showLink   : replies.length > 1,
+            showLink   : replies && replies.length !== 0,
             isLoading  : false,
             linkData   : {
-                reply : reply,
-                totalReplies : replies.length,
+                reply,
+                totalReplies : replies && replies.length,
             }
         },
     };
 };
 
-export const getReplyChildLindData = (props:object) => {
-   let reply:object = props['reply'];
-   let replyList:object[] = reply['children'];
-   let byId:string = props['byId'];
-   console.log(props)      
-   
-    return {
-        type   : props['actionType'],
-        byId,
-        payLoad : {
-            replyList,
-            error        : '',
-            showLink     : replyList['length'] > 1,
-            isLoading    : false,
-            linkData  : {
-                reply        : reply,
-                totalReplies : replyList['length'],
-            },
-        },
-    };
-};
 
 export const showModal = (byId:string, isOpening:boolean):object =>{
     

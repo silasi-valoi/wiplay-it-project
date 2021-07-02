@@ -114,21 +114,27 @@ class UserProfileContainer extends Component {
     componentDidMount() {
         this.isMounted = true;
         this.onProfileUpdate();
-        console.log(this.props)
-                        
+                                
         let entities    = this.props['entities'];
-        let { slug, id }           = this.props['match'].params;
+        let {slug, id}  = this.props['match'].params;
         let {users, userProfile}  = entities; 
         let  profileById           = `userProfile${id}`;
         this.setState({profileById, id})
                
         userProfile = userProfile && userProfile[profileById];
-        userProfile = userProfile && userProfile.user;
-        users       = users['filteredUsers']
+        let user = userProfile && userProfile.user;
+        let userList = users['filteredUsers'];
         
-        !userProfile  && this.updateWithCacheData({profileById, id});
-        !users        && this.updateUsersStore();
-                     
+        if (user) {
+            this.setState({userProfile});
+
+        }else{
+            this.updateWithCacheData({profileById, id});
+        } 
+
+        if (!userList) {
+            this.updateUsersStore();
+        }       
     };
 
     updateUsersStore(){
@@ -188,7 +194,6 @@ class UserProfileContainer extends Component {
                 let userItemsStyles   = {answersBtnStyles};
                 this.setState({userItemsStyles})
 
-                ///console.log(usersAnswers, answers)
                 store.dispatch<any>(action.getAnswerListPending(byId));
                 store.dispatch<any>(action.getAnswerListSuccess(byId, userAnswers));
             }
@@ -257,7 +262,6 @@ class UserProfileContainer extends Component {
                 return;  
 
             default:
-                //console.log(data, items)
                 return;  
         };
     };
@@ -271,12 +275,10 @@ class UserProfileContainer extends Component {
     };
 
     mouseEnter = () =>{
-        //alert('Mouse is entering')
         this.setState({isMouseInside: true})
     } 
 
     mouseLeave = ()=>{
-        //alert('Mouse is leaving')
         this.setState({isMouseInside : false})
     } 
 
@@ -294,9 +296,11 @@ class UserProfileContainer extends Component {
     };
     
     render() {
+        if(!this.isMounted) return null;
+
         let   props = this.getProps();
         const userProfile = props['userProfile'];
-                      
+                             
         return (
             <div>
                 <PartalNavigationBar {...props}/>

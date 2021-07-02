@@ -126,7 +126,7 @@ export const AlertComponent =(props)=> {
     let styles = alertBoxStyles || {}; 
     return(
         <div  className="alert-container">
-            <div style={styles} className={`alert  alert-success ${classNames}`}>
+            <div style={styles} className={`alert ${classNames}`}>
                 <div  className="alert-box">
 
                     <ul className="alert-message">

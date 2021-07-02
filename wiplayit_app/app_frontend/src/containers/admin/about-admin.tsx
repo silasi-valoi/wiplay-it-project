@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import  * as action  from "actions/actionCreators";
 import { Link } from "react-router-dom";
 import {store } from "store/index";
-import { GetModalLinkProps } from "templates/component-props";
 import {PartalNavigationBar,NavigationBarBigScreen } from "templates/navBar";
 import { OpenEditorBtn  } from "templates/buttons";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
@@ -10,7 +9,8 @@ import {Editor} from 'draft-js';
 import * as checkType from 'helpers/check-types'; 
 import { UnconfirmedUserWarning,
          PageErrorComponent, } from "templates/partials";
-
+import Api from 'utils/api';
+import {UPDATE_ABOUT, CREATE_ABOUT} from 'actions/types';
 import {getAdmin}  from "dispatch/index"
 import Helper from 'utils/helpers';
 import  AjaxLoader from "templates/ajax-loader";
@@ -19,7 +19,7 @@ import GetTimeStamp from 'utils/timeStamp';
 import  MainAppHoc from "containers/main/index-hoc";
 
 const helper   = new Helper();
-
+const api      = new Api();
 
 
 class AboutAdminPage extends Component {
@@ -140,21 +140,27 @@ export const AboutAdminComponent = props => {
     let about = props.about;
     about = about && about.info;
 
-    const EditAboutProps =(obj?:object)=>{
+    const EditAboutProps =(obj?:object):object=>{
         let isPut    = obj && true || false;
         let isPost   = !obj && true || false;
 
-        let params = {
+        let apiUrl:string = isPost && api.createAboutApi()
+                            || isPut && api.updateAboutApi(obj['id']);
+
+        let actionType:object = isPost && CREATE_ABOUT || isPost && UPDATE_ABOUT;
+
+        return {
             isPost,
             isPut,
             obj,
-            isAuthenticated :  props.isAuthenticated,
+            apiUrl,
+            actionType,
             withTextArea : true,
             objName      : 'About',
+            isAuthenticated :  props.isAuthenticated,
             className    : "edit-about-admin-btn btn-sm",
         };
-
-        return GetModalLinkProps.props(params);
+        
     };
 
     console.log(props ,about)

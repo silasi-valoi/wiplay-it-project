@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Link } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
+import { Editor } from "draft-js";
+
 import {
          UpVoteCommentBtn,
          DownVoteCommentBtn,
@@ -9,15 +11,11 @@ import {
          ChangeImageBtn,
          OpenUsersModalBtn, } from 'templates/buttons';
 
-
-import { GetModalLinkProps } from "templates/component-props";
-
-import {ButtonsBox,AuthorAvatar,AuthorDetails} from "templates/partials";
+import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
 import Api from 'utils/api';
 import  * as types  from 'actions/types';
 import Helper from 'utils/helpers';
-import RepliesLevelZero from "containers/main/replies/replies-level-0";
-import { Editor } from "draft-js";
+import RepliesConatiner from "containers/main/replies";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 
 const api      = new Api();
@@ -51,25 +49,11 @@ export const CommentsComponent = props => {
 
 
     let editorState = helper.convertFromRaw(comment.comment)  
-
-    let pathToUpvoters;
+   
 
     let commentRepliesById = isAnswerBox && `answerReplies${comment.id}` 
                                          || `postReplies${comment.id}`;
-    
-    let state = {
-            comment,
-            usersIsFor : isAnswerBox? 'answerCommentUpVoters' : 'postCommentUpVoters', 
-        }
-    if (comment.answer) {
-        pathToUpvoters =  `/answer/comment/${comment.id}/upvoters/`;
         
-    }
-
-    else{
-        
-       pathToUpvoters =  `/post/comment/${comment.id}/upvoters/`;
-    }
     let usersById = isAnswerBox && `answerCommentUpVoters${comment.id}` 
                                 || `postCommentUpVoters${comment.id}`;
 
@@ -98,23 +82,25 @@ export const CommentsComponent = props => {
         isPut       : true,
         obj         : comment, 
         actionType : types.UPDATE_COMMENT,
+        editorPlaceHolder : `Edit Comment...`,
         apiUrl : answer && api.updateAnswerCommentApi(comment.id) ||
                  post && api.updatePostCommentApi(comment.id),
     };
         
-
+    const newRepliesById = answer && `newAnswerCommentReplies$-${comment.id}`
+                            || post && `newPostCommentReplies$-${comment.id}`;
     let createObjProps = {
         currentUser,
         isAuthenticated,
         objName           : 'Reply',
         obj               : comment,
         isPost            : true,
-        byId              : `newCommentsReplies${comment.id}`,
+        byId              : newRepliesById,
         className         : 'btn-sm edit-reply-btn',
-        actionType        :  types.CREATE_COMMENT,
-        editorPlaceHolder : `Add Comment...,`,
-        apiUrl : answer && api.createAnswerCommentApi(answer.id) || 
-                post && api.createPostCommentApi(post.id), 
+        actionType        :  types.CREATE_REPLY,
+        editorPlaceHolder : `Add Reply...`,
+        apiUrl : answer && api.createAnswerReplyApi(comment.id) || 
+                post && api.createPostReplyApi(comment.id), 
     };
     
     let EditorModalBtn     = <OpenEditorBtn {...createObjProps}/>; 
@@ -153,7 +139,7 @@ export const CommentsComponent = props => {
         ...props,
         parent : comment,
         parentId : comment.id,
-                 
+        newRepliesById,
     };
 
     return(
@@ -177,7 +163,7 @@ export const CommentsComponent = props => {
                 </div>
             </div>
             
-            <RepliesLevelZero {...replyProps}/>
+            <RepliesConatiner {...replyProps}/>
         </div>
     );
 };

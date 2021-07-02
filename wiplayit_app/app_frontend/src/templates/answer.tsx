@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, BrowserRouter  } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
+import { Editor } from "draft-js";
 
-import { GetModalLinkProps } from "templates/component-props";
 import { 
         UpVoteAnswerBtn,
         DownVoteAnswerBtn,
@@ -11,7 +11,6 @@ import {
         LinkButton,
         OpenUsersModalBtn} from 'templates/buttons';
 
-import { Editor } from "draft-js";
 import  * as types  from 'actions/types';
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import Helper from 'utils/helpers';
@@ -78,18 +77,24 @@ export const AnswersComponent = props => {
         byId        : answerListById,
         currentUser,
         isAuthenticated,
+        actionType : types.UPDATE_ANSWER,
+        editorPlaceHolder : `Edit Answer...`,
+        apiUrl:api.updateAnswerApi(answer.id)
     };
 
-
+    let newCommentsById:string = `newAnswerComments${answer.id}`;
 
     let createObjProps = {
         objName           : 'Comment',
         obj               : answer,
         isPost            : true,
-        byId              : `newAnswerComments${answer.id}`,
+        byId              : newCommentsById,
         className         : 'btn-sm edit-comment-btn',
         currentUser,
         isAuthenticated,
+        actionType : types.CREATE_COMMENT,
+        editorPlaceHolder : `Add Comment...`,
+        apiUrl:api.createAnswerCommentApi(answer.id)
     };
   
     let createBookmarkProps = {
@@ -99,25 +104,23 @@ export const AnswersComponent = props => {
         byId              : `bookmarkedAnswers`,
         isPost            : true,
         currentUser,  
-        isAuthenticated
+        isAuthenticated,
+        actionType : types.CREATE_BOOKMARK,
+        apiUrl : api.addAnswerBookMarkApi(answer.id)
     };
 
-    createBookmarkProps = GetModalLinkProps.props(createBookmarkProps)
-    editObjProps = GetModalLinkProps.props(editObjProps);
-    createObjProps = GetModalLinkProps.props(createObjProps);
-
-    let EditorModalBtn     = <OpenEditorBtn {...createObjProps}/>; 
+    let EditorModalBtn = <OpenEditorBtn {...createObjProps}/>; 
     
     let AnswerUpVotersBtn = answer.upvotes !== 0 &&
-                            <OpenUsersModalBtn {...answerUpvotersProps}/> 
+                            <OpenUsersModalBtn {...answerUpvotersProps}/>; 
    
     
 
     let btnsProps = {
-            ...props,
-            editObjProps,
-            createObjProps, 
-            createBookmarkProps,
+        ...props,
+        editObjProps,
+        createObjProps, 
+        createBookmarkProps,
     }; 
    
     

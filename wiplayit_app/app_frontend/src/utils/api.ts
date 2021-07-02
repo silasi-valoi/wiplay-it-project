@@ -36,76 +36,61 @@ export default class Api{
     }
 
     getCurrentUserApi() {
-        var api = `/api/current/user/`;
-        return api
+        return `/api/current/user/`;
     }
 
-   createDraftEditorContentsApi(){
-    var api =   `api/draft/editor/contents/`;
-    return api;
-   } 
+    createDraftEditorContentsApi(){
+        return `api/draft/editor/contents/`;
+    } 
 
     getIndexApi() {
-        
-        var api = `api/main/`;
-        return api;
+        return `api/main/`;
     }      
     
     createPostApi() {
-        var api = `/api/create/post/`;
-        return api;
+        return `/api/create/post/`;;
     }
 
 
     createPostCommentApi(id){
-       var api = `/api/create/post/${id}/comment/`;
-       return api; 
+        return `/api/create/post/${id}/comment/`; 
     }
 
     createPostReplyApi(id){
-       var api = `/api/create/post/comment/${id}/reply/`;
-        return api;
+        return `/api/create/post/comment/${id}/reply/`;
     }
     
 
     createPostReplyChildApi(id){
-       var api = `/api/create/post/reply/${id}/child/`;
-        return api;
+        return `/api/create/post/reply/${id}/child/`;
     }
 
     createQuestionApi() {
-        var api = `/api/create/question/`;
-        return api;
+        return `/api/create/question/`;
     }
     
     createAnswerApi(id) {
-        var api = `/api/create/question/${id}/answer/`;
-        return api;
+        return `/api/create/question/${id}/answer/`;
     }
 
     createAnswerCommentApi(id) {
-
-        var api = `/api/create/answer/${id}/comment/`;
-        return api;
-
+        return `/api/create/answer/${id}/comment/`;
     }
 
     createAnswerReplyApi(id){
-       var api = `/api/create/answer/comment/${id}/reply/`;
-        return api;
+        return `/api/create/answer/comment/${id}/reply/`;
     }
 
     createAnswerReplyChildApi(id){
-       var api = `/api/create/answer/reply/${id}/child/`;
-        return api;
+        return `/api/create/answer/reply/${id}/child/`;
     }
 
 
-    AddPostBookMarkApi(id){
+    addPostBookMarkApi(id){
         return `api/post/${id}/bookmark/add/`
     }
     
-    AddAnswerBookMarkApi(id){
+    addAnswerBookMarkApi(id){
         return `api/answer/${id}/bookmark/add/`
     }  
 
@@ -114,96 +99,73 @@ export default class Api{
     }   
 
     getQuestionListApi() {
-        var api = `/api/question/list/`;
-        return api;
+        return `/api/question/list/`;
     }  
 
     getPostListApi() {
-        var api = `/api/post/list/`;
-        return api;
+        return `/api/post/list/`;
     }
 
-
-
-     getQuestionApi(id) {
-        var api = `/api/question/${id}/`;
-        return api;
+    getQuestionApi(id) {
+        return `/api/question/${id}/`;
     }  
 
     getPostApi(id) {
-        var api = `/api/post/${id}/`;
-        return api;
+        return `/api/post/${id}/`;
     }
 
-
     getPostCommentListApi(id) {
-        var api = `/api/post/${id}/comment/list/`;
-        return api;
+        return `/api/post/${id}/comment/list/`;
     }
 
     getPostCommentUpVotersListApi(id) {
-        var api = `/api/post/comment/${id}/upvoters/`;
-        return api;
+        return `/api/post/comment/${id}/upvoters/`;
     }
 
-
     getPostReplyListApi(id) {
-        var api = `/api/post/comment/${id}/reply/list/`;
-        return api;
+        return `/api/post/comment/${id}/reply/list/`;
     }
 
     getPostReplyUpVotersListApi(id) {
-        var api = `/api/post/reply/${id}/upvoters/`;
-        return api;
+        return `/api/post/reply/${id}/upvoters/`;
     }
 
-
     getPostReplyChildrenListApi(id) {
-        var api = `/api/post/reply/${id}/children/list/`;
-        return api;
+        return `/api/post/reply/${id}/children/list/`;
     }  
 
     getQuestionFollowersListApi(id) {
-        var api = `/api/question/${id}/followers/`;
-        return api;
+        return `/api/question/${id}/followers/`;
     }
 
     getUserFollowersListApi(id) {
-        var api = `/api/user/${id}/followers/`;
-        return api;
+        return `/api/user/${id}/followers/`;
     }
 
     getUserFollowingsListApi(id) {
-        var api = `/api/user/${id}/followings/`;
-        return api;
+        return `/api/user/${id}/followings/`;
     }
-    
-
+   
     getPostUpVotersListApi(id) {
-        var api = `/api/post/${id}/upvoters/`;
-        return api;
+        return `/api/post/${id}/upvoters/`;
     }
 
     getAnswerUpVotersListApi(id) {
-        var api = `/api/answer/${id}/upvoters/`;
-        return api;
+        return `/api/answer/${id}/upvoters/`;
     }
 
 
     getAnswerCommentListApi(id) {
-        var api = `/api/answer/${id}/comment/list/`;
-        return api;
+        return `/api/answer/${id}/comment/list/`;
     }
 
     getAnswerCommentUpVotersListApi(id) {
-        var api = `/api/answer/comment/${id}/upvoters/`;
-        return api;
+        return `/api/answer/comment/${id}/upvoters/`;
     }
 
 
     getAnswerReplyListApi(id) {
-        var api = `/api/answer/comment/${id}/reply/list/`;
-        return api;
+        return `/api/answer/comment/${id}/reply/list/`;
     }
 
     

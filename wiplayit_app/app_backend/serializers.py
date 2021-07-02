@@ -347,11 +347,7 @@ class IndexSerializer(BaseSerializer):
 	
 	
 	def get_posts(self, obj):
-		if self.current_user().is_authenticated: 
-			posts = Post.objects.exclude(author=self.current_user())
-		else:
-			posts = Post.objects.all()[:5]
-
+		posts = Post.objects.all()[:5]
 		self.update_serializer_obj_perms('post_perms')
 
 		return PostReadSerializer(posts, context=self.context, many=True).data

@@ -4,24 +4,22 @@ import { PostComponent} from "templates/post";
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
 import  MainAppHoc from "containers/main/index-hoc";
-import { GetModalLinkProps } from "templates/component-props";
 import { MatchMediaHOC } from 'react-match-media';
 import { UnconfirmedUserWarning,PageErrorComponent, } from "templates/partials";
 import {OpenEditorBtn}  from "templates/buttons";
+import {CREATE_POST} from 'actions/types';
+import Api from 'utils/api';
 
 import {PartalNavigationBar,
-    NavigationBarBottom,
-    NavigationBarBigScreen } from "templates/navBar";
+        createPostProps,
+        NavigationBarBottom,
+        NavigationBarBigScreen } from "templates/navBar";
 import  AjaxLoader from "templates/ajax-loader";
  
 import { getPostList } from 'dispatch/index';
 
 
-
-
-
-
-
+const api      = new Api();
 
 class  PostListPage extends Component  {
     private isFullyMounted:boolean = false;
@@ -181,20 +179,6 @@ class  PostListPage extends Component  {
 
 
 export default MainAppHoc(PostListPage);
-
-
-
-
-
-
-let createPostProps = {
-        objName     : 'Post',
-        linkName    : 'Add Post',
-        isPost      : true,
-        className   : "btn",
-    };
-
-createPostProps = GetModalLinkProps.props(createPostProps);
 
 
 const Posts = props => {

@@ -2,19 +2,22 @@ import React, {Component} from 'react';
 
 import {QuestionComponent} from "templates/question"
 import  * as action  from 'actions/actionCreators';
+import Api from 'utils/api';
 import {getQuestionList} from 'dispatch/index';
 import {store} from 'store/index';
 import  MainAppHoc from "containers/main/index-hoc";
 import {OpenEditorBtn}  from "templates/buttons";
 import {UnconfirmedUserWarning, PageErrorComponent} from 'templates/partials';
-import { GetModalLinkProps } from "templates/component-props";
 import { MatchMediaHOC } from 'react-match-media';
+import {CREATE_QUESTION} from 'actions/types';
 import {PartalNavigationBar, 
+        createQuestionProps,
         NavigationBarBottom,
         NavigationBarBigScreen} from 'templates/navBar';
 import  AjaxLoader from 'templates/ajax-loader';
  
 
+const api      = new Api();
 
 class  QuestionListPage extends Component  {
     private isFullyMounted:boolean = false;
@@ -150,19 +153,6 @@ class  QuestionListPage extends Component  {
 
 export default MainAppHoc(QuestionListPage);
 
-
-
-
-
-let createQuestionProps = {
-        objName   : 'Question',
-        isPost    : true,
-        linkName  : "Ask Question",
-        className : "btn-sm",
-    };
-
-
-createQuestionProps = GetModalLinkProps.props(createQuestionProps);
 
 
 const Questions = props => {

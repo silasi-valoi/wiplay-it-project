@@ -9,13 +9,17 @@ import { SubmitBtn,
          ModalCloseBtn,
          OpenEditorBtn  } from "templates/buttons";
 import { Modal}   from  "containers/modal/modal-container";
-import { GetModalLinkProps } from "templates/component-props";
 import { store } from "store/index";
+import Api from 'utils/api';
 import { closeModals}   from  'containers/modal/helpers';
+import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
 
 import { showModal } from 'actions/actionCreators';
 import { history } from "App"
 import * as Icon from 'react-feather';
+
+const api      = new Api();
+
 
 let editorLinkMobileStyles = {
         background : '#A33F0B !important',
@@ -38,7 +42,7 @@ let editorLinkDesktopStyles = {
        fontWeight  : 'bold',
     }
 
-let createPostProps = {
+export const createPostProps = {
         objName     : 'Post',
         linkName    : 'Add Post',
         isPost      : true,
@@ -46,9 +50,11 @@ let createPostProps = {
         className   : "create-post-btn btn",
         editorLinkDesktopStyles,
         editorLinkMobileStyles,
+        apiUrl : api.createPostApi(),
+        actionType: CREATE_POST,
     };
 
-let createQuestionProps = {
+export const createQuestionProps = {
         objName      : 'Question',
         isPost       : true,
         withTextArea :true,
@@ -56,17 +62,14 @@ let createQuestionProps = {
         className    : "create-question-btn btn",
         editorLinkMobileStyles,
         editorLinkDesktopStyles,
+        actionType :  CREATE_QUESTION,
+        apiUrl  : api.createQuestionApi()
     };
 
 let authenticationProps = {
         authenticationType : 'Login',
         linkName  : "Login/Register",
 };
-
-
-createQuestionProps = GetModalLinkProps.props(createQuestionProps);
-createPostProps = GetModalLinkProps.props(createPostProps);
-
 
 export const NavBarMenuItems = props => {
     let {currentUser, isAuthenticated} = props;

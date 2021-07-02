@@ -470,41 +470,42 @@ export function getCommentList(byId:string) {
 	}
 };
 
-export function getReplyList(params:object) {
-    console.log(params)
-    return dispatch => {
-        dispatch(action.getReplyListPending(params['actionType'], params['byId']))
-    }
-};
 
-export function getReplyChildrenList(params:object) {
+export function getReplyList(params:object) {
     console.log(params)
     
     let actionType = params['actionType'];
     let byId:string = params['byId'];
-    let children = params['children'];
+    let replies = params['replies'];
  
-    if (children && children['length']) {
+    if (replies && replies['length']) {
         return dispatch => {
-            dispatch(action.getReplyChildListPending(actionType, byId));
-            dispatch(action.getReplyChildListSuccess(actionType, byId, children));
-        }
+            dispatch(action.getReplyListPending(actionType, byId));
+        };
         
     }
-    /*
+    
     let useToken:boolean = true;
     const Api    = _GetApi(useToken);  
-  
-    return dispatch => {
-        dispatch(action.getReplyChildListPending(actionType, byId))
-	    Api.get(params['apiUrl'])
-        .then(response =>{
-            dispatch(action.getReplyChildListSuccess(actionType, byId, response.data))
-        })
-        .catch(error => {
-            dispatch(action.getReplyChildListError(actionType, byId, error))
-        }) 
-    }*/
+
+    return async dispatch => {
+        let online = await checkOnlineStatus();
+
+        if (online) {
+            dispatch(action.getReplyListPending(actionType, byId));
+
+	        Api.get(params['apiUrl']).then(response => {
+                dispatch(action.getReplyListSuccess(actionType, byId, response.data));
+            }).catch(error => {
+                dispatch(action.getReplyListError(actionType, byId, error));
+            }) 
+
+        }else{
+            let error:string = 'Your internet connection is offline';
+            await dispatch(action.handleError(error));
+
+        }
+    };
 };
 
 
@@ -656,7 +657,6 @@ function sendPostRequest(params:object, dispatch:Function){
 };
 
 function sendUpdateResquest(params:object, dispatch:Function){
-    console.log(params)
     const Api  = _GetApi(true);
 
     let isModal:boolean = params['isModal'];
@@ -668,9 +668,11 @@ function sendUpdateResquest(params:object, dispatch:Function){
         ...params,
         isUpdating:true,
     }
+
+    isModal && dispatch(action.ModalSubmitPending(modalName));
+    dispatch(action.updateActionPending(updateProps));
      
     Api.put(params['apiUrl'], formData).then(response => {
-        console.log(response)
         updateProps['data'] = prepPayLoad(objName, response.data);
         updateProps['successMessage'] = BuildAlertMessage(updateProps)
 
@@ -678,8 +680,8 @@ function sendUpdateResquest(params:object, dispatch:Function){
         dispatch(action.updateActionSuccess(updateProps));
        
     }).catch(error => {
+        
         if (error.response) {
-            console.log(error.response)
             error = error.response.data;
             updateProps['error'] = error.detail;
 

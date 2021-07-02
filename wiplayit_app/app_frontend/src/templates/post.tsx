@@ -1,12 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Link } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
-import Api from 'utils/api';
-import { GetModalLinkProps } from "templates/component-props";
+import {Editor} from 'draft-js';
 
+import Api from 'utils/api';
 import  * as types  from 'actions/types';
 import Helper from 'utils/helpers';
-
 import {
         DownVotePostBtn,
         UpVotePostBtn,
@@ -19,7 +18,6 @@ import {
 
 import CommentsBox from "containers/main/comment-page";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
-import {Editor} from 'draft-js';
 import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
 
 
@@ -74,6 +72,9 @@ export const PostComponent = props => {
         byId        : postById || postListById,
         currentUser,
         isAuthenticated, 
+        actionType : types.UPDATE_POST,
+        editorPlaceHolder : `Edit Post...`,
+        apiUrl:api.updatePostApi(post.id)
     };
 
 
@@ -83,9 +84,12 @@ export const PostComponent = props => {
         obj               : post,
         isPost            : true,
         currentUser,
+        editorPlaceHolder : `Add Comment...`,
         byId        : `newPostComments${post.id}`,
         className   : 'btn-sm edit-comment-btn',
         isAuthenticated,
+        actionType : types.CREATE_COMMENT,
+        apiUrl:api.createPostCommentApi(post.id)
     };
 
     let createBookmarkProps = {
@@ -95,11 +99,9 @@ export const PostComponent = props => {
         isPost            : true,
         currentUser,  
         isAuthenticated,
+        actionType : types.CREATE_BOOKMARK,
+        apiUrl : api.addPostBookMarkApi(post.id)
     };
-
-    createBookmarkProps = GetModalLinkProps.props(createBookmarkProps)
-    editObjProps = GetModalLinkProps.props(editObjProps)
-    createObjProps = GetModalLinkProps.props(createObjProps)
 
     let EditorModalBtn     = <OpenEditorBtn {...createObjProps}/>; 
 

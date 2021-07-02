@@ -1,10 +1,8 @@
 import { MatchMediaHOC } from 'react-match-media';
-
 import React, { Component } from 'react';
+
 import TextareaAutosize from 'react-autosize-textarea';
 import {handleModalScroll} from 'containers/modal/helpers';
-import { GetModalLinkProps } from 'templates/component-props';
-
 import { EditProfileNavBar } from 'templates/navBar';
 import {  ChangeImageBtn  } from 'templates/buttons';
 import MainAppHoc from "containers/main/index-hoc";
@@ -19,11 +17,8 @@ import  Helper from 'utils/helpers';
 import Api from 'utils/api';
 import * as checkType from 'helpers/check-types'; 
 
-
 const api = new Api();
-
 const helper   = new Helper();  
-
 
 class EditProfileRouter extends Component{
 
@@ -100,6 +95,8 @@ export class EditProfile extends Component{
             let dropImageModal = modal['dropImage'];
               
             if (userProfile) {
+                this.setState({submitting : userProfile['submitting']});
+
                 let isEditorModal:boolean    = this.checkModalIsOpen('editor');
                 let isDropImageModal:boolean = this.checkModalIsOpen('dropImage');
 
@@ -107,26 +104,21 @@ export class EditProfile extends Component{
                     this._HandleSuccessUpdate(userProfile)
                 }
 
-                !isDropImageModal && this._IsSubmiting(userProfile);
                 this._SetUpdatedUser(userProfile)
-
-                
             }
         };
         this.unsubscribe = store.subscribe(onStoreChange);
     };
-
-    _IsSubmiting(userProfile){
-        let isSubimiting  = userProfile &&  checkType.isBoolean(userProfile.submitting)
-        isSubimiting && this.setState({ submitting : userProfile.submitting});
-
-    }
-
-    _SetUpdatedUser(userProfile){
-        userProfile = userProfile &&  userProfile.user;
-        userProfile && this.setState({userProfile})
-        userProfile && this.populateEditForm(userProfile);
-    }
+    
+    _SetUpdatedUser(userProfile:object){
+        if (!userProfile || !userProfile['user']) {
+            return
+        }
+       
+        const user = userProfile['user'];
+        this.setState({userProfile : user});
+        this.populateEditForm(user);
+    };
 
     _HandleSuccessUpdate(userProfile){
         if (!userProfile) return;
@@ -137,14 +129,12 @@ export class EditProfile extends Component{
             let textMessage = "Your profile successfuly updated"
             let message:object     = {textMessage, messageType:'success'}
             this.displayMessage(message)
-
         }
-
-    }
+    };
 
     _HandleErrorUpdate(){
 
-    }
+    };
 
     displayMessage(message){
         if (!this.isMounted) return;
@@ -163,13 +153,12 @@ export class EditProfile extends Component{
     componentDidMount() {
         this.isMounted = true
         this.onProfileUpdate();
-           
+                  
         let location = this.props['location']; 
-        let match    = this.props['match']
-        let state:any =  location && location.state;
+        let state:object =  location && location.state;
                 
         if (state) {
-            let {obj, byId} =  state;
+            let byId =  state['byId'];
             this.setState({...state});
             this.getUserProfileFromStore(byId)
            
@@ -180,7 +169,8 @@ export class EditProfile extends Component{
 
             if (byId) {
                 this.setState({...this.props});
-                this.getUserProfileFromStore(byId)
+                this.getUserProfileFromStore(byId);
+
             }else{
                 this.getUserProfile()
             }
@@ -236,17 +226,12 @@ export class EditProfile extends Component{
             
         let first_name = userProfile['first_name']
         let last_name = userProfile['last_name']
-
-        let {live, credential, favorite_quote, country, phone_number} = userProfile['profile'] 
-      
-        form = { first_name, 
-                 last_name, 
-                 live, 
-                 country,
-                 phone_number,
-                 credential,
-                 favorite_quote 
-            };
+        
+        form = { 
+            first_name, 
+            last_name, 
+            ...userProfile['profile'],
+        };
 
         this.setState({ form, userProfile });
     }
@@ -283,15 +268,15 @@ export class EditProfile extends Component{
     };
 
 
-    submitProps() {
+    submitProps():object {
+
         let form:object = this.state['form'];
         let editUserProfileProps = this.getUserEditProps()
         let formData = helper.createFormData(form)
+
         return Object.assign(editUserProfileProps, {formData})
-    
-          
-           
     };
+
     checkModalIsOpen(modalName){
         let storeUpdate  = store.getState();
         let {entities }  = storeUpdate;
@@ -303,24 +288,23 @@ export class EditProfile extends Component{
     }
 
 
-    getUserEditProps(){
+    getUserEditProps():object{
         let isModal:boolean = this.checkModalIsOpen('editor');
 
-       let modalName = isModal && 'editor' || undefined;
+        let modalName = isModal && 'editor' || undefined;
+        let userProfile = this.state['userProfile']
             
-        let editUserProfileProps = {
-                objName     : 'UserProfile',
-                isPut       : true,
-                obj         : this.state['userProfile'], 
-                currentUser : this.state['currentUser'],
-                byId : this.state['byId'],
-                modalName,
-                isModal,
-
-            } 
-
-        return GetModalLinkProps.props(editUserProfileProps)    
-
+        return {
+            apiUrl : api.updateProfileApi(userProfile.id),
+            actionType : types.UPDATE_USER_PROFILE,    
+            objName     : 'UserProfile',
+            isPut       : true,
+            obj         : this.state['userProfile'], 
+            currentUser : this.state['currentUser'],
+            byId : this.state['byId'],
+            modalName,
+            isModal,
+        } 
     }
 
     handleScroll=()=>{
@@ -347,6 +331,8 @@ export class EditProfile extends Component{
     };
 
     render() {
+        if (!this.isMounted) return null;
+
         let props = this.getProps();
         let alertMessageStyles = props['displayMessage']?{ display : 'block'}:
                                                       { display : 'none' };
@@ -366,10 +352,11 @@ export class EditProfile extends Component{
                         <ProfileEditComponent {...props}/>
                     </div>
                 }  
+          
+            </div>
 
-                <div style={alertMessageStyles}>
-                    <AlertComponent {...props}/>
-                </div>         
+            <div style={alertMessageStyles}>
+                <AlertComponent {...props}/>
             </div>
                    
         </div>
@@ -383,8 +370,6 @@ export class EditProfile extends Component{
 const ProfileEditComponent = props => {
     
     let {submitting, userProfile, editUserProfileProps } = props;
-    userProfile = userProfile;
-    
     let submitButtonStyles = submitting?{opacity:'0.60'}:{};
     
     let fieldSetStyles = submitting? {opacity:'0.60'}:{};
@@ -490,8 +475,7 @@ const EditProfilePicture = (props:object)=>{
         let linkName = `Edit`; 
 
         editUserProfileProps = {...editUserProfileProps, linkName}
-        //console.log(editUserProfileProps)
-    
+           
         return(
             <div className="edit-img-container">
                 <ul className="item-title-box">
@@ -572,10 +556,18 @@ export class DropImage extends React.Component {
             let dropImageModal = modal['dropImage'];
             
             if (dropImageModal) {
-                let isSubimiting  =   checkType.isBoolean(dropImageModal.submitting)
-                isSubimiting && this.setState({submitting : dropImageModal.submitting});
+                let submitting:boolean = dropImageModal['submitting'];
+                this.setState({submitting});
 
-                dropImageModal.error && this._HandleErrorUpdate(dropImageModal);
+                dropImageModal['error'] && this._HandleErrorUpdate(dropImageModal);
+
+                let data:object = dropImageModal['data'];
+
+                if (data && dropImageModal['isUpdating']) {
+                   dropImageModal['isUpdating'] = false;
+                   store.dispatch<any>(action.getCurrentUserSuccess(data['user']));
+
+                }
             }
             
         };
@@ -583,24 +575,20 @@ export class DropImage extends React.Component {
     };
 
     _HandleErrorUpdate(data:object){
-        if (data && data['error']) {
-            
-            let error = data['error']
-            this.setState({ failed : true, error });
-            setTimeout(()=> {
-                this.setState({failed : false}); 
-            }, 5000);
-
-            delete data['error']
-        }
+        let error = data['error']
+        this.setState({ failed : true, error });
+       
+        setTimeout(()=> {
+            this.setState({failed : false}); 
+        }, 5000);
+        delete data['error']
     };
 
     componentWillUnmount() {
         this.isMounted = false;
         this.unsubscribe();
     };
-  
-    
+     
     handleChange(event) {
         event.preventDefault();
         var reader = new FileReader();
@@ -705,7 +693,10 @@ export class DropImage extends React.Component {
                     <div className="image-preview-container">
                         <div className="image-preview-contents">
                             <div className="image-preview-box">
-                                <img className="image-preview" alt="" src={imagePreviewUrl} />
+                                <img 
+                                className="image-preview" 
+                                alt="" 
+                                src={imagePreviewUrl} />
                             </div>
                         </div>
                         <div className="cancel-image-btn-box">
@@ -719,7 +710,9 @@ export class DropImage extends React.Component {
                      :
                      <form className="image-form">
                         <label className="fileBox" id="fileContainer">
-                           <input onChange={this.handleChange} type="file" accept="image/*" />
+                           <input 
+                               onChange={this.handleChange}
+                               type="file" accept="image/*" />
                               Click Here to Upload
                        </label>
                      </form>

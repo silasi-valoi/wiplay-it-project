@@ -7,11 +7,11 @@ import { NavigationBarSmallScreen,
          NavigationBarBigScreen } from "templates/navBar";
 import {store } from "store/index";
 import { FollowUserBtn, LinkButton} from "templates/buttons"; 
-import { GetModalLinkProps } from "templates/component-props";
 import { UnconfirmedUserWarning,
          PageErrorComponent, } from "templates/partials";
 import  {getIndex} from 'dispatch/index';
-
+import {UPDATE_USER_LIST} from 'actions/types';
+import Api from 'utils/api';
 import { QuestionComponent} from "templates/question"
 import { PostComponent} from "templates/post"
 import CommentsBox from "containers/main/comment-page";
@@ -24,7 +24,7 @@ import {history} from 'App'
 import  MainAppHoc from "containers/main/index-hoc";
 
 
-
+const api      = new Api();
 
 class HomePage extends Component<any, any> {
     public isFullyMounted = false;
@@ -435,7 +435,7 @@ const _UserList = (props) =>{
         <div className="index-user-list-container">
             { users.userList.map((user, index) => {
                                 
-                let profile         = user['profile'];
+                let profile = user['profile'];
                 let profile_picture = profile['profile_picture'];
 
                 const linkProps:object = {
@@ -449,9 +449,10 @@ const _UserList = (props) =>{
                         obj        : user, 
                         byId       : userListById,
                         currentUser,
+                        actionType : UPDATE_USER_LIST,
+                        apiUrl : api.updateProfileApi(user.id),
                 }
-
-                editObjProps = GetModalLinkProps.props(editObjProps);
+               
                 let btnsProps   = {...props, editObjProps};
                 let UnfollowOrFollowUserBtn =  <FollowUserBtn {...btnsProps}/>;
 

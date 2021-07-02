@@ -97,6 +97,8 @@
     width         : 35px;
     height        : 35px; 
     margin-left   : 18px; 
+    border: 1px solid  green;
+   
 }
 
 .menu-img {
@@ -120,7 +122,6 @@
     margin-left  : 18px; 
 
 }
-
 
 .menu-btn-container {
     border : px solid blue;
@@ -170,7 +171,6 @@
     width      : 100%;
         
 }
-
 
 .partial-form-navbar {
     border-bottom : 1px solid #D5D7D5;
@@ -238,8 +238,6 @@
        margin-top: 8px;
     
     }
-
-
     
     .log {
         font-family: 'Signika';
@@ -312,17 +310,18 @@
         padding : 7px  15px;  
         width   : 100%;
     }
-
     
     .navigation-img-box, #nav-bar-modal-men {
         justify-content: flex-end;
         display: flex;
-    
+    }
+
+    .nav-bar-img {
+        border-radius : 50%;
     }
 
     .nav-bar-modal-menu-box {
         margin-top: 15px;
-
     }
 
     .nav-bar-menu-header {
@@ -351,8 +350,8 @@
         font-weight: bold;;
     }
 
-    #navBardropdown, .nav-bar-img-box{
-        border        : px solid #D5D7D5;
+    #navBardropdown, .nav-bar-img-box {
+        border        : 1px solid #D5D7D5;
         border-radius : 50%;
         width         : 30px;
         height        : 30px; 

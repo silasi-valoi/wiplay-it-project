@@ -10,19 +10,22 @@
     position      : fixed;
     right         : auto;
     left          : auto;
-    z-index       : 999;
+    z-index       : 1500;
+    
 }
 
+.alert {
+    
+}
 
 .alert-box {
     justify-content : center;
     display         : flex;
-    border          : px solid black;
-    margin          : 4px 0; 
+    margin          : 2px 0; 
 }
 
 .alert-message {
-    font-size: 14px;
+    font-size : 14px;
 }
 
 
@@ -78,11 +81,7 @@
 }
 
 .author-name-box {
-    font-size   : 10px;
-    color       : black;
-    font-weight : bold;
-    font-family : 'Kanit';
-     
+
 }
 
 .time-created {
@@ -123,7 +122,6 @@
     border   : px solid  black;
 }
 
-
 .post-box, 
 .question-box, 
 .answer-box {
@@ -132,12 +130,15 @@
 }
 
 .reply-container,
-.replies-level-4,
-.replies-level-0 {
+.replies-level-0,
+.replies-level-1,
+.replies-level-2,
+.replies-level-3,
+.replies-level-4, 
+.replies-level-5 {
     border  : px solid black;
-    margin-left : 7%;
-    margin-top: 5px;
-
+    margin-left : 8.8%;
+    margin-top: 7px;
 }
 
 .contents-nav-container {
@@ -154,44 +155,84 @@
     word-wrap: break-word;
 }
 
+.comment-container,
 .replies-container {
-    border  : px solid black;
+    border  : px solid red;
 }
 
 .comment-container {
-    padding-right: 15px;
     word-wrap: break-word;
     margin-left: 10px;
     margin-right: 10px;
 }
 
 .comments-title {
-    margin:  0 10px 10px;
+    margin:  5px 10px 10px;
     font-family : 'Cabin'; 
     border-top : 1px solid #D5D7D5;
     border-width: thin;
 }
 
+.replies-toggle-box {
+    margin : 2px 0px 10px;
+   
+}
+
 .comments-loader {
-    margin:  0 10px;
+    margin: 5%;
+}
+
+.replies-loader,
+.comments-loader {
     font-family : 'Cabin';
     font-size: 13px;
+}
+
+.replies-loader:hover,
+.comments-loader:hover {
+    cursor : pointer;
+    text-decoration: underline;
+}
+
+
+.replies-loader {
+    display: flex;
+}
+
+.replies-loader  li {
+    display: flex;
+}
+
+.reply-author {
+    font-weight: bold;
+    font-size : 11px;
+    color : #2C2D2D;
+    font-family : 'Mukta';
+    margin-top : 3px;
 
 }
 
-.comments-loader:hover {
-    margin:  0 10px;
-    cursor: pointer;
-    text-decoration: underline;
-    
+
+.reply-author span {
+    font-weight : normal;
+}
+
+.replies-link .reply-text {
+    margin: 0 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.replies-count {
+    margin-left: 10px;
 }
 
 
 .reply-contents, .comment-contents {
-    display: flex;
-    margin-left: 5px;
-    width: 100%;
-}
+    display : flex;
+    width : 100%;
+ }
 
 .reply-box, .comment-box {
     border-top-right-radius : 10px;
@@ -200,16 +241,11 @@
     background : #E8E6E6;
     padding : 2px 4px 4px !important;
     margin-left : 2px;
-    
 }
 
 .reply-body, .comment-body {
     font-size : 13px;
     width : auto;
-}
-
-.reply-link-box {
-    border : 1px solid blue;
 }
 
 .btn-box1 button, .btn-box2 button,

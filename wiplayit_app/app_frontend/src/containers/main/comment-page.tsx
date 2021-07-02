@@ -14,6 +14,7 @@ const helper   = new Helper();
 
 
 class CommentsBox extends Component {
+    private isFullyMounted:boolean = false;
 
     constructor(props) {
         super(props);
@@ -26,12 +27,22 @@ class CommentsBox extends Component {
         };
     };
 
+    public get isMounted() {
+            return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+            this.isFullyMounted = value;
+    }
+
     componentDidCatch(error, info) {
        // You can also log the error to an error reporting service
        //console.log(error, info);
     };
 
     componentDidMount() {
+        this.isMounted = true;
+
         let answer = this.props['answer'];
         let post = this.props['post'];
 
@@ -80,6 +91,10 @@ class CommentsBox extends Component {
     }; 
    
     render() { 
+         if (!this.isMounted) {
+            return null;
+        }
+
         let props  = this.getProps();
         
         let commentsById = props['commentsById'];
@@ -87,28 +102,27 @@ class CommentsBox extends Component {
             
         let comments  =  props['entities']['comments'];
         let newComments = comments && comments[newCommentsById]; 
-        let oldComments = comments && comments[commentsById]
-                
+        let oldComments = comments && comments[commentsById];
+
+        let commentsTitle:string; 
+        if(newComments  && newComments.commentList){
+            commentsTitle = 'Comments';
+
+        }else if(oldComments && oldComments.commentList){
+            commentsTitle = 'Comments';
+        }
+                             
         return (
             <div className="comment-page">
-                {newComments || oldComments &&
-                    <p className="comments-title">Comments</p>
-                }
-                <div>
-                    { newComments?
-                        <NewComments {...props}/>
-                        :
-                        ""       
-                    }
+                <p className="comments-title">{commentsTitle}</p>
+                            
+                <div className="new-comments-box">
+                    { NewComments(props, newComments) }
                 </div>
-               
-                <div>
-                    {oldComments?  
-                        <OldComments {...props}/>
-                        :
-                        ""
-                    }
-                </div>  
+                               
+                <div className="previous-comments-box">
+                    { OldComments(props, oldComments) }
+                </div>
             </div>
         );
    };
@@ -118,29 +132,28 @@ class CommentsBox extends Component {
 export default CommentsBox;
 
 
-const NewComments = props => {
-   let {entities, newCommentsById} = props;
-   let comments = entities.comments[newCommentsById]; 
+const NewComments = (props:object, comments:object) => {
+    let commentList:object[] = comments && comments['commentList'] || [];
+ 
+    if (!commentList.length) {
+        return null
+    }
    
-   let commentsProps = Object.assign({isNewComments:true}, props)
-
-   let commentList = comments.commentList 
-                   && comments.commentList.length 
-                   && comments.commentList;  
-
-   return Comments(commentsProps, commentList);
+    let commentsProps:object = {...props, isNewComments:true}
+    return Comments(commentsProps, commentList);
 };
 
 
-const OldComments = props => {
-    let {entities, commentsById, parent} = props;
-    let comments = entities.comments[commentsById]; 
-    let linkData = comments.linkData;
+const OldComments = (props, comments:object) => {
+    let {commentsById, parent} = props;
+    let commentList:object[] = comments && comments['commentList'] || []; 
 
+    if (!commentList.length) {
+        return null;
+    }
 
-    let commentList = comments.commentList 
-                   && comments.commentList.length 
-                   && comments.commentList;
+    let linkData = comments['linkData'];
+                  
     const commentProps:object = {
         ...props, 
         comment:linkData.comment,
@@ -148,7 +161,7 @@ const OldComments = props => {
 
     return(
         <div>
-            {comments.showLink &&
+            {comments['showLink'] &&
                 <div>
                     <CommentsComponent {...commentProps}/>
                     <ul className="comments-loader"
@@ -156,10 +169,11 @@ const OldComments = props => {
                         <li>Click to view {commentList.length - 1} more comments</li>
                     </ul>
                 </div>
+
                 ||
 
                 <div>
-                    { comments.isLoading &&
+                    { comments['isLoading'] &&
                         <div className="spin-loader-box">
                             <AjaxLoader/>
                         </div>
@@ -174,8 +188,6 @@ const OldComments = props => {
             }
         </div>
     )
-
-      
 };
 
 const Comments = (props, commentList) => {
@@ -202,7 +214,6 @@ const Comments = (props, commentList) => {
                 return(
                     <div  key={index} >
                         <CommentsComponent {...commentProps}/>
-                         
                     </div>
                 )
             })}

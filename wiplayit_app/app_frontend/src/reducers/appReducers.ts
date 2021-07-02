@@ -143,15 +143,17 @@ export function entities(state:object=InitialState(), action:object):object {
             
 
         case types.UPDATE_USER_PROFILE['SUCCESS']:
+
             let userProfileToUpdate:object = state['userProfile'][byId];
             userProfileToUpdate = userProfileToUpdate && userProfileToUpdate['user']
             let updatedUserProfile:object = payLoad['user'];
 
-            let user =  {...userProfileToUpdate || {}, ...updatedUserProfile || {}}
-            payLoad['user'] = user;
-            action['payLoad'] = payLoad;
-           
-            return updateStateEntyties('userProfile', action, state);  
+            payLoad['user'] = {
+                ...userProfileToUpdate || {},
+                ...updatedUserProfile || {}
+            };
+
+            return updateStateEntyties('userProfile', {byId, payLoad}, state);
 
 
         case types.GET_USER_LIST['SUCCESS']:
@@ -225,7 +227,10 @@ export function entities(state:object=InitialState(), action:object):object {
                 let questions:[] = state['questions'][byId];
                 let questionList:[] = questions['questionList'] || [];
                 payLoad['questionList'] = 
-                            helper.updateReducerListEntynties(questionList, updatedQuestion);
+                           helper.updateReducerListEntynties(
+                                                questionList, 
+                                                updatedQuestion
+                                            );
                 delete payLoad['question'];
 
                 return updateStateEntyties('questions', {byId, payLoad}, state);
@@ -265,7 +270,10 @@ export function entities(state:object=InitialState(), action:object):object {
             
                 let posts:[]        = state['posts'][byId];
                 let postList        = posts['postList'] || [];
-                payLoad['postList'] = helper.updateReducerListEntynties(postList, updatedPost);
+                payLoad['postList'] = helper.updateReducerListEntynties(
+                                                      postList,
+                                                      updatedPost
+                                                    );
                 delete payLoad['post'];
 
                 return updateStateEntyties('posts', {byId, payLoad}, state);
@@ -294,8 +302,7 @@ export function entities(state:object=InitialState(), action:object):object {
 
             newAnswerList      =  currentAnswers.length &&
                                   currentAnswers.unshift(newAnswer) || newAnswerList;
-            console.log(newAnswerList)
-
+           
             payLoad['answerList'] = Array.isArray(newAnswerList) && 
                         newAnswerList || currentAnswers;
             delete payLoad['answer']; 
@@ -307,7 +314,10 @@ export function entities(state:object=InitialState(), action:object):object {
             let updatedAnswer = payLoad['answer'];
             let answers:[] = state['answers'][byId].answerList;
             
-            payLoad['answerList'] = helper.updateReducerListEntynties(answers, updatedAnswer);
+            payLoad['answerList'] = helper.updateReducerListEntynties(
+                                                        answers,
+                                                        updatedAnswer
+                                                    );
             delete payLoad['answer'];
             return updateStateEntyties('answers', {byId, payLoad}, state)|| state;
 
@@ -346,7 +356,10 @@ export function entities(state:object=InitialState(), action:object):object {
             let updatedComment = payLoad['comment'];
             let comments = state['comments'][byId];
             comments = comments['commentList']
-            payLoad['commentList'] = helper.updateReducerListEntynties(comments, updatedComment);
+            payLoad['commentList'] = helper.updateReducerListEntynties(
+                                                       comments,
+                                                       updatedComment
+                                                    );
             delete payLoad['comment'];
          
             return updateStateEntyties('comments', {byId, payLoad }, state)|| state; 
@@ -354,15 +367,11 @@ export function entities(state:object=InitialState(), action:object):object {
             
 
         case  types.GET_REPLY_LIST['PENDING']:
-        case  types.GET_REPLY_CHILD_LIST['PENDING']:
-        case  types.GET_REPLY_CHILD_LIST['SUCCESS']:
-        case  types.GET_REPLY_CHILD_LIST['ERROR']:
         case  types.CREATE_REPLY['PENDING']:
         case  types.CREATE_REPLY['ERROR']:
         case  types.UPDATE_REPLY['PENDING']:
         case  types.UPDATE_REPLY['ERROR']:
         case  'GET_REPLY_LINK_DATA':
-        case  'GET_REPLY_CHILD_LINK_DATA':
             return updateStateEntyties('replies', action, state);
 
 

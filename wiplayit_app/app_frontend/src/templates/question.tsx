@@ -1,6 +1,5 @@
 import React from 'react';
 import * as Icon from 'react-feather';
-import { GetModalLinkProps } from "templates/component-props";
 import { BrowserRouter, Link } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
 import { OpenOptionlBtn,
@@ -71,6 +70,8 @@ export const QuestionComponent = props => {
         byId        : questionById || questionListById,
         currentUser,
         isAuthenticated,
+        actionType : types.UPDATE_QUESTION,
+        apiUrl : api.updateQuestionApi(question.id)
     };
 
     let answersById = ()=>{
@@ -88,25 +89,20 @@ export const QuestionComponent = props => {
         isPut             : question.user_has_answer, 
         className         : 'btn-sm edit-answer-btn', 
         currentUser,  
-        isAuthenticated
+        isAuthenticated,
+        actionType : types.CREATE_ANSWER,
+         editorPlaceHolder : `Add Answer...`,
+        apiUrl : api.createAnswerApi(question.id),          
        
     };
 
-  
-    editObjProps = GetModalLinkProps.props(editObjProps)
-    createObjProps = GetModalLinkProps.props(createObjProps)
- 
     let EditorModalBtn = <OpenEditorBtn {...createObjProps}>
                             <Icon.Edit className="" size={20}/> 
                          </OpenEditorBtn> 
 
-    
-
     let questionFollowersBtn = question.followers !== 0 && 
                <OpenUsersModalBtn {...questionFollowersProps}/> || null;
     
-  
-
     let btnsProps = {
             ...props,
             editObjProps,

@@ -124,9 +124,7 @@ export const GetRestApiProps = (actionName, obj=null, isPut=false, isPost=false)
  	        apiUrl = !apiUrl && isPost? api.createAnswerReplyApi(id):apiUrl;
  	         	        
  	        return apiUrl;
-
- 	    case 'AnswerBookmark':
- 	    	return api.AddAnswerBookMarkApi(id)  	    
+  	    
 
  	    default:
  	    	return apiUrl;

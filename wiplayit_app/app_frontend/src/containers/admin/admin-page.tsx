@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import  * as action  from "actions/actionCreators";
 import { Link } from "react-router-dom";
 import {store } from "store/index";
-import { GetModalLinkProps } from "templates/component-props";
 import {PartalNavigationBar,NavigationBarBigScreen } from "templates/navBar";
 
 import { UnconfirmedUserWarning,

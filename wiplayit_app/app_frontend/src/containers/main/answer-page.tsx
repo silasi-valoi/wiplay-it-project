@@ -242,7 +242,7 @@ export const Answers = (props, answerList, isNewAnswers=false) => {
                 answerProps = {...props, ...answerProps}; 
       
                 return ( 
-                   <div key={index} className="answer-contents"> 
+                    <div key={index} className="answer-contents"> 
                         <AnswersComponent {...answerProps}/>
                         <CommentsBox {...answerProps}/>
                     </div>
