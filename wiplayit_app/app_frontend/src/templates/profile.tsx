@@ -343,7 +343,7 @@ export const PartialUserList = props => {
         let btnsProps   = {...props, editObjProps};
       
         let FollowBtn   = MatchMediaHOC(FollowUserBtn, '(min-width: 980px)');
-        //console.log(props)
+        
         const linkProps:object = {
                 linkPath:`/profile/${user.id}/${user['slug']}/`,
                 pushToRouter: props['pushToRouter'],
@@ -390,8 +390,7 @@ export const PartialUserList = props => {
 
 
 export const UserList = props => {
-    //console.log(props)
-    let {entities,users, usersById } = props
+    let {entities, users, usersById} = props
 
     users   = entities?.users[usersById] || users && users[usersById];
     let userList = users?.userList || [];
@@ -415,14 +414,13 @@ export const UserList = props => {
 
 
 export const UserAnswers = props =>{
-   var profileById    = props.profileById;
-   let userProfile    = props.userProfile;
-   userProfile        = userProfile.user;
-   var answerListById = `usersAnswers${userProfile.id}`
-   var answers        = props.entities.answers;
-   
-   var usersAnswers   = answers[answerListById]
-   let answerList:object[] = usersAnswers && usersAnswers.answerList;
+    let userProfile    = props.userProfile;
+    userProfile        = userProfile.user;
+    const answerListById = `userAnswers${userProfile.id}`
+    const answers        = props.entities.answers;
+     
+    const usersAnswers   = answers[answerListById]
+    const answerList:object[] = usersAnswers && usersAnswers.answerList;
    
    
    return (
@@ -472,16 +470,14 @@ export const UserAnswers = props =>{
 
 
 export const UserQuestions = props => {
-    var profileById = props.profileById;
     let userProfile = props.userProfile;
     userProfile    = userProfile.user;
 
-    let  questionListById     = `usersQuestions${userProfile.id}`
+    let  questionListById     = `userQuestions${userProfile.id}`
     let questions  = props.entities.questions;
     questions      = questions[questionListById]
     let questionList = questions && questions.questionList;  
-    console.log(questionList,  props)
-    
+        
     return (
         <div>
             {questionList && questionList?.length &&
@@ -519,12 +515,12 @@ export const UserQuestions = props => {
 
 
 export const UserPosts = props => {
-   var profileById = props.profileById;
-   let userProfile = props.entities.userProfile[profileById];
+   
+   let userProfile = props.userProfile;
    userProfile    = userProfile.user;
 
-   var postListById     = `usersPosts${userProfile.id}`;
-   var posts  = props.entities.posts;
+   let postListById = `userPosts${userProfile.id}`;
+   let posts  = props.entities.posts;
    posts      = posts && posts[postListById];
    let postList = posts && posts.postList;
    
@@ -641,14 +637,12 @@ export const UsersComponent = props => {
 
 
 export const UserFollowings = props => {
-   var profileById = props.profileById;
-   let userProfile = props.userProfile;
-   userProfile    = userProfile.user;
+    let userProfile = props.userProfile;
+    userProfile    = userProfile.user;
 
-   var usersById   = `usersFollowings${userProfile.id}`;
-   var users       = props.entities.users[usersById];
-   //console.log(users,usersById, props.entyties)
-   let userListProps = {...props, usersById};
+    let usersById   = `userFollowings${userProfile.id}`;
+    let users       = props.entities.users[usersById];
+    let userListProps = {...props, usersById};
 
     return (
       <div>
@@ -683,12 +677,11 @@ export const UserFollowings = props => {
 
 
 export const UserFollowers = props => {
-    var profileById = props.profileById;
     let userProfile = props.userProfile;
     userProfile    = userProfile.user;
 
-    var usersById   = `usersFollowers${userProfile.id}`
-    var users       = props.entities.users[usersById];
+    let usersById   = `userFollowers${userProfile.id}`
+    let users       = props.entities.users[usersById];
     let userListProps     = {...props, ...{ usersById }}
   
     return (
@@ -719,50 +712,64 @@ export const UserFollowers = props => {
         </div>
     );
 };
+ 
+export  const userProfileItemsParams = {
+    
+        answers(user:object){
+            return {
+                component : UserAnswers,
+                byId      : `userAnswers${user['id']}`,
+                data      :  user['answers'],
+                itemsType : 'Answers',
+            }
+        },
+      
+        questions(user:object){
+            return{
+                component : UserQuestions,
+                byId      : `userQuestions${user['id']}`,
+                data      :  user['questions'], 
+                itemsType : 'Questions',
+            }
+        },
+
+        posts(user:object){
+            return {
+                component : UserPosts,
+                byId      : `userPosts${user['id']}`,
+                data      :  user['posts'],
+                itemsType : 'Posts',
+            }
+        },
+   
+        followers(user:object){
+            return {
+                component : UserFollowers,
+                byId      : `usersFollowers${user['id']}`,
+                data      :  user['followers'],
+                itemsType : 'Followers'
+            }
+        },
+
+
+        followings(user:object) {
+            return {
+                component :  UserFollowings,
+                byId      :  `userFollowings${user['id']}`,
+                data      :  user['followings'],
+                itemsType :  'Followings'
+            }
+        },
+
+}
 
 
 export const UserActivitiesBtns = props => {
-    var profileById = props.profileById;
-    var userProfile = props.userProfile;
-    var userProfile = userProfile.user;
+    const itemsParams = userProfileItemsParams;
+    let userProfile = props.userProfile;
+    userProfile = userProfile.user;
 
-    var usersAnswers = {
-        component      : UserAnswers,
-        byId           : userProfile && `usersAnswers${userProfile.id}`,
-        data           :  userProfile.answers,
-        items          : 'isUsersAnswers',
-
-    };
-   
-    var usersQuestions = {
-        component        : UserQuestions,
-        byId             : `usersQuestions${userProfile.id}`,
-        data             :  userProfile.questions, 
-        items            : 'isUsersQuestions',
-    };
-
-    var usersPosts = {
-        component      : UserPosts,
-        byId           : `usersPosts${userProfile.id}`,
-        data           :  userProfile.posts,
-        items          : 'isUsersPosts',
-    };
-   
-    var usersFollowers = {
-        component          : UserFollowers,
-        byId               : `usersFollowers${userProfile.id}`,
-        data               :  userProfile.followers,
-        items              : 'isUsersFollowers'
-    };
-
-
-    var usersFollowings = {
-        component           :  UserFollowings,
-        byId                :  `usersFollowings${userProfile.id}`,
-        data                :  userProfile.followings,
-        items               :  'isUsersFollowings'
-    };
-
+    
     let totalAnswers    = userProfile?.answers?.length || 0;
     let totalQuestions  = userProfile?.questions?.length || 0;
     let totalPosts      = userProfile?.posts?.length || 0;
@@ -778,39 +785,44 @@ export const UserActivitiesBtns = props => {
     return (
         <div className="user-activities">
             <div style={answersBtnStyles} className="user-activities-btn-box">
-            <button type="button" onClick={() => props.showUserItems(usersAnswers)} 
-                             className="btn-sm activities user-answers" >
-                { totalAnswers } {totalAnswers <= 1? "Answer":"Answers"}
+            <button type="button" 
+                    onClick={()=> props.showUserItems(itemsParams.answers(userProfile))} 
+                    className="btn-sm activities user-answers" >
+                {totalAnswers} {totalAnswers <= 1? "Answer":"Answers"}
             </button>
             </div>
 
             <div  style={questionsBtnStyles}className="user-activities-btn-box">
-            <button type="button" onClick={() => props.showUserItems(usersQuestions)} 
-                        className="btn-sm activities user-questions" >
-                { totalQuestions } {totalQuestions <= 1? "Question":"Questions"}
+            <button type="button"
+                    onClick={() => props.showUserItems(itemsParams.questions(userProfile))} 
+                    className="btn-sm activities user-questions" >
+                {totalQuestions} {totalQuestions <= 1? "Question":"Questions"}
             </button>
 
             </div>
 
             <div style={postsBtnStyles} className="user-activities-btn-box">
-            <button type="button" onClick={() => props.showUserItems(usersPosts)} 
-                               className="btn-sm activities user-posts">
-               { totalPosts } {totalPosts <= 1? "Post":"Posts"}
+            <button type="button" 
+                    onClick={() => props.showUserItems(itemsParams.posts(userProfile))} 
+                    className="btn-sm activities user-posts">
+               {totalPosts} {totalPosts <= 1? "Post":"Posts"}
             </button> 
             </div>
 
             <div style={followingsBtnStyles} className="user-activities-btn-box">
-            <button type="button" onClick={() => props.showUserItems(usersFollowings)} 
-                            className="btn-sm activities user-following ">
-                { totalFollowings } {totalFollowings <= 1? "Following":"Followings"}
+            <button type="button" 
+                    onClick={() => props.showUserItems(itemsParams.followings(userProfile))} 
+                    className="btn-sm activities user-following ">
+                {totalFollowings} {totalFollowings <= 1? "Following":"Followings"}
             </button>
             </div>
 
             <div style={followersBtnStyles} className="user-activities-btn-box">
          
-            <button type="button" onClick={() => props.showUserItems(usersFollowers)} 
-                            className="btn-sm activities user-followers " >
-               { totalFollowers } {totalFollowers <= 1? "Follower":"Followers"}        
+            <button type="button"
+                    onClick={() => props.showUserItems(itemsParams.followers(userProfile))} 
+                    className="btn-sm activities user-followers " >
+               {totalFollowers} {totalFollowers <= 1? "Follower":"Followers"}        
             </button>
             </div>
 

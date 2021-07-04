@@ -120,9 +120,9 @@ export const PostComponent = props => {
     let UpVoteBtn =  post.upvoted? <DownVotePostBtn {...btnsProps}/>
                : <UpVotePostBtn {...btnsProps}/>
 
-    let comments:object[] = post.comments;
-    let itemsName:string = comments.length > 1  && "Comments" ||
-                        comments.length == 1 && "Comment" || '';
+    let comments:object[] = post?.comments;
+    let itemsName:string = comments?.length > 1  && "Comments" ||
+                        comments?.length == 1 && "Comment" || '';
 
     let itemsProps:object = {
             itemsName,

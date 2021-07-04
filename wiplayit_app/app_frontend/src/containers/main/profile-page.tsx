@@ -11,7 +11,7 @@ import {PartalNavigationBar,
         NavigationBarBigScreen } from'templates/navBar';
 
 import  * as action  from 'actions/actionCreators';
-import { ProfileComponent, UserAnswers } from 'templates/profile';
+import {ProfileComponent, UserAnswers, userProfileItemsParams} from 'templates/profile';
 import MainAppHoc from "containers/main/index-hoc";
 import { UnconfirmedUserWarning, PageErrorComponent } from "templates/partials";
 import * as checkType from 'helpers/check-types'; 
@@ -71,9 +71,16 @@ class UserProfileContainer extends Component {
             
             if (userProfile) {
                 this.setErrors(userProfile); 
-                
-                this.setState({userProfile})
-                this._dispatchUserProfileAnswers(userProfile['user']);
+                this.setState({userProfile});
+
+                let user:object = userProfile['user'];
+                if (user && !userProfile['answersDispatched']) {
+                    userProfile['answersDispatched'] = true;
+
+                    const itemsparams = userProfileItemsParams.answers(user)
+                    this.showUserItems(itemsparams)
+                }
+                              
             }
         };
         this.unsubscribe = store.subscribe(onStoreChange);
@@ -110,6 +117,7 @@ class UserProfileContainer extends Component {
             this.updateUsersStore();
         }
     };
+   
 
     componentDidMount() {
         this.isMounted = true;
@@ -125,12 +133,21 @@ class UserProfileContainer extends Component {
         let user = userProfile && userProfile.user;
         let userList = users['filteredUsers'];
         
-        if (user) {
-            this.setState({userProfile});
+        const userProfileCache = this.getUserProfileCache(profileById);
+        let _cacheExpired:boolean = cacheExpired(userProfileCache);
+        console.log(_cacheExpired, userProfileCache);
+         
 
-        }else{
-            this.updateWithCacheData({profileById, id});
-        } 
+        if (!_cacheExpired) { 
+            this.setState({userProfile : userProfileCache});
+           
+            const itemsParams = userProfileItemsParams.answers(userProfileCache['user'])
+            this.showUserItems(itemsParams)
+           
+            
+        } else {
+            store.dispatch<any>(getUserProfile(id));
+        }
 
         if (!userList) {
             this.updateUsersStore();
@@ -168,38 +185,16 @@ class UserProfileContainer extends Component {
      
         const userProfile = this.getUserProfileCache(profileById);
         let _cacheExpired:boolean = cacheExpired(userProfile);
+        console.log(_cacheExpired, userProfile)
 
         if (!_cacheExpired) { 
             this.setState({userProfile});
-            this._dispatchUserProfileAnswers(userProfile.user);
-            
+                        
         } else {
             let id  = params['id'];
             store.dispatch<any>(getUserProfile(id));
         }
     };
-
-    _dispatchUserProfileAnswers(userProfile){
-        let userAnswers = userProfile && userProfile['answers'];
-        
-        if (userAnswers && userAnswers.length) {
-            var byId =`usersAnswers${userProfile.id}`;
-            let entities = this.props['entities'];
-            let answers  = entities.answers[byId];
-            let _cacheExpired:boolean = cacheExpired(answers);
-
-            if (!answers && !_cacheExpired) {
-                
-                let  answersBtnStyles = this._userActivitesStyle();
-                let userItemsStyles   = {answersBtnStyles};
-                this.setState({userItemsStyles})
-
-                store.dispatch<any>(action.getAnswerListPending(byId));
-                store.dispatch<any>(action.getAnswerListSuccess(byId, userAnswers));
-            }
-        }
-
-    }
 
     _userActivitesStyle = ()=>{
         return {
@@ -211,13 +206,13 @@ class UserProfileContainer extends Component {
     showUserItems(params) {
         if(!this.isMounted) return;
 
-        let {items, component, byId, data } = params;
+        let {itemsType, component, byId, data } = params;
         this.setState({userItemsComponent : component});
 
         let userItemsStyles; 
 
-        switch(items){
-            case 'isUsersAnswers':
+        switch(itemsType){
+            case 'Answers':
                 let  answersBtnStyles = this._userActivitesStyle();
                 userItemsStyles       = {answersBtnStyles};
                 this.setState({userItemsStyles})
@@ -227,7 +222,7 @@ class UserProfileContainer extends Component {
                 return;
 
 
-            case 'isUsersQuestions':
+            case 'Questions':
                 let  questionsBtnStyles = this._userActivitesStyle();
                 userItemsStyles         = {questionsBtnStyles};
                 this.setState({userItemsStyles})
@@ -236,7 +231,7 @@ class UserProfileContainer extends Component {
                 store.dispatch<any>(action.getQuestionListSuccess(byId, data));
                 return;
             
-            case 'isUsersPosts':
+            case 'Posts':
                 let  postsBtnStyles = this._userActivitesStyle();
                 userItemsStyles     = {postsBtnStyles};
                 this.setState({userItemsStyles})
@@ -245,7 +240,7 @@ class UserProfileContainer extends Component {
                 store.dispatch<any>(action.getPostListSuccess(byId, data));
                 return;
          
-            case 'isUsersFollowings':
+            case 'Followings':
                 let  followingsBtnStyles = this._userActivitesStyle();
                 userItemsStyles          = {followingsBtnStyles};
                 this.setState({userItemsStyles})
@@ -253,7 +248,7 @@ class UserProfileContainer extends Component {
                 store.dispatch<any>(action.getUserListSuccess(byId, data));
                 return;
 
-            case 'isUsersFollowers':
+            case 'Followers':
                 let  followersBtnStyles = this._userActivitesStyle();
                 userItemsStyles          = {followersBtnStyles};
                 this.setState({userItemsStyles})
