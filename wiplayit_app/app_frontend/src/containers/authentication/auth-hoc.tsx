@@ -9,7 +9,7 @@ import {closeModals}   from  'containers/modal/helpers';
 import  * as action  from 'actions/actionCreators';
 import {store} from 'store/index';
 import {history} from 'App';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import Helper from 'utils/helpers';
 
 import {getFormFields,
@@ -125,16 +125,13 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             this.isFullyMounted = value;
         }
 
-
-        public api:Api = new Api();
-        
         private helper:Helper   = new Helper();
 
  
 
         responseFacebook = (response:object):void => {
             console.log(response)
-            let apiUrl =  this.api.facebookLoginApi();
+            let apiUrl =  Apis.facebookLoginApi();
             let accessToken =  response['accessToken']
             accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
 
@@ -143,13 +140,13 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
         responseTwitter = (response:object):void => {
             let accessToken =  response['accessToken']
-            let apiUrl =  this.api.twitterLoginApi()
+            let apiUrl =  Apis.twitterLoginApi()
             accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
         };
 
         responseGoogle = (response):void => {
             let accessToken =  response.accessToken
-            let apiUrl =  this.api.googleLoginApi();
+            let apiUrl =  Apis.googleLoginApi();
             accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
         };
 

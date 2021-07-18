@@ -1,5 +1,5 @@
 import {store} from 'store/index';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import {authenticate} from 'dispatch/index';
 import Helper from 'utils/helpers';
 
@@ -224,39 +224,38 @@ export const getFormFields =()=> {
 };
 export const getAuthUrl =(formName)=> {
     if (!formName) return;
-    const api = new Api();
-        
+            
     switch(formName){
         case 'loginForm':
         case 'reLoginForm':
-            return api.logginUser();
+            return Apis.logginUser();
 
         case 'signUpForm':
-            return api.createUser();
+            return Apis.createUser();
                 
         case 'passwordResetForm':
-            return api.passwordResetApi();
+            return Apis.passwordResetApi();
 
         case 'passwordChangeForm':
-            return api.passwordChangeApi();
+            return Apis.passwordChangeApi();
 
         case 'passwordChangeConfirmForm':
-            return api.passwordChangeConfirmApi()
+            return Apis.passwordChangeConfirmApi()
 
         case 'passwordResetSmsCodeForm':
-            return api.passwordResetSmsConfirmApi();
+            return Apis.passwordResetSmsConfirmApi();
 
         case 'emailResendForm':
-            return api.confirmationEmailResendApi();
+            return Apis.confirmationEmailResendApi();
 
         case 'phoneNumberConfirmationForm':
-            return api.accountConfirmPhoneNumberApi();
+            return Apis.accountConfirmPhoneNumberApi();
 
         case 'addEmailForm':
-            return api.addEmailApi();
+            return Apis.addEmailApi();
 
         case 'addPhoneNumberForm':
-            return api.addPhoneNumberApi();
+            return Apis.addPhoneNumberApi();
 
         default:
             return  '';

@@ -23,16 +23,13 @@ import {showModal}  from 'actions/actionCreators';
 import {handleModalScroll} from '../modal/helpers';
 import {store} from 'store/index';
 
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import {handleSubmit, _GetApi }  from "dispatch/index"
 import  * as action  from "actions/actionCreators";
 import * as checkType from 'helpers/check-types'; 
-
   
-const api      = new Api();
+
 const helper   = new Helper();  
-
-
 
 export default  class AppEditor extends Component{
     private isFullyMounted:boolean = false;
@@ -290,7 +287,7 @@ export default  class AppEditor extends Component{
     };
 
     saveFile(name, file){
-        let apiUrl   = api.createDraftEditorContentsApi();
+        let apiUrl   = Apis.createDraftEditorContentsApi();
         let form     = {'draft_editor_file': file}
         let fileForm = helper.createFormData(form);
 

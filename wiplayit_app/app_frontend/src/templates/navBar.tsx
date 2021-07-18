@@ -10,15 +10,13 @@ import { SubmitBtn,
          OpenEditorBtn  } from "templates/buttons";
 import { Modal}   from  "containers/modal/modal-container";
 import { store } from "store/index";
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import { closeModals}   from  'containers/modal/helpers';
 import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
 
 import { showModal } from 'actions/actionCreators';
 import { history } from "App"
 import * as Icon from 'react-feather';
-
-const api      = new Api();
 
 
 let editorLinkMobileStyles = {
@@ -50,7 +48,7 @@ export const createPostProps = {
         className   : "create-post-btn btn",
         editorLinkDesktopStyles,
         editorLinkMobileStyles,
-        apiUrl : api.createPostApi(),
+        apiUrl : Apis.createPostApi(),
         actionType: CREATE_POST,
     };
 
@@ -63,7 +61,7 @@ export const createQuestionProps = {
         editorLinkMobileStyles,
         editorLinkDesktopStyles,
         actionType :  CREATE_QUESTION,
-        apiUrl  : api.createQuestionApi()
+        apiUrl  : Apis.createQuestionApi()
     };
 
 let authenticationProps = {
@@ -256,9 +254,10 @@ const NavBarModalMenu = props => {
 
             <div className="nav-bar-modal-menu" id="nav-bar-modal-menu">
                 <div className="nav-bar-img-box"> 
-                    { profile && 
+                    {profile && 
                         <img alt="" 
-                             src={profile.profile_picture} className="nav-bar-img"/>
+                             src={profile.profile_picture}
+                             className="nav-bar-img"/>
                     }
                 </div>
             </div>

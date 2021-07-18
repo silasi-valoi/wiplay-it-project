@@ -111,28 +111,28 @@ class AnswerComment(models.Model):
 
 
 class AnswerReply(MPTTModel):
-    reply          = models.TextField(null=True)
+    reply = models.TextField(null=True)
     date_created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     date_updated = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    author     = models.ForeignKey(settings.AUTH_USER_MODEL,
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
                                on_delete=models.CASCADE,
                                 related_name="user",
                                 blank=True
                              )
-    parent         = TreeForeignKey(
-                        'self', on_delete=models.CASCADE, 
-                        null=True,
-                        blank=True,
-                        related_name='children'
-                    )
-    comment        = models.ForeignKey(
+    parent = TreeForeignKey(
+                'self', on_delete=models.CASCADE, 
+                null=True,
+                blank=True,
+                related_name='children'
+            )
+    comment = models.ForeignKey(
                         AnswerComment,
                         on_delete=models.CASCADE,
                         related_name="replies", 
                         blank=True,
                         null=True
-                     )
-    upvotes        = models.IntegerField(default=0)
+                    )
+    upvotes = models.IntegerField(default=0)
 
 
     class Meta:

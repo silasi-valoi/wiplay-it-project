@@ -178,9 +178,10 @@ export const Post = props => {
         <div className="post-page" id="post-page">
             <div className="post-container">
                 <div className="post-contents"> 
-                    <PostComponent {...postProps }  />
+                    <PostComponent {...postProps }/>
+                    <CommentsBox {...postProps}/>
                 </div>
-                <CommentsBox {...postProps}/>
+                
             </div>
         </div>
     );

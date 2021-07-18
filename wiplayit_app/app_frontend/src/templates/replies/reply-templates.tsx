@@ -12,31 +12,22 @@ import { UpVoteReplyBtn,
          OpenUsersModalBtn,} from 'templates/buttons';
 
 import {ButtonsBox, AuthorAvatar,AuthorDetails} from "templates/partials";
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import  * as types  from 'actions/types';
 import Helper from 'utils/helpers';
 
 
-const api      = new Api();
 const helper   = new Helper();
 
 export const Reply = (props, replyProps, isNewReply:boolean) => {
-  
-    let optionsBtnStyles = {
-              fontSize   : '11px',
-              background : ' #F5F5F5',
-              fontWeight : 'bold',
-              width      : '40px',
-              color      : '#4A4A4A',
-              margin     : '0 0 2px'
-    }
+   
     
     let {currentUser,
          isAnswerBox,
          isAuthenticated,
          isPostBox } = props;
 
-   let {byId, newRepliesById, reply,} = replyProps && replyProps  
+   let {byId, index, newRepliesById, reply,} = replyProps && replyProps  
 
     if (!reply || !reply.reply) {
         return null;
@@ -50,19 +41,19 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
     var updateUrl    = ''; 
 
     if(isAnswerBox) {
-        updateUrl    = api.updateAnswerReplyApi(reply.id);
-        createApiUrl = api.createAnswerReplyChildApi(reply.id);
+        updateUrl    = Apis.updateAnswerReplyApi(reply.id);
+        createApiUrl = Apis.createAnswerReplyChildApi(reply.id);
       
     }else if(isPostBox) {
-        updateUrl    = api.updatePostReplyApi(reply.id);
-        createApiUrl = api.createPostReplyChildApi(reply.id);
+        updateUrl    = Apis.updatePostReplyApi(reply.id);
+        createApiUrl = Apis.createPostReplyChildApi(reply.id);
     }
 
     let usersById = reply && isAnswerBox && `answerReplyUpVoters${reply.id}` ||
                     reply &&  `postReplyUpVoters${reply.id}`;
 
-    let apiUrl    = reply && isAnswerBox && api.getAnswerReplyUpVotersListApi(reply.id) ||
-                    reply && api.getPostReplyUpVotersListApi(reply.id);
+    let apiUrl    = reply && isAnswerBox && Apis.getAnswerReplyUpVotersListApi(reply.id) ||
+                    reply && Apis.getPostReplyUpVotersListApi(reply.id);
 
     let linkName = reply.upvotes > 1 && `${reply.upvotes} Upvoters`
                                      || `${reply.upvotes} Upvoter`;
@@ -78,6 +69,7 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
    
      
     let editObjProps = {
+        index,
         objName     : 'Reply',
         isPut       : true,
         obj         : reply, 
@@ -90,6 +82,7 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
     };
     
     let createObjProps = {
+        index,
         currentUser,
         isAuthenticated,
         objName           : 'Reply',
@@ -115,7 +108,6 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
         ...props,
         editObjProps,
         createObjProps,
-        btnStyles:optionsBtnStyles,
         btnText : 'More', 
     }; 
 
@@ -140,6 +132,14 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
             data   : reply,
         };
 
+    let replyLevelOneProps:object = {
+        ...props,
+        parent : reply,
+        parentId : reply['id'],
+        newRepliesById,
+        isRecusive:true,
+    };
+
     return (
         <div className="reply-contents">
             <AuthorAvatar {...authorProps}/>
@@ -156,6 +156,7 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
                     </div>
                 </div>
                 <ButtonsBox {...btnsList}/>
+
             </div>
         </div>
     );
@@ -221,53 +222,22 @@ const getRepliesApi = (params:object):string => {
 
     if (params['isAnswerBox']) { 
         if (parent['has_children']) {
-            apiUrl = api.getAnswerReplyChildrenListApi(parent['id'])
+            apiUrl = Apis.getAnswerReplyChildrenListApi(parent['id'])
             
         }else {
-            apiUrl = api.getAnswerReplyListApi(parent['id']);
+            apiUrl = Apis.getAnswerReplyListApi(parent['id']);
         }
 
     }else {
         if(parent['has_children']){
-            apiUrl = api.getPostReplyChildrenListApi(parent['id']);
+            apiUrl = Apis.getPostReplyChildrenListApi(parent['id']);
 
         }else {
-            apiUrl = api.getPostReplyListApi(parent['id']);
+            apiUrl = Apis.getPostReplyListApi(parent['id']);
         }
     }
     return apiUrl;
 
 }
 
-
-
-export const ChildrenRepliesLink = (props:object, replies:object) => {
-           
-    let linkData:object = replies['linkData'];
-    let reply:object   = linkData['reply'];
-    let parent = props['parent'];
-    
-    var apiUrl = '';
-    if (props['isAnswerBox']) { 
-      apiUrl = api.getAnswerReplyChildrenListApi(parent['id']);
-    }else{
-      apiUrl = api.getPostReplyChildrenListApi(parent['id']);
-    } 
-
-    var replyProps:object = {
-        apiUrl,
-        byId : props['repliesById'],
-        children : parent['children'],
-        actionType : types.GET_REPLY_CHILD_LIST,
-    };
-
-    const getReplyList:Function = props['getReplyChildrenList'];
-    
-    return(
-        <div className="reply-link-box"
-             onClick={() => getReplyList(replyProps)}> 
-            <RepliesLink {...replies}/>
-        </div> 
-    );
-};
 

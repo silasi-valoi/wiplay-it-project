@@ -39,7 +39,7 @@ class DefaultProfilePictureView(BaseApiView, APIView):
 
 	def get(self, *args, **kwargs):
 		serializer = self.serializer_class(*args, **kwargs)
-		print(serializer.data)
+		
 		return Response(serializer.data,  status=status.HTTP_200_OK )
 
 class AboutView(BaseApiView, APIView):

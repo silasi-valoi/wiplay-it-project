@@ -47,8 +47,6 @@ class CommentsBox extends Component {
         let post = this.props['post'];
 
         let isAnswerBox:boolean = this.props['isAnswerBox'];
-        let isPostBox:boolean = this.props['isPostBox'];
-
         const parent:object = post && post || answer && answer;
                 
         if(parent){
@@ -60,7 +58,7 @@ class CommentsBox extends Component {
                commentsById =  `commentsAnswer${parentId}`;
                newCommentsById = `newAnswerComments${parentId}`; 
 
-            } else if(isPostBox) {
+            } else {
                 commentsById =  `commentsPost${parentId}`;
                 newCommentsById = `newPostComments${parentId}`;
             }
@@ -73,7 +71,7 @@ class CommentsBox extends Component {
             });
          
             let comments:object[] = parent['comments'];
-            if (comments.length) {
+            if (comments && comments.length) {
                 
                 store.dispatch<any>(
                     action.getCommentLindData(commentsById, comments)
@@ -96,6 +94,7 @@ class CommentsBox extends Component {
         }
 
         let props  = this.getProps();
+        //console.log(props)
         
         let commentsById = props['commentsById'];
         let newCommentsById = props['newCommentsById'];
@@ -111,10 +110,12 @@ class CommentsBox extends Component {
         }else if(oldComments && oldComments.commentList){
             commentsTitle = 'Comments';
         }
+
+        //<p className="comments-title">{commentsTitle}</p>
                              
         return (
             <div className="comment-page">
-                <p className="comments-title">{commentsTitle}</p>
+                
                             
                 <div className="new-comments-box">
                     { NewComments(props, newComments) }

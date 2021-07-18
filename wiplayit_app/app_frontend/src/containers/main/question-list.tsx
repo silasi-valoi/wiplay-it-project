@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 
 import {QuestionComponent} from "templates/question"
 import  * as action  from 'actions/actionCreators';
-import Api from 'utils/api';
 import {getQuestionList} from 'dispatch/index';
 import {store} from 'store/index';
 import  MainAppHoc from "containers/main/index-hoc";
@@ -17,7 +16,6 @@ import {PartalNavigationBar,
 import  AjaxLoader from 'templates/ajax-loader';
  
 
-const api      = new Api();
 
 class  QuestionListPage extends Component  {
     private isFullyMounted:boolean = false;
@@ -190,7 +188,9 @@ const QuestionList = (props, questionList:[])=>{
                        
         return (
             <div key={index}>
-                <QuestionComponent {...{...props, question}}/>
+                <div className="question-contents">
+                    <QuestionComponent {...{...props, question}}/>
+                </div>
             </div>
         )
     })

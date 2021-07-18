@@ -32,14 +32,7 @@
     #home-page-contents{
         border: px solid black;
     }
-
-    .index-posts-box, .index-questions-box,.index-answers-box  {
-        border  : 1px solid #D5D7D5;
-        margin  : 9px 0px;
-        padding : 0px 0px 4px; 
-        background:  #ffff;
-    }
-    
+   
 
     .index-items-label {
         border-bottom : 1px solid #D5D7D5;
@@ -47,6 +40,18 @@
         padding       : 4px 17px 0px;
         color         : #A33F0B;
         font-weight   : bold;
+    }
+    
+    .answer-list-container 
+    .answer-contents, 
+    .index-post-contents,
+    .index-answer-contents {
+        border-bottom : 5px solid #D5D7D5;
+        padding: 10px 10px 12px;
+    }
+
+    .answer-list-container {
+
     }
   
     .empty-question-list-box,

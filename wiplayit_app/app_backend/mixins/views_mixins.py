@@ -11,18 +11,7 @@ class BaseMixin(object):
 
     def get(self, request, pk=None):
     	return Response({}, status=status.HTTP_200_OK)  
-    	
-    def get_obj_permissions(self, obj_perms=None, perm_to=None):
-    	permissions = get_objects_perms(obj_perms)
-    	
-    	if permissions and perm_to is not None:
-    		return permissions.get(perm_to)
-   
-    	return None
-
-
-
-        
+            
     def update_text_field(self, instance=None):
     	data = dict()
     	if hasattr(self, 'fields_to_update'):
@@ -66,12 +55,11 @@ class BaseMixin(object):
     		return generate_unique_slug(instance.__class__, field_to_slugify)
 
     	return	
-        
-    	
-     	
+        	
     def remove_perm(self, perm, instance, author=None):
     	if author is None:
     		author = self.request.user
+
     	return remove_perm(perm, author, instance)
 
     	        
@@ -103,7 +91,7 @@ class UpdateObjectMixin(BaseMixin):
 		return instance.save()
 
 
-	def modify_current_user_followings_field(self, instance, increm=False, decrem=False):
+	def update_current_user_followings(self, instance, increm=False, decrem=False):
 		if increm:
 			instance.followings = instance.followings + 1
 			
@@ -119,14 +107,12 @@ class UpdateObjectMixin(BaseMixin):
 		followings_perms = self.permissions.get('followings_perms', None)		
 		followers_perms = self.permissions.get('followers_perms', None)
 		user_is_following = has_perm(request.user, followers_perms, instance)
-		print(user_is_following)
-		print(hasattr(self, 'is_user'))
-
+				
 		if  hasattr(self, 'is_user'):
 			profile    = dict()
 			
 			if user_is_following:
-				request.user.profile = self.modify_current_user_followings_field(
+				request.user.profile = self.update_current_user_followings(
 															instance.profile,
 															decrem=True
 														)
@@ -136,7 +122,7 @@ class UpdateObjectMixin(BaseMixin):
 				self.remove_perm(followings_perms, request.user, author=instance)
 				
 			else:
-				request.user.profile = self.modify_current_user_followings_field(
+				request.user.profile = self.update_current_user_followings(
 													   instance.profile,
 													   increm=True
 													)
@@ -167,15 +153,14 @@ class UpdateObjectMixin(BaseMixin):
 		upvotes_perm = self.permissions.get('upvotes_perms',None)
 		data = dict()
 		author     = self.request.user
-				
+					
 		if has_perm(author, upvotes_perm, instance):
-			instance.upvotes = instance.upvotes - 1
-			instance.save()
+			
+			self.downvote(instance)
 			self.remove_perm(upvotes_perm, instance )
 			
 		else:
-			instance.upvotes = instance.upvotes + 1
-			instance.save()
+			self.upvote(instance)
 			self.assign_perm(upvotes_perm, instance )
 			
 		data['upvotes']  = instance.upvotes
@@ -214,6 +199,7 @@ class UpdateObjectMixin(BaseMixin):
 		
 	def put(self, request, *args, **kwargs):
 	 	instance = self.get_object()
+	 	#kwargs['instance'] = 
 	 	print(request.data)
 	 		 		 	
 	 	if  request.data.get("followers", False):
@@ -231,7 +217,7 @@ class UpdateObjectMixin(BaseMixin):
 	def update(self, request, *args, **kwargs):
 		data = kwargs.pop("data", None)
 		instance = self.get_object()
-
+		
 		serializer = self.get_serializer(
             					instance, 
             					data,
@@ -242,15 +228,13 @@ class UpdateObjectMixin(BaseMixin):
 			self.perform_update(serializer)
 
 		else:
-			print(serializer.errors)
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
 			
 		if getattr(instance, '_prefetched_objects_cache', None):
 			# If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
 			instance._prefetched_objects_cache = {}
-
-            
+  
 		return Response(serializer.data, status=status.HTTP_200_OK)    
         
     	
@@ -298,6 +282,14 @@ class CreateMixin(BaseMixin):
 		          
 class RetrieveMixin(BaseMixin):
 	permission_classes = (AllowAny,)
+
+	def get_obj_permissions(self, obj_perms=None, perm_to=None):
+		permissions = get_objects_perms(obj_perms)
+
+		if permissions and perm_to is not None:
+			return permissions.get(perm_to)
+
+		return None
 	
 	
 	

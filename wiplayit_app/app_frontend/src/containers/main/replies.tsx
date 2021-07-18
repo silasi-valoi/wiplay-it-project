@@ -32,8 +32,7 @@ class RepliesConatiner extends Component {
     getRepliesIds(data:object){
         let isRecusive:boolean = this.props['isRecusive'];
         let isAnswerBox:boolean = this.props['isAnswerBox'];
-        let isPostBox:boolean = this.props['isPostBox'];
-
+    
         let repliesById:string; 
         let newRepliesById:string;
         let level:number = data['level'];
@@ -43,7 +42,7 @@ class RepliesConatiner extends Component {
             repliesById = isRecusive && `answerReplies-${level}-${parentId}`
                                      ||  `answerCommentReplies-${parentId}`;
 
-        }else if(isPostBox){
+        }else{
            repliesById = isRecusive && `postReplies-${level}-${parentId}`
                                     ||  `postCommentReplies-${parentId}`;
         }
@@ -154,7 +153,7 @@ const OldReplies = (props:object, replies:object) => {
     return(
         <div>
             {replies['showLink'] &&
-                <div  className={`reply-container replies-level-${reply['level']}`}>
+                <div  className={`replies-level-${reply['level']}`}>
                     { RepliesToggle(props, replies)}
                 </div>
               
@@ -185,7 +184,6 @@ const Replies = (props, replyList:object[], isNewReply=false) => {
           parentId, 
           repliesById,
           newRepliesById,
-          isPostBox,
           isAnswerBox } = props;
       
     return(
@@ -201,11 +199,12 @@ const Replies = (props, replyList:object[], isNewReply=false) => {
                 if (isAnswerBox){
                     newRepliesById = `newAnswerReplies-${reply['level']}-${reply['id']}`;
 
-                }else if(isPostBox){
+                }else{
                     newRepliesById = `newPostReplies-${reply['level']}-${reply['id']}`;
                 } 
 
                 let replyProps:object = {
+                    index,
                     reply,
                     byId,
                     newRepliesById,
@@ -213,6 +212,7 @@ const Replies = (props, replyList:object[], isNewReply=false) => {
 
                 let replyLevelOneProps:object = {
                     ...props,
+                    index,
                     parent : reply,
                     parentId : reply['id'],
                     newRepliesById,

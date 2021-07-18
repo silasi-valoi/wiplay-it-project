@@ -34,7 +34,11 @@ class BaseChildSerializer(BaseModelSerializer):
 	author = BaseUserSerializer(read_only=True)
 				
 	def get_upvoted(self, obj):
+		if hasattr(self, 'update_perms'):
+			self.update_perms()
+
 		perms = self.get_obj_permissions('upvotes_perms')
+	
 		if perms and self.current_user().is_authenticated:
 			return has_perm(self.current_user(), perms, obj)
 
@@ -47,6 +51,7 @@ class BaseReplySerializer(BaseChildSerializer):
 	
 	def get_children(self, obj):
 		children = obj.get_children()
+		#print('children', children)
 		child_serializer =	self.children_serializer(children)
 		return child_serializer
 		
@@ -65,13 +70,17 @@ class AnswerReplySerializer(BaseChildSerializer):
 		model = AnswerReply 
 		fields = '__all__'
 
+	def update_perms(self):
+		self.update_serializer_obj_perms('answer_reply_perms')
+
 		
 class AnswerReplyReadSerializer(BaseReplySerializer):
-	
+
 	class Meta:
 		model = AnswerReply 
 		fields = '__all__'
-		
+	
+			
 	def children_serializer(self, children_queryset=[]):
 		self.update_serializer_obj_perms('answer_reply_perms')
 		return AnswerReplyReadSerializer(
@@ -87,14 +96,23 @@ class AnswerCommentSerializer(BaseChildSerializer):
 		model = AnswerComment
 		fields = '__all__'
 
+	def update_perms(self):
+		self.update_serializer_obj_perms('answer_comment_perms')
+
 
 class AnswerCommentReadSerializer(AnswerCommentSerializer):
-	replies    = serializers.SerializerMethodField()
+	replies = serializers.SerializerMethodField()
+	replies_count = serializers.SerializerMethodField()   
+
+	def get_replies_count(self, obj):
+		return obj.replies.count()
 
 	def get_replies(self, obj):
 		self.update_serializer_obj_perms('answer_reply_perms')
+		replies = obj.replies.all()[:1]
+
 		return AnswerReplyReadSerializer(
-					obj.replies,
+					replies,
 					context=self.context,
 					many=True).data
 
@@ -104,6 +122,9 @@ class PostReplySerializer(BaseChildSerializer):
 	class Meta:
 		model = PostReply 
 		fields = '__all__'
+
+	def update_perms(self):
+		self.update_serializer_obj_perms('post_reply_perms')
 
 
 
@@ -127,15 +148,24 @@ class PostCommentSerializer(BaseChildSerializer):
 		model = PostComment 
 		fields = '__all__'
 
+	def update_perms(self):
+		self.update_serializer_obj_perms('post_comment_perms')
+
 
 
 class PostCommentReadSerializer(PostCommentSerializer):
 	replies    = serializers.SerializerMethodField()
+	replies_count = serializers.SerializerMethodField()
+
+	def get_replies_count(self, obj):
+		return obj.replies.count() 
 
 	def get_replies(self, obj):
 		self.update_serializer_obj_perms('post_reply_perms')
+		replies =  obj.replies.all()[:1]
+
 		return PostReplyReadSerializer(
-					obj.replies,
+					replies,
 					context=self.context,
 					many=True).data
 
@@ -144,16 +174,24 @@ class PostSerializer(BaseChildSerializer):
 	class Meta:
 		model = Post 
 		fields = '__all__'
-		
+
+	def update_perms(self):
+		self.update_serializer_obj_perms('post_perms')
+				
 
 class PostReadSerializer(PostSerializer):
 	comments    = serializers.SerializerMethodField()
+	comments_count = serializers.SerializerMethodField()
 
+	def get_comments_count(self, obj):
+		return obj.comments.count() 
 
 	def get_comments(self, obj):
 		self.update_serializer_obj_perms('post_comment_perms')
+		comments =  obj.comments.all()[:1]
+
 		return PostCommentReadSerializer(
-					obj.comments, 
+					comments, 
 					context=self.context,
 					many=True).data
 	
@@ -163,15 +201,25 @@ class AnswerSerializer(BaseChildSerializer):
 	class Meta:
 		model = Answer 
 		fields = '__all__'
+
+	def update_perms(self):
+		self.update_serializer_obj_perms('answer_perms')
+		
 		
 class AnswerReadSerializer(AnswerSerializer):
 	comments   = serializers.SerializerMethodField()
+	comments_count = serializers.SerializerMethodField()
 	question   =  serializers.SerializerMethodField()
+
+	def get_comments_count(self, obj):
+		return obj.comments.count() 
 
 	def get_comments(self, obj):
 		self.update_serializer_obj_perms('answer_comment_perms')
+		comments =  obj.comments.all()[:1]
+		
 		return AnswerCommentReadSerializer(
-						obj.comments,
+						comments,
 						context=self.context,
 						many=True).data
 
@@ -331,7 +379,7 @@ class IndexSerializer(BaseSerializer):
 	
 	def get_questions(self, obj):
 		if self.current_user().is_authenticated:
-			questions = Question.objects.exclude(author=self.current_user())
+			questions = Question.objects.exclude(author=self.current_user())[:3]
 		else:
 			questions = Question.objects.all()[:5]
 

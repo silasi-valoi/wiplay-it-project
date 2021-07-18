@@ -89,7 +89,7 @@ export const UnfollowUserBtn = props => {
     return(
         <button type="button"
                 onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
-                className="unfollow-user">
+                className="btn-sm unfollow-user">
             Follow 
         </button>
     )
@@ -151,82 +151,61 @@ export const DownVotePostBtn = props => (
 
             
 export const UpVoteAnswerBtn = props => (     
-      
-        <button
-            type="button"
-            onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
-                                          className="btn-sm  upvote-answer" >
+    <button
+        type="button"
+        onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
+        className="btn-sm  upvote-answer" >
             Upvote <span className="fa fa-arrow-up"></span>
-        </button>
-   
+    </button>
 );
-
-
-
 
          
 export const DownVoteAnswerBtn = props => (  
-    <div>       
-        <button type="button"
-            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
-            className="btn-sm icon-color upvote-answer" >
-            Upvoted <span className=" fa fa-arrow-up upvote-icon"></span>
-        </button>
-  </div>
- )
-
-
+    <button type="button"
+        onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
+        className="btn-sm icon-color upvote-answer" >
+        Upvoted <span className=" fa fa-arrow-up upvote-icon"></span>
+    </button>
+)
              
 export const UpVoteCommentBtn = props => (     
-    <div>    
-        <button  type="button"
-            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
-            className="btn-sm upvote-comment-btn" >
-            Upvote 
-        </button>
-    </div>
-
+    <button  type="button"
+        onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
+        className="btn-sm upvote-comment-btn" >
+        Upvote 
+    </button>
+    
 )
 
-
 export const DownVoteCommentBtn = props => (     
-    <div>    
-        <button  type="button" 
+    <button  type="button" 
             onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)} 
-                      className="btn-sm upvote-comment-btn" >
-         Upvoted 
-        </button>
-    </div>
+            className="btn-sm upvote-comment-btn" >
+        Upvoted 
+    </button>
 )
 
 
 export const UpVoteReplyBtn = props => (     
-    <div>    
-        <button 
-            type="button"
-            onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
-            className="btn-sm upvote-reply-btn" >
-            Upvote 
-        </button>
-    </div>
-
+    <button 
+        type="button"
+        onClick={ () => props.editFollowersOrUpVoters(props.editObjProps)}
+        className="btn-sm upvote-reply-btn" >
+        Upvote 
+    </button>
 )
-
 
 export const DownVoteReplytBtn = props => (     
-    <div>    
-        <button  
-            type="button"
-            onClick={() => props.editFollowersOrUpVoters(props.editObjProps)} 
-            className="btn-sm  icon-color upvote-comment" >
-            Upvoted 
-        </button>
-    </div>
+    <button  
+        type="button"
+        onClick={() => props.editFollowersOrUpVoters(props.editObjProps)} 
+        className="btn-sm  icon-color upvote-comment" >
+        Upvoted 
+    </button>
 )
 
-
 export const ProfileOptsModalBtns = props => {
-   
+  
     return (
         <button type="button" id="logout" 
                 onClick={props.logout}

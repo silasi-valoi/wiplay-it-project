@@ -15,7 +15,7 @@ export default class Helper {
         //console.log(listItems,obj)
         if (Array.isArray(listItems) && obj ) {
 
-            listItems.map(( item, index) => {
+            listItems.map((item, index) => {
                 if ( item.id  === obj.id) {
                     Object.assign(listItems[index], obj)
                 }

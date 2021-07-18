@@ -25,15 +25,12 @@ import * as checkType from 'helpers/check-types';
 import {store} from 'store/index';
 import {history} from "App";
 import GetTimeStamp from 'utils/timeStamp';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import {isAuthenticated, isAdmin, getUserFromCache} from 'utils/authService';
 import Helper, { IsBookMarked,
                  displaySuccessMessage,
                  displayErrorMessage } from 'utils/helpers';
 
-
-
-const api      = new Api();
 const helper   = new Helper();
 
 
@@ -417,7 +414,7 @@ export function MainAppHoc(Component) {
         };
 
         logout= () => {
-            let apiUrl:string   =  api.logoutUser();
+            let apiUrl:string   =  Apis.logoutUser();
             let useToken:boolean = false;
             let formName:string = 'logoutForm';
             this.props.authenticateUser({apiUrl, form:{},formName, useToken})
@@ -456,7 +453,7 @@ export function MainAppHoc(Component) {
 
         removeAnswerBookmark =(params:object)=>{
             let obj:object = params['obj']
-            let apiUrl = api.removeAnswerBookMarkApi(obj['id']);
+            let apiUrl = Apis.removeAnswerBookMarkApi(obj['id']);
             store.dispatch<any>(Delete({...params, apiUrl}))
         };
 

@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import {HelpPageNavBar} from 'templates/navBar';
 import MessageFormContainer from 'containers/main/message';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import  MainAppHoc from "containers/main/index-hoc";
 
 
@@ -21,8 +21,8 @@ class ContactAdminContainer extends Component{
 
 
     render(){
-        let api    = new Api()
-        let apiUrl = api.getContactAdminApi();
+        
+        let apiUrl = Apis.getContactAdminApi();
         let props  = {
                 ...this.props,
                 ...this.state,

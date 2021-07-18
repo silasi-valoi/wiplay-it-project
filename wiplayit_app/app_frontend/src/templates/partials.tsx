@@ -1,9 +1,10 @@
 import React from 'react';
+import styled from 'styled-components'
 import * as Icon from 'react-feather';
+
 import {OpenAuthModalBtn, LinkButton} from "templates/buttons";
 import * as checkType from 'helpers/check-types'; 
 import GetTimeStamp from 'utils/timeStamp';
-
 import {validateEmail,
         validatePhoneNumber} from 'containers/authentication/utils';
 
@@ -40,6 +41,16 @@ export const ButtonsBox = props => {
 
 };
 
+const StyledCounter = styled['div']`
+  /* ... */
+`
+const Paragraph = styled['p']`
+  /* ... */
+`
+const Button = styled['button']`
+  /* ... */
+`
+
 const AuthorLinkProps = (author:object):object => {
     return{
         linkPath:`/profile/${author['id']}/${author['slug']}/`,
@@ -48,7 +59,7 @@ const AuthorLinkProps = (author:object):object => {
 }
 
 export const AuthorAvatar = (props:object) => {
-    const author:object = props['author']
+    const author:object = props['author'];
     const linkProps = AuthorLinkProps(author);
     const profile = author && author['profile'];
 

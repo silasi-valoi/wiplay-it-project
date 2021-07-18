@@ -9,14 +9,9 @@ import { PageErrorComponent } from "templates/partials";
 import Helper from 'utils/helpers';
 import {handleModalScroll} from 'containers/modal/helpers';
 import {history} from "App";
-import Api from 'utils/api';
+import Apis from 'utils/api';
 
 const helper   = new Helper();
-
-const api = new Api();
-
-
-  
 
 class UserListBox extends Component {
     public isFullyMounted:boolean = false;
@@ -79,7 +74,7 @@ class UserListBox extends Component {
         let usersById:string  = this.state['usersById'];
 
         usersById  = byId   || usersById;
-        apiUrl     = apiUrl || api.getUserListApi();
+        apiUrl     = apiUrl || Apis.getUserListApi();
 
         this.setState({usersById, apiUrl})
         

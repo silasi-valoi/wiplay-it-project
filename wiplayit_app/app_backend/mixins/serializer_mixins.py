@@ -15,6 +15,7 @@ class SerialiizerMixin(object):
 		
 	def get_obj_permissions(self, perm_to=None):
 		permissions = self.context.get('permissions', None)
+
 		if permissions:
 			return  permissions.get(perm_to, None)
 
@@ -27,7 +28,7 @@ class SerialiizerMixin(object):
 			self.context['permissions'] = permissions
 			return self.context	
 
-		return 
+		return None
 
 
 
@@ -36,13 +37,17 @@ class SerialiizerMixin(object):
 		if not current_user.is_authenticated: return False
 			
 		edit_perms = self.get_obj_permissions('edit_perms')
+	
 		if edit_perms:
+
 			can_edit = has_perm(
 				current_user, 
 				edit_perms[0],
 				obj
 			) or has_perm(current_user , edit_perms[1], obj)
+		
 			return can_edit
+
 		return False
 
 

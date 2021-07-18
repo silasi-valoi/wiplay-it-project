@@ -1,3 +1,4 @@
+
 .alert-container {
     width         : 100%;
     margin        : auto;
@@ -57,8 +58,15 @@
   	font-size: 13px !important;
 }
 
-.author-post-detail-box,
-.autor-answer-detail-box {
+
+.author-box {
+    border  : px solid  #A33F0B; 
+    display : flex;
+}
+
+
+.author-post-details-box,
+.autor-answer-details-box {
     display : flex;
     border  : px solid black;
 }
@@ -67,17 +75,24 @@
 .author-details {
 }
 
-.author-name-box {
-   
+
+.author-post-details-box .author-details-box,
+.autor-answer-details-box .author-details-box {
+    padding : 5px 4px 0;
 }
 
-.author-box {
-    border  : px solid  #A33F0B; 
-    display : flex;
+
+.author-name-box {
+    border  : px solid black;
+    font-weight : bold;
+    font-size : 11px;
+    font-family : 'Otomanopee one';
+
 }
 
 .author-img-box {
     border  : px solid blue;
+    
 }
 
 .author-name-box {
@@ -95,6 +110,12 @@
     height : 25px;
 }
 
+.author-post-details-box .author-img,
+.autor-answer-details-box .author-img {
+    width  : 35px;
+    height : 35px;
+}
+
 .author-img a img {
     border : px solid  #D5D7D5;
     border-radius : 50%;
@@ -106,43 +127,72 @@
 
 .question-container,
 .post-container{
-    border   : px solid  red;
-}
-
-
-.answer-container {
-  border: px solid blue;
-  position: relative;
-  overflow: hidden;
 
 }
 
-.post-contents,.question-contents {
+.answer-contents,
+.new-answer-container {
+   border-top: none;
+}
+
+.answer-contents {
+    margin-bottom: 15px;
+    padding: 10px;
+
+}
+
+.answers-count-box {
+    background : #E8E6E6;
+} 
+
+.answers-count {
+    padding: 0 12px;
+} 
+
+.answer-question-box {
+    border : px solid black;
+}
+
+.post-title, .question {
+    font-size   : 10px;
+    font-family : 'Ropa Sans';
+    font-weight : bold;
+}
+
+.post-contents, .question-contents {
     background : white;
-    border   : px solid  black;
+    padding : 10px 10px 0;
+    margin-top: 10px;
+    border-width: thin;
+}
+
+.question-contents {
+    border-bottom : 1px solid  #D5D7D5;
+}
+
+.post-contents {
+    margin : 5px 0 10px; 
 }
 
 .post-box, 
 .question-box, 
 .answer-box {
-    margin-left: 10px;
-    margin-right: 10px;
+    
 }
 
-.reply-container,
-.replies-level-0,
 .replies-level-1,
 .replies-level-2,
 .replies-level-3,
 .replies-level-4, 
 .replies-level-5 {
     border  : px solid black;
-    margin-left : 8.8%;
-    margin-top: 7px;
+    margin-top : 7px;
+    margin-left : 10%; 
 }
 
-.contents-nav-container {
-    border  : px solid black;
+
+.replies-level-0 {
+    border : px solid blue;
 }
 
 .contents-nav-container button {
@@ -158,28 +208,23 @@
 .comment-container,
 .replies-container {
     border  : px solid red;
+
 }
 
 .comment-container {
-    word-wrap: break-word;
-    margin-left: 10px;
-    margin-right: 10px;
+    border-top : 1px solid  #D5D7D5;
+    margin:  5px 0;
+    padding-top : 15px;
 }
 
 .comments-title {
-    margin:  5px 10px 10px;
+    margin:  5px 0 10px;
     font-family : 'Cabin'; 
-    border-top : 1px solid #D5D7D5;
-    border-width: thin;
+    font-size: 12px;
 }
 
 .replies-toggle-box {
     margin : 2px 0px 10px;
-   
-}
-
-.comments-loader {
-    margin: 5%;
 }
 
 .replies-loader,
@@ -212,7 +257,6 @@
 
 }
 
-
 .reply-author span {
     font-weight : normal;
 }
@@ -228,11 +272,10 @@
     margin-left: 10px;
 }
 
-
 .reply-contents, .comment-contents {
     display : flex;
     width : 100%;
- }
+}
 
 .reply-box, .comment-box {
     border-top-right-radius : 10px;
@@ -254,7 +297,7 @@
 .upvote-answer, .edit-comment-btn {
     font-family: 'Ubuntu';
     font-size:13px;
-    color: #807f7f; /* #979797;*/
+    color: #807f7f; 
 }
 
 .contents-nav-container {
@@ -299,13 +342,11 @@
    width  : 100%;
    display: flex;
    justify-content: flex-end;
-   
 }
 
 .options-btn {
   border      : px solid black;
   color       : gray; 
-  
 }
 
 #feather-more-horizontal {
@@ -317,15 +358,12 @@
 	display : flex;
 }
 
-
 .items-btn-box:nth-child(2) {
     margin-left: 7%;
-    	
 }
 
 .items-counter-btn {
     border  :  px solid red;
-      
 }
 
 .comment-contents .contents-nav-box {

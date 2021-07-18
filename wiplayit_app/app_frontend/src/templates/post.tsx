@@ -3,7 +3,7 @@ import { BrowserRouter, Link } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
 import {Editor} from 'draft-js';
 
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import  * as types  from 'actions/types';
 import Helper from 'utils/helpers';
 import {
@@ -13,7 +13,6 @@ import {
         OpenEditorBtn,
         ChangeImageBtn,
         LinkButton,
-        ToggleItemsBtn,
         OpenUsersModalBtn,} from 'templates/buttons';
 
 import CommentsBox from "containers/main/comment-page";
@@ -23,7 +22,6 @@ import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
 
 const helper   = new Helper();
 
-const api      = new Api();
 
 export const PostComponent = props => {
 
@@ -37,6 +35,7 @@ export const PostComponent = props => {
     }
 
     let {
+        index,
         post,
         isAuthenticated,
         currentUser, 
@@ -48,7 +47,7 @@ export const PostComponent = props => {
     const editorState  = helper.convertFromRaw(post.add_post);
    
     let usersById       = post && `postUpVoters${post.id}`;
-    let apiUrl          = post && api.getPostUpVotersListApi(post.id);
+    let apiUrl          = post && Apis.getPostUpVotersListApi(post.id);
     let linkName = post.upvotes > 1 && `${post.upvotes} Upvoters`
                                     || `${post.upvotes} Upvoter`;
 
@@ -74,12 +73,13 @@ export const PostComponent = props => {
         isAuthenticated, 
         actionType : types.UPDATE_POST,
         editorPlaceHolder : `Edit Post...`,
-        apiUrl:api.updatePostApi(post.id)
+        apiUrl:Apis.updatePostApi(post.id)
     };
 
 
 
     let createObjProps = {
+        index,
         objName           : 'Comment',
         obj               : post,
         isPost            : true,
@@ -89,7 +89,7 @@ export const PostComponent = props => {
         className   : 'btn-sm edit-comment-btn',
         isAuthenticated,
         actionType : types.CREATE_COMMENT,
-        apiUrl:api.createPostCommentApi(post.id)
+        apiUrl:Apis.createPostCommentApi(post.id)
     };
 
     let createBookmarkProps = {
@@ -100,7 +100,7 @@ export const PostComponent = props => {
         currentUser,  
         isAuthenticated,
         actionType : types.CREATE_BOOKMARK,
-        apiUrl : api.addPostBookMarkApi(post.id)
+        apiUrl : Apis.addPostBookMarkApi(post.id)
     };
 
     let EditorModalBtn     = <OpenEditorBtn {...createObjProps}/>; 
@@ -130,11 +130,9 @@ export const PostComponent = props => {
             itemsById : `commentsPost${post.id}`,
             getItemsList : props.getCommentList
         }
-
     
 
     const btnsList   = { 
-            itemsCounter : <ToggleItemsBtn {...itemsProps}/>,
             authorCounter : PostUpVotersBtn,
             btn1   : UpVoteBtn,
             btn2   : EditorModalBtn,
@@ -161,20 +159,21 @@ export const PostComponent = props => {
             {editorState?
                 <div className="post-box">
                     <div className="post"> 
-                        <div className="author-post-detail-box">
+                        <div className="author-post-details-box">
                             <AuthorAvatar {...authorProps}/>
                             <AuthorDetails {...authorProps}/>           
                         </div>
-                        <ul className="">
-                            {props.isPostBox? 
-                                <li className="post-title">
-                                    { post.add_title }
+                        <ul className="post-title">
+                            {props.isPostBox && 
+                                <li>
+                                    {post.add_title}
                                 </li>
-                                :
 
-                                <li className="post-title">
-                                      <LinkButton {...linkProps}>
-                                        <span>{  post.add_title }</span>
+                                ||
+
+                                <li>
+                                    <LinkButton {...linkProps}>
+                                        <span>{post.add_title}</span>
                                     </LinkButton>
                                 </li>
                             }

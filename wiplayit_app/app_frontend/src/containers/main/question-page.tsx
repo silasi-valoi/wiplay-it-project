@@ -174,13 +174,15 @@ export const Questions = props => {
     const questionData = props['questionData'];
     let question = questionData && questionData.question;
     if (!question) return null;
-    
     const questionProps = {...props, question}; 
    
     return (
         <div className="question-page" id="question-page">
             <div className="question-container">
-                <QuestionComponent {...questionProps}/>
+                <div className="question-contents">
+                    <QuestionComponent {...questionProps}/>
+                    
+                </div>
                 <AnswersBox {...questionProps}/>
             </div>
         </div>

@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import {HelpPageNavBar} from 'templates/navBar';
 import MessageFormContainer from '../main/message';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import  MainAppHoc from "../main/index-hoc";
 
 
@@ -21,8 +21,8 @@ class FeedBackContainer extends Component{
 
 
     render(){
-        let api    = new Api()
-        let apiUrl = api.getFeedBackApi();
+   
+        let apiUrl = Apis.getFeedBackApi();
         let props  = {
                 ...this.props,
                 ...this.state,

@@ -1,3 +1,5 @@
+'use strict'
+
 import React from 'react';
 import { Link, BrowserRouter  } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
@@ -9,16 +11,15 @@ import {
         OpenEditorBtn,
         OpenOptionlBtn,
         LinkButton,
-        OpenUsersModalBtn} from 'templates/buttons';
+        OpenUsersModalBtn } from 'templates/buttons';
 
 import  * as types  from 'actions/types';
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import Helper from 'utils/helpers';
 import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
-import Api from 'utils/api';
+import Apis from 'utils/api';
 
 
-const api      = new Api();
 const helper   = new Helper(); 
 
 
@@ -26,6 +27,7 @@ export const AnswersComponent = props => {
     //console.log(props)
 
     var {
+        index,
         answer, 
         answerListById,
         newAnswerListById,
@@ -50,7 +52,7 @@ export const AnswersComponent = props => {
    const editorState  = helper.convertFromRaw(answer.add_answer);
 
     let usersById =  `answerUpVoters${answer.id}`;
-    let apiUrl    =  api.getAnswerUpVotersListApi(answer.id);
+    let apiUrl    =  Apis.getAnswerUpVotersListApi(answer.id);
     let linkName  =  answer.upvotes > 1
                      && `${answer.upvotes} Upvoters` 
                      || `${answer.upvotes} Upvoter`;
@@ -70,51 +72,50 @@ export const AnswersComponent = props => {
         };
 
     let editObjProps = {
+        index,
+        currentUser,
+        isAuthenticated,
         objName     : 'Answer',
         linkName    : 'Edit Answer',
         isPut       : true,
         obj         : answer, 
         byId        : answerListById,
-        currentUser,
-        isAuthenticated,
         actionType : types.UPDATE_ANSWER,
         editorPlaceHolder : `Edit Answer...`,
-        apiUrl:api.updateAnswerApi(answer.id)
+        apiUrl:Apis.updateAnswerApi(answer.id)
     };
 
     let newCommentsById:string = `newAnswerComments${answer.id}`;
 
     let createObjProps = {
+        currentUser,
+        isAuthenticated,
         objName           : 'Comment',
         obj               : answer,
         isPost            : true,
         byId              : newCommentsById,
         className         : 'btn-sm edit-comment-btn',
-        currentUser,
-        isAuthenticated,
         actionType : types.CREATE_COMMENT,
         editorPlaceHolder : `Add Comment...`,
-        apiUrl:api.createAnswerCommentApi(answer.id)
+        apiUrl:Apis.createAnswerCommentApi(answer.id)
     };
   
     let createBookmarkProps = {
+        currentUser,  
+        isAuthenticated,
         objName           : `AnswerBookmark`,
         bookmarkType      : 'answers',
         obj               : answer,
         byId              : `bookmarkedAnswers`,
         isPost            : true,
-        currentUser,  
-        isAuthenticated,
         actionType : types.CREATE_BOOKMARK,
-        apiUrl : api.addAnswerBookMarkApi(answer.id)
+        apiUrl : Apis.addAnswerBookMarkApi(answer.id)
     };
 
     let EditorModalBtn = <OpenEditorBtn {...createObjProps}/>; 
     
     let AnswerUpVotersBtn = answer.upvotes !== 0 &&
                             <OpenUsersModalBtn {...answerUpvotersProps}/>; 
-   
-    
 
     let btnsProps = {
         ...props,
@@ -122,14 +123,23 @@ export const AnswersComponent = props => {
         createObjProps, 
         createBookmarkProps,
     }; 
-   
-    
+
     let UpVoteBtn = answer.upvoted? <DownVoteAnswerBtn {...btnsProps}/>
                : <UpVoteAnswerBtn {...btnsProps}/>
           
-   
+    let comments:object[] = answer?.comments;
+    let itemsName:string = comments?.length > 1  && "Comments" ||
+                        comments?.length == 1 && "Comment" || '';
+
+    let itemsProps:object = {
+            itemsName,
+            items: comments,
+            itemsById : `commentsPost${answer.id}`,
+            getItemsList : props.getCommentList
+        }
+
     const btnsList   = { 
-            itemsCounter : AnswerUpVotersBtn,
+            authorCounter : AnswerUpVotersBtn,
             btn1   : UpVoteBtn,
             btn2   : EditorModalBtn,
             btn3   : <OpenOptionlBtn {...btnsProps}/>,
@@ -140,27 +150,32 @@ export const AnswersComponent = props => {
             data   : answer,
         };
 
-    let question = answer.question;
+    let question:object = answer.question;
+
+    if (typeof question !== 'object') {
+        question = props.question;
+    }
     
     const linkProps:object = {
-        linkPath:`/question/${question.slug}/${question.id}/`,
+        linkPath:`/question/${question['slug']}/${question['id']}/`,
         state:{question},
     }
-                                        
+
+                                           
     return (
         <div className="answer-box">     
-            <div className="autor-answer-detail-box">
+            <div className="autor-answer-details-box">
                 <AuthorAvatar {...authorProps}/>
                 <AuthorDetails {...authorProps}/>
             </div>
 
-            { !isQuestionBox  &&
+            {!isQuestionBox  &&
                 <ul className="answer-question-box">
-                <li className="question">
-                    <LinkButton {...linkProps}>
-                        <span>{ question.add_question }</span>
-                    </LinkButton>
-                </li>
+                    <li className="question">
+                        <LinkButton {...linkProps}>
+                            <span>{ question['add_question'] }</span>
+                        </LinkButton>
+                    </li>
                 </ul>
             }
 

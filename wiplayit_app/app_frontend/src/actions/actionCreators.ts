@@ -56,15 +56,18 @@ export const updateActionPending = (params:object):object => {
 
 export const updateActionSuccess = (params:object): object => {
 
-    return{
+    return {
         type : params['actionType'].SUCCESS,
         byId: params['byId'],
+        index:params['index'],
+
         payLoad: {
             ...params['data'],
             submitting : false,
             updated    : true,
-      }
-   };
+            
+        }
+    };
 };
 
 export const updateActionError = (params:object):object => {
@@ -477,13 +480,16 @@ export const getReplyListError = (actionType:any, byId:string, error:string):obj
 });
 
 
-export const handleError  = (error?:string):object => {
+export const handleError  = (error?:string, errorParams?:object):object => {
     console.log(error)
+    let byId = errorParams && errorParams['byId'];
+
     if (!error) {
         error = 'Something wrong happened.'
     }
     
     return {
+        
         type: types.SERVER['ERROR'],
         payLoad: {
             error,

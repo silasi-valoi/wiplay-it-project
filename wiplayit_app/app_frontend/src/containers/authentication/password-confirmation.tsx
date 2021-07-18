@@ -23,10 +23,8 @@ import {formIsValid,
         setForm,} from 'containers/authentication/utils';   
 
 import {store} from "store/index";
-import Api from 'utils/api';
+//import Apis from 'utils/api';
 
-
-const api = new Api();
 
 
 export class PasswordConfirmationPage extends Component{

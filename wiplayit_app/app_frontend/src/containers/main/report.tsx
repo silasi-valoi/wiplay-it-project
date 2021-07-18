@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {HelpPageNavBar} from "templates/navBar";
 import MessageFormContainer from 'containers/main/message';
 import MainAppHoc from "containers/main/index-hoc";
-import Api from 'utils/api';
+import Apis from 'utils/api';
 
 
 class ReportContainer extends Component{
@@ -21,8 +21,8 @@ class ReportContainer extends Component{
  
 
     render(){
-        let api    = new Api()
-        let apiUrl = api.getBugReportApi();
+        
+        let apiUrl = Apis.getBugReportApi();
         let props = {
                 ...this.props,
                 ...this.state,

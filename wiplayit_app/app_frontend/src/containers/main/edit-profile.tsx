@@ -14,10 +14,9 @@ import {handleSubmit, getUserProfile}  from "dispatch/index"
 import { AlertComponent } from 'templates/partials';
 import  AjaxLoader from 'templates/ajax-loader';
 import  Helper from 'utils/helpers';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import * as checkType from 'helpers/check-types'; 
 
-const api = new Api();
 const helper   = new Helper();  
 
 class EditProfileRouter extends Component{
@@ -153,70 +152,27 @@ export class EditProfile extends Component{
     componentDidMount() {
         this.isMounted = true
         this.onProfileUpdate();
+
+        console.log(this.props)
                   
         let location = this.props['location']; 
-        let state:object =  location && location.state;
-                
-        if (state) {
-            let byId =  state['byId'];
-            this.setState({...state});
-            this.getUserProfileFromStore(byId)
+                        
+        if (location) {
+            let state:object =  location.state;
+            let userProfile  = state && state['obj'];
+
+            this.setState({...state, userProfile});
+            this.populateEditForm(userProfile);
            
         }else{
 
             let byId = this.props['byId']; 
-            let obj = this.props['obj'];
-
-            if (byId) {
-                this.setState({...this.props});
-                this.getUserProfileFromStore(byId);
-
-            }else{
-                this.getUserProfile()
-            }
-           
+            let userProfile = this.props['obj'];
+            this.setState({...this.props, userProfile});
+            this.populateEditForm(userProfile);
         }
         
     };
-
-    getUserProfileFromStore(byId){
-        let storeUpdate  = store.getState();
-        let {entities }  = storeUpdate;
-        let userProfile:object = entities['entities'];
-
-        userProfile = userProfile && userProfile[byId];
-                                
-        if (userProfile && userProfile['user']) {
-            userProfile = userProfile['user'];
-            this.populateEditForm(userProfile);
-            return;
-        }
-
-        this.getUserProfile()
-    }
-
-    getUserProfile(){
-        let cacheEntities = this.props['cacheEntities']; 
-        let match = this.props['match'];
-        let { userProfile, currentUser } = cacheEntities;
-
-        let {id}    = match && match.params;
-        let byId    = `userProfile${id}`;
-        userProfile = userProfile && userProfile[byId];
-
-        currentUser = currentUser.user;
-        userProfile = userProfile.user;
-        this.setState({userProfile, currentUser, byId});
-
-        if (userProfile) {
-            this.populateEditForm(userProfile);
-            return;
-        }
-
-        store.dispatch<any>(getUserProfile(id));
-    }
-
-
     
     populateEditForm(userProfile:object ){
         if (!userProfile) return;
@@ -293,9 +249,10 @@ export class EditProfile extends Component{
 
         let modalName = isModal && 'editor' || undefined;
         let userProfile = this.state['userProfile']
+        let apiUrl:string = userProfile && Apis.updateProfileApi(userProfile.id);
             
         return {
-            apiUrl : api.updateProfileApi(userProfile.id),
+            apiUrl,
             actionType : types.UPDATE_USER_PROFILE,    
             objName     : 'UserProfile',
             isPut       : true,

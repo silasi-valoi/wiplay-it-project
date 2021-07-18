@@ -5,10 +5,9 @@ import GetTimeStamp from 'utils/timeStamp';
 import { getCookie } from 'utils/csrf_token';
 import * as checkType from 'helpers/check-types'; 
 import {authenticate} from "dispatch/index"
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import {store} from 'store/index';
 
-const api      = new Api();
 let csrftoken = getCookie('csrftoken');  
 
 
@@ -65,7 +64,7 @@ export default class Axios {
             if (!token) return
            
             const authProps:object ={
-                apiUrl :api.refreshTokenApi(), 
+                apiUrl :Apis.refreshTokenApi(), 
                 form   :{token},
                 formName:'loginForm',
                 isTokenRefresh : true,

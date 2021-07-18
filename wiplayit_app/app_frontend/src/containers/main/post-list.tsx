@@ -8,18 +8,14 @@ import { MatchMediaHOC } from 'react-match-media';
 import { UnconfirmedUserWarning,PageErrorComponent, } from "templates/partials";
 import {OpenEditorBtn}  from "templates/buttons";
 import {CREATE_POST} from 'actions/types';
-import Api from 'utils/api';
 
 import {PartalNavigationBar,
         createPostProps,
         NavigationBarBottom,
         NavigationBarBigScreen } from "templates/navBar";
 import  AjaxLoader from "templates/ajax-loader";
- 
 import { getPostList } from 'dispatch/index';
 
-
-const api      = new Api();
 
 class  PostListPage extends Component  {
     private isFullyMounted:boolean = false;

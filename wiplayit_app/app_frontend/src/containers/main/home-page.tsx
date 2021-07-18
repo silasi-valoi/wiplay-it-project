@@ -11,20 +11,17 @@ import { UnconfirmedUserWarning,
          PageErrorComponent, } from "templates/partials";
 import  {getIndex} from 'dispatch/index';
 import {UPDATE_USER_LIST} from 'actions/types';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import { QuestionComponent} from "templates/question"
 import { PostComponent} from "templates/post"
 import CommentsBox from "containers/main/comment-page";
 import {AnswersBox} from "containers/main/answer-page";
-import * as checkType from 'helpers/check-types'; 
 import  AjaxLoader from "templates/ajax-loader";
 import { AnswersComponent } from "templates/answer";
 import GetTimeStamp from 'utils/timeStamp';
 import {history} from 'App'
 import  MainAppHoc from "containers/main/index-hoc";
 
-
-const api      = new Api();
 
 class HomePage extends Component<any, any> {
     public isFullyMounted = false;
@@ -166,23 +163,13 @@ class HomePage extends Component<any, any> {
         this.getIndexData();
     };
 
-    _checkData(data:object):boolean {
-        if (!data) return false;
-
-        if(checkType.isObject(data)){
-            data = Object.keys(data)
-        }
-        return data && data['length'] || false;
-    }
-
     updateIndexEntities(index){
         let {questions, posts, answers, users} =  index;
-        const checkData = this._checkData; 
 
-        checkData(questions) && this.dispatchQuestions(questions);
-        checkData(answers)   && this.dispatchAnswers(answers);
-        checkData(posts)     && this.dispatchPosts(posts);
-        checkData(users)     && this.dispatchUsers(users);
+        this.dispatchAnswers(answers);
+        this.dispatchQuestions(questions);
+        this.dispatchPosts(posts);
+        this.dispatchUsers(users);
     };
 
     dispatchQuestions(questions){
@@ -190,6 +177,7 @@ class HomePage extends Component<any, any> {
         store.dispatch<any>(action.getQuestionListSuccess('filteredQuestions', questions));
 
     }
+
     dispatchAnswers(answers){
         store.dispatch<any>(action.getAnswerListPending('filteredAnswers'));
         store.dispatch<any>(action.getAnswerListSuccess('filteredAnswers', answers));
@@ -272,7 +260,7 @@ export const Questions = props => {
     return (
 
         <div >
-            { questionList && questionList.length?
+            { questionList && 
                 <div className="index-questions">
                     <div className="index-questions-box">
                         <div className="question-container">
@@ -290,7 +278,7 @@ export const Questions = props => {
 
                                 return (
 
-                                    <div key={index}>
+                                    <div key={index} className="question-contents">
                                         <QuestionComponent {...contentsProps}/>
                                     </div>
                                 )
@@ -298,9 +286,6 @@ export const Questions = props => {
                         </div>
                     </div>
                 </div>
-
-                :
-                null
             }
        
       </div>
@@ -312,16 +297,13 @@ export const Questions = props => {
 
 
 export const Posts = props => {
-   
     let { postListById, entities } = props;
-
     let posts = entities.posts[postListById];
-    
   
     return (
 
         <div>
-            { posts && posts.postList && posts.postList.length?
+            { posts && posts.postList && 
                 <div className="index-posts">
                     <div className="index-posts-box">
                        <div className="post-container">
@@ -329,7 +311,7 @@ export const Posts = props => {
                                 <b>Posts</b>
                             </div>
 
-                            { posts.postList.map((post, index) => {
+                            {posts.postList.map((post, index) => {
                                 let postProps = {
                                         post,
                                         postById: postListById,
@@ -338,17 +320,15 @@ export const Posts = props => {
                                 Object.assign(postProps, props)  
 
                                 return (
-                                    <div key={index} className="post-contents">
+                                    <div key={index} className="index-post-contents">
                                         <PostComponent {...postProps}  />
-                                         <CommentsBox {...postProps}/>
+                                        <CommentsBox {...postProps}/>
                                     </div>
                                 )
                             })}
                         </div>
                     </div>
                 </div>
-                :
-                null
             }
         </div>
     );
@@ -356,16 +336,13 @@ export const Posts = props => {
 
 
 
-
-
-
 export const Answers = props => {
     let { answerListById, entities } = props;
     let answers   = entities.answers[answerListById]; 
-    //console.log(answers)     
+        
     return(
         <div>
-            {answers && answers.answerList && answers.answerList?
+            {answers && answers.answerList && 
                 <div className="index-answers">
                     <div className="index-answers-box">
 
@@ -375,12 +352,14 @@ export const Answers = props => {
                              </ul>
                   
                             { answers.answerList.map((answer, index) => {
-                                let answerProps = { answer };
-                                Object.assign(answerProps, props); 
-      
+                                let answerProps = {
+                                    ...props,
+                                    answer,
+                                    isAnswerBox:true,
+                                };
+                                 
                                 return ( 
-                                    <div key={index} className="answer-contents"> 
-                                        
+                                    <div key={index} className="index-answer-contents"> 
                                         <AnswersComponent {...answerProps}/>
                                         <CommentsBox {...answerProps}/>
                                     </div>
@@ -389,9 +368,6 @@ export const Answers = props => {
                         </div>
                     </div>
                 </div>
-
-                :
-               ""
             }
 
         </div> 
@@ -429,6 +405,7 @@ const _UserList = (props) =>{
     let { userListById, entities, currentUser } = props;
     let users  =  entities && entities.users 
     users =  users[userListById]; 
+    const apis = Apis; 
 
     
     return(
@@ -450,7 +427,7 @@ const _UserList = (props) =>{
                         byId       : userListById,
                         currentUser,
                         actionType : UPDATE_USER_LIST,
-                        apiUrl : api.updateProfileApi(user.id),
+                        apiUrl : apis.updateProfileApi(user.id),
                 }
                
                 let btnsProps   = {...props, editObjProps};

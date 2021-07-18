@@ -18,12 +18,8 @@ import * as checkType from 'helpers/check-types';
 import {store} from "store/index";
 import GetTimeStamp from 'utils/timeStamp';
 import {cacheExpired} from 'utils/helpers';
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import  AjaxLoader from "templates/ajax-loader";
-
-
-
-const api = new Api();
 
 
 class UserProfileContainer extends Component {
@@ -128,26 +124,20 @@ class UserProfileContainer extends Component {
         let {users, userProfile}  = entities; 
         let  profileById           = `userProfile${id}`;
         this.setState({profileById, id})
-               
-        userProfile = userProfile && userProfile[profileById];
-        let user = userProfile && userProfile.user;
-        let userList = users['filteredUsers'];
-        
+              
         const userProfileCache = this.getUserProfileCache(profileById);
         let _cacheExpired:boolean = cacheExpired(userProfileCache);
-        console.log(_cacheExpired, userProfileCache);
-         
-
+        
         if (!_cacheExpired) { 
             this.setState({userProfile : userProfileCache});
-           
+          
             const itemsParams = userProfileItemsParams.answers(userProfileCache['user'])
             this.showUserItems(itemsParams)
-           
-            
         } else {
             store.dispatch<any>(getUserProfile(id));
         }
+
+        let userList = users['filteredUsers'];
 
         if (!userList) {
             this.updateUsersStore();
@@ -167,7 +157,7 @@ class UserProfileContainer extends Component {
 
         }
         
-        let apiUrl = api.getUserListApi();
+        let apiUrl = Apis.getUserListApi();
         return store.dispatch<any>(getUserList({usersById, apiUrl}))
         
     }

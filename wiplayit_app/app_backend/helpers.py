@@ -4,7 +4,7 @@ from guardian.core import ObjectPermissionChecker
 def get_users_with_permissions(obj,  permission_name=None):
 		users = []
 				
-		if permission_name is not None:
+		if permission_name:
 			perms = get_users_with_perms(obj , attach_perms=True)
 						
 			for user, permission in perms.items():
@@ -159,13 +159,13 @@ def permission_checker(user=None):
 
 	if user is not None:
 		return ObjectPermissionChecker(user)
-	return user	
+	return None
 
 
-def has_perm(user, perm, instance ):
+def has_perm(user, perm, instance):
+	checker = permission_checker(user)
 
-	if perm and user:
-		checker = permission_checker(user)
+	if perm and user and checker:
 		return checker.has_perm(perm, instance)
 
 	return False

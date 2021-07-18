@@ -9,7 +9,7 @@ import {Editor} from 'draft-js';
 import * as checkType from 'helpers/check-types'; 
 import { UnconfirmedUserWarning,
          PageErrorComponent, } from "templates/partials";
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import {UPDATE_ABOUT, CREATE_ABOUT} from 'actions/types';
 import {getAdmin}  from "dispatch/index"
 import Helper from 'utils/helpers';
@@ -19,8 +19,6 @@ import GetTimeStamp from 'utils/timeStamp';
 import  MainAppHoc from "containers/main/index-hoc";
 
 const helper   = new Helper();
-const api      = new Api();
-
 
 class AboutAdminPage extends Component {
     public isFullyMounted:boolean = false;
@@ -144,8 +142,8 @@ export const AboutAdminComponent = props => {
         let isPut    = obj && true || false;
         let isPost   = !obj && true || false;
 
-        let apiUrl:string = isPost && api.createAboutApi()
-                            || isPut && api.updateAboutApi(obj['id']);
+        let apiUrl:string = isPost && Apis.createAboutApi()
+                            || isPut && Apis.updateAboutApi(obj['id']);
 
         let actionType:object = isPost && CREATE_ABOUT || isPost && UPDATE_ABOUT;
 

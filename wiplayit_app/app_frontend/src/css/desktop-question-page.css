@@ -1,25 +1,25 @@
 
-.answer-question-box {
-    padding    : 0px 10px;
-}
+
  
 @media (min-width:980px) {
 
     .page-contents, #home-page-contents {
         width    : 42%;
         margin   : 25px 29%;
+    
     }
-
+    
     #page-error-box, #answer-page,     
     .question-page, .post-page,
     .question-list-page  {
         width    : 42%;
         margin   : 30px 29%; 
+        padding-top : 10px;
         border   : 1px solid #D5D7D5; 
         border-radius : 15px;
         z-index  : 500;
         position : relative;
-        padding: 10px;  
+        background : #ffff;
     }
     
     .index-questions, 
@@ -27,17 +27,20 @@
     .index-posts, 
     .index-user-list,
     .post-list-page {
-        background : #ffff;
         margin   : 15px 0; 
         border   : 1px solid #D5D7D5; 
         border-radius : 10px;
         z-index  : 800;
         position : relative;
-        padding: 10px;  
-    
     }
 
-
+    .index-post-contents,
+    .index-answer-contents {
+        border-bottom : 1px solid #D5D7D5;
+        border-width: thin;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
 
     .answer-container, .question-container, .post-container {
         background : #ffff;
@@ -48,7 +51,11 @@
         background : #ffff; 
         border     : px solid  #D5D7D5;  
     }
-     
+
+    .answer-list-container
+    .answer-contents {
+        border-top : 1px solid  #D5D7D5;
+    }
     
     .page-error-box {
        padding-top: 5%;
@@ -68,7 +75,6 @@
         justify-content: center;
         display : flex;
         margin :15px 0; 
-
     }
 
     .post-list-create-box button,
@@ -78,25 +84,15 @@
         background : #A33F0B;
         color      : #fff; 
         font-size  : 13px; 
-
     }
-
-    .post, .question {
-        font-size   : 13px;
-        font-family : 'Ropa Sans';
-        font-weight : bold;
-    }
-
-    .post-title, .comment-box {
-        border-bottom : px solid blue; 
-    }
-
+   
     .post-body {
         width: 100%;
         font-size: 17px;
     }
 
-    .index-questions, .index-answers, .index-posts {
+    .post-title, .question {
+        font-size   : 12px;
     }
 
     .index-items-label {
@@ -106,143 +102,31 @@
         font-family    : 'Cabin'; 
     }
 
-    .answer-list-container {
-        border : px solid blue;
-    }
+    .answers-count-box {
+        margin-bottom: 5px;
+        background : #ffff;
+    } 
     
-
-    .replies-level-0 {
-        border  : px solid black;
-        margin-left: 5%;
-    }
-    .replies-level-1 {
-        margin-left: 5%;
-    }
-
-    .replies-level-2 {
-        margin-left: 5%;
-    }
-
-    .replies-level-3 {
-        margin-left: 8%;
+    
+    .replies-level-1,
+    .replies-level-2,
+    .replies-level-3,
+    .replies-level-4, 
+    .replies-level-5 {
+        margin-left : 6%; 
     }
 
     .comment-page {
         border : px solid blue;
     }
-   
-    .create-answer {
-        box-shadow: none;
-        background-color: white;
-    }     
-
-    .answer-box {
-        border-bottom:1px solid #D5D7D5;
-       /*background-color:#f0eeed;*/
+ 
+    .edit-reply-btn,.upvote-comment,
+    .edit-answer-btn, .follow-question-btn,
+    .upvote-answer, .edit-comment-btn {
+        font-family: 'Ubuntu';
+        font-size:13px;
+        color: #807f7f; 
     }
-   
-    .number-answers-box {
-        border-bottom :  1px solid #D5D7D5;
-        padding: 0 12px;
-    } 
-
-    .number-of-answers {
-        padding-left:6px ;
-        margin-top:7px;
-    } 
-
-    .comments-link:hover {
-        cursor:pointer;
-    }
-
-    .answer {
-        border      : px solid black;
-        font-size   : 15px;
-    }
-
-
-    .answer-dropdown {
-        padding-right: 34px; 
-    }
-    
-
-
-.following,.question-followers {
-      border:px solid black;  
-      font-size: 12px;
-      color: black;
-      list-style-type: none;
-      /*margin-left: 30px;*/
-
-}
-.following {
-  margin-left: 20px;
-}
-
-.question-followers a {
-      font-size: 10px;
-      color: black;
-
-}
-
-
-.answer-dropdown-btn,.answer-btn,
-.question-btn,.question-dropdown-btn {
-  background-color: white;
-  font-family: 'Nunito';
-  font-size:7px;
-  font-weight: 578;
-
-}
-
-
-.edit-reply-btn,.upvote-comment,
-.edit-answer-btn, .follow-question-btn,
-.upvote-answer, .edit-comment-btn {
-      /*#fefbfa;*/
-    font-family: 'Ubuntu';
-    font-size:13px;
-    color: #807f7f; /* #979797;*/
-  }
-
-
-
-.comment-counter,.reply-counter  {
-     margin-left: 20px;
-     color:  #5384e5 ;
-     padding:0px;
-
-}
-
-
-.img-container {
-    border: 1px solid #D5D7D5;/*#F9F7F7;*/
-    position: relative;
-    border-radius: 50px;
-    width: 100px;
-    height:100px;
-    margin: 20px 15px 10px 20px;
-}
-
-
-.img-container-sm {
-    border: 1px solid #D5D7D5;/*#F9F7F7;*/
-    border-radius: 50px;
-    width: 30px;
-    height:30px;
-    border: 1px solid red;
-    
-}
-
-.profile-user-name {
-  position: relative;
-  display:inline-block;
-  margin-left: 10px;
-  font-size: 13px;
-  color: black;
-  font-weight: 600;
-  font-family: 'Kanit';
-}
 
 }
 

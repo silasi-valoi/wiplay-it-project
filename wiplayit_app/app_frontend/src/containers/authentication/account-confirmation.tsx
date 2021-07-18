@@ -24,10 +24,8 @@ import {formIsValid,
 
 import {store} from "store/index";
 import {authenticateWithGet}  from "dispatch/index"
-import Api from 'utils/api';
+import Apis from 'utils/api';
 
-
-const api = new Api();
 
 
 class AccountConfirmationPage extends Component{
@@ -251,8 +249,9 @@ export class AccountEmailConfirmationPage extends Component{
         this.onAuthStoreUpdate();
         
         let formName:string = 'AccountConfirmation'
-        let { key } = this.props['match'].params; 
-        key && store.dispatch<any>(authenticateWithGet({key, formName}));  
+        let {key} = this.props['match'].params; 
+        let apiUrl = Apis.accountConfirmApi(key);
+        key && store.dispatch<any>(authenticateWithGet({key,apiUrl, formName}));  
     };
 
     onAuthStoreUpdate =()=> {

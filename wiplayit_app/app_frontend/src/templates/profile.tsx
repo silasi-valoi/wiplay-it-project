@@ -6,7 +6,7 @@ import * as Icon from 'react-feather';
 import {history} from "App" 
 
 
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import  * as types  from 'actions/types';
 
 import{ QuestionComponent } from "templates/question"
@@ -24,8 +24,6 @@ import { OpenEditorBtn,
          FollowUserBtn } from "templates/buttons";
 
 
-const api      = new Api();
-
 export const ProfileComponent = props => {
     let {entities,
         currentUser,
@@ -38,7 +36,7 @@ export const ProfileComponent = props => {
     if (!userProfile) return null;
          
     let profile  = userProfile.profile;
-    let apiUrl   = api.getQuestionFollowersListApi(userProfile?.id);
+    let apiUrl   = Apis.getQuestionFollowersListApi(userProfile?.id);
     let linkName = profile.followers > 1 && `${profile.followers} Followers` 
                                 || `${profile?.followers} Follower`;
 
@@ -71,7 +69,7 @@ export const ProfileComponent = props => {
             isAuthenticated,
             linkName    : 'Edit',
             currentUser,
-            apiUrl : api.updateProfileApi(userProfile.id),
+            apiUrl : Apis.updateProfileApi(userProfile.id),
             actionType : types.UPDATE_USER_PROFILE,
 
     }
@@ -337,7 +335,7 @@ export const PartialUserList = props => {
             byId       : usersById,
             currentUser,
             actionType : types.UPDATE_USER_LIST,
-            apiUrl : api.updateProfileApi(user.id),
+            apiUrl : Apis.updateProfileApi(user.id),
         }
        
         let btnsProps   = {...props, editObjProps};
@@ -577,7 +575,7 @@ export const UsersComponent = props => {
             byId       : usersById,
             currentUser,
             actionType : types.UPDATE_USER_LIST,
-            apiUrl : api.updateProfileApi(user.id),
+            apiUrl : Apis.updateProfileApi(user.id),
             
     }
 

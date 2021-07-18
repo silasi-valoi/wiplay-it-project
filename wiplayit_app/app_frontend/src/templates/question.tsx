@@ -12,14 +12,12 @@ import { OpenOptionlBtn,
 import {ButtonsBox} from "templates/partials";
 
 import  * as types  from 'actions/types';
-import Api from 'utils/api';
-
-
-const api      = new Api();
+import Apis from 'utils/api';
 
 export const QuestionComponent = props => {
     
     let { question,
+          index,
           questionById,
           questionListById, 
           isQuestionBox, 
@@ -47,7 +45,7 @@ export const QuestionComponent = props => {
     }
 
     let usersById =  question && `questionFollowers${question.id}`;
-    let apiUrl    = question && api.getQuestionFollowersListApi(question.id);
+    let apiUrl    = question && Apis.getQuestionFollowersListApi(question.id);
     let linkName  = question.followers > 1 && 
                     `${question.followers} Followers` ||
                      `${question.followers} Follower`;
@@ -64,6 +62,7 @@ export const QuestionComponent = props => {
 
 
     let editObjProps = {
+        index,
         objName     : 'Question',
         isPut       : true,
         obj         : question, 
@@ -71,7 +70,7 @@ export const QuestionComponent = props => {
         currentUser,
         isAuthenticated,
         actionType : types.UPDATE_QUESTION,
-        apiUrl : api.updateQuestionApi(question.id)
+        apiUrl : Apis.updateQuestionApi(question.id)
     };
 
     let answersById = ()=>{
@@ -91,8 +90,8 @@ export const QuestionComponent = props => {
         currentUser,  
         isAuthenticated,
         actionType : types.CREATE_ANSWER,
-         editorPlaceHolder : `Add Answer...`,
-        apiUrl : api.createAnswerApi(question.id),          
+        editorPlaceHolder : `Add Answer...`,
+        apiUrl : Apis.createAnswerApi(question.id),          
        
     };
 
@@ -109,8 +108,6 @@ export const QuestionComponent = props => {
             createObjProps,
         }
 
-    
-
     let unfollowOrFollowQuestionBtn =  question.user_is_following? 
                                         <UnfollowQuestionBtn {...btnsProps}/>
                                           :
@@ -118,7 +115,7 @@ export const QuestionComponent = props => {
 
 
     const btnsList  = {
-            itemsCounter : questionFollowersBtn,
+            authorCounter : questionFollowersBtn,
             btn1         : EditorModalBtn,
             btn2         : unfollowOrFollowQuestionBtn,
             btn3         : <OpenOptionlBtn {...btnsProps}/>,
@@ -130,22 +127,20 @@ export const QuestionComponent = props => {
     }
   
     return(
-        <div className="question-contents">
-            <div className="question-box ">
-                <div className="question">
-                    {props.isQuestionBox?
-                        <b className="">
-                            { question.add_question }
-                        </b>
-                        :
-                        <b className="">
-                            <LinkButton {...linkProps}>
-                                <span>{ question.add_question }</span>
-                            </LinkButton>
-                        </b>
-                    }
-                    <ButtonsBox {...btnsList}/>
-                </div>
+        <div className="question-box ">
+            <div className="question">
+                {props.isQuestionBox?
+                    <b className="">
+                        { question.add_question }
+                    </b>
+                    :
+                    <b className="">
+                        <LinkButton {...linkProps}>
+                            <span>{ question.add_question }</span>
+                        </LinkButton>
+                    </b>
+                }
+                <ButtonsBox {...btnsList}/>
             </div>
         </div>
     );

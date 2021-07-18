@@ -4,5 +4,5 @@ Wiplayit project is a social network for football professionals and alike where 
 
 The Question and Answer feature is not the only thing the platform does. The platform again allow users to create posts, follow questions, create comments to answers and post, upvote answers, posts, commets and edit their profiles.  
 
-The platform is built in python/django on the backend and Javscript/React in the browser.
+The platform is built in python/django on the backend and Javscript/React on the browser.
 

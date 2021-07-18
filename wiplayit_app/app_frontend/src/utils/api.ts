@@ -1,332 +1,284 @@
 
 
+const Apis = {
 
-export default class Api{
-
-    getDefaultProfilePicture(){
+    getDefaultProfilePicture():string{
         return `/api/default/profile/picture/`;
-    }
+    },
 
-    getContactAdminApi() {
+    getContactAdminApi():string {
        return `/api/contact/admin/`;
-    }
+    },
 
-    getFeedBackApi() {
+    getFeedBackApi():string {
        return `/api/feedback/`;
-    }
+    },
 
-    getBugReportApi() {
+    getBugReportApi():string {
        return `/api/bug/report/`;
-    }
+    },
 
-    getAdminApi() {
+    getAdminApi():string {
        return `/api/admin/`;
-    }
+    },
 
-    updateAboutApi(id) {
+    updateAboutApi(id:number):string {
        return `/api/about/change/${id}/`;
-    }
+    },
 
-    createAboutApi(){
+    createAboutApi():string {
         return `/api/about/create/`;
-    }
+    },
 
-    getAboutInfoApi() {
+    getAboutInfoApi():string {
         return `/api/about/`;
-    }
+    },
 
-    getCurrentUserApi() {
+    getCurrentUserApi():string {
         return `/api/current/user/`;
-    }
+    },
 
-    createDraftEditorContentsApi(){
+    createDraftEditorContentsApi():string {
         return `api/draft/editor/contents/`;
-    } 
+    }, 
 
-    getIndexApi() {
+    getIndexApi():string {
         return `api/main/`;
-    }      
+    },      
     
-    createPostApi() {
+    createPostApi():string {
         return `/api/create/post/`;;
-    }
+    },
 
-
-    createPostCommentApi(id){
+    createPostCommentApi(id:number):string {
         return `/api/create/post/${id}/comment/`; 
-    }
+    },
 
-    createPostReplyApi(id){
+    createPostReplyApi(id:number):string {
         return `/api/create/post/comment/${id}/reply/`;
-    }
+    },
     
-
-    createPostReplyChildApi(id){
+    createPostReplyChildApi(id:number):string {
         return `/api/create/post/reply/${id}/child/`;
-    }
+    },
 
-    createQuestionApi() {
+    createQuestionApi():string {
         return `/api/create/question/`;
-    }
+    },
     
-    createAnswerApi(id) {
+    createAnswerApi(id:number):string {
         return `/api/create/question/${id}/answer/`;
-    }
+    },
 
-    createAnswerCommentApi(id) {
+    createAnswerCommentApi(id:number):string {
         return `/api/create/answer/${id}/comment/`;
-    }
+    },
 
-    createAnswerReplyApi(id){
+    createAnswerReplyApi(id:number):string {
         return `/api/create/answer/comment/${id}/reply/`;
-    }
+    },
 
-    createAnswerReplyChildApi(id){
+    createAnswerReplyChildApi(id:number):string {
         return `/api/create/answer/reply/${id}/child/`;
-    }
+    },
 
 
-    addPostBookMarkApi(id){
+    addPostBookMarkApi(id:number):string {
         return `api/post/${id}/bookmark/add/`
-    }
+    },
     
-    addAnswerBookMarkApi(id){
+    addAnswerBookMarkApi(id:number):string {
         return `api/answer/${id}/bookmark/add/`
-    }  
+    },  
 
-    removeAnswerBookMarkApi(id){
+    removeAnswerBookMarkApi(id:number):string {
         return `api/answer/${id}/bookmark/remove/`
-    }   
+    },   
 
-    getQuestionListApi() {
+    getQuestionListApi():string {
         return `/api/question/list/`;
-    }  
+    }, 
 
-    getPostListApi() {
+    getPostListApi():string {
         return `/api/post/list/`;
-    }
+    },
 
-    getQuestionApi(id) {
+    getQuestionApi(id:number):string {
         return `/api/question/${id}/`;
-    }  
+    },  
 
-    getPostApi(id) {
+    getPostApi(id:number):string {
         return `/api/post/${id}/`;
-    }
+    },
 
-    getPostCommentListApi(id) {
+    getPostCommentListApi(id:number) {
         return `/api/post/${id}/comment/list/`;
-    }
+    },
 
-    getPostCommentUpVotersListApi(id) {
+    getPostCommentUpVotersListApi(id:number):string {
         return `/api/post/comment/${id}/upvoters/`;
-    }
+    },
 
-    getPostReplyListApi(id) {
+    getPostReplyListApi(id:number):string {
         return `/api/post/comment/${id}/reply/list/`;
-    }
+    },
 
-    getPostReplyUpVotersListApi(id) {
+    getPostReplyUpVotersListApi(id:number):string {
         return `/api/post/reply/${id}/upvoters/`;
-    }
+    },
 
-    getPostReplyChildrenListApi(id) {
+    getPostReplyChildrenListApi(id:number):string {
         return `/api/post/reply/${id}/children/list/`;
-    }  
+    },  
 
-    getQuestionFollowersListApi(id) {
+    getQuestionFollowersListApi(id:number):string {
         return `/api/question/${id}/followers/`;
-    }
+    },
 
-    getUserFollowersListApi(id) {
+    getUserFollowersListApi(id:number):string {
         return `/api/user/${id}/followers/`;
-    }
+    },
 
-    getUserFollowingsListApi(id) {
+    getUserFollowingsListApi(id:number):string {
         return `/api/user/${id}/followings/`;
-    }
+    },
    
-    getPostUpVotersListApi(id) {
+    getPostUpVotersListApi(id:number):string {
         return `/api/post/${id}/upvoters/`;
-    }
+    },
 
-    getAnswerUpVotersListApi(id) {
+    getAnswerUpVotersListApi(id:number):string {
         return `/api/answer/${id}/upvoters/`;
-    }
+    },
 
-
-    getAnswerCommentListApi(id) {
+    getAnswerCommentListApi(id:number):string {
         return `/api/answer/${id}/comment/list/`;
-    }
+    },
 
-    getAnswerCommentUpVotersListApi(id) {
+    getAnswerCommentUpVotersListApi(id:number):string {
         return `/api/answer/comment/${id}/upvoters/`;
-    }
+    },
 
-
-    getAnswerReplyListApi(id) {
+    getAnswerReplyListApi(id:number):string {
         return `/api/answer/comment/${id}/reply/list/`;
-    }
-
+    },
     
-    getAnswerReplyChildrenListApi(id) {
-        var api = `/api/answer/reply/${id}/children/list/`;
-        return api;
-    }
+    getAnswerReplyChildrenListApi(id:number):string {
+        return `/api/answer/reply/${id}/children/list/`;
+    },
 
+    getAnswerReplyUpVotersListApi(id:number):string {
+        return `/api/answer/reply/${id}/upvoters/`;
+    },
 
-    getAnswerReplyUpVotersListApi(id) {
-        var api = `/api/answer/reply/${id}/upvoters/`;
-        return api;
-    }
-
-    getProfileApi(id ) {
-        var api = `/api/profile/${id}/`;
-        return api;
-    }
+    getProfileApi(id:number):string {
+        return `/api/profile/${id}/`;
+    },
     
-    getUserListApi() {
-        var api = `/api/user/list/`;
-        return api;
-    }
+    getUserListApi():string {
+        return  `/api/user/list/`;
+    },
 
-    updateProfileApi(id) {
-        var api = `/api/profile/${id}/edit/`;
-        return api;
-    }
+    updateProfileApi(id:number):string {
+        return `/api/profile/${id}/edit/`;
+    },
 
+    updateUseNameApi(id:number):string {
+        return `/api/profile/username/${id}/edit/`;
+    },
+        
+    updateQuestionApi(id:number):string {
+        return `/api/question/${id}/edit/`;
+    },
 
-    updateUseNameApi(id) {
-        var api = `/api/profile/username/${id}/edit/`;
-        return api;
-    }
-    
-    
-    updateQuestionApi(id) {
-        var api = `/api/question/${id}/edit/`;
-        return api;
-    }
-
-    updateAnswerApi(id) {
-        var api = `/api/answer/${id}/edit/`;
-        return api;
-    }
+    updateAnswerApi(id:number):string {
+        return `/api/answer/${id}/edit/`;
+    },
    
+    updateAnswerCommentApi(id:number):string {
+        return `/api/answer/comment/${id}/edit/`;
+    },
 
-    updateAnswerCommentApi(id) {
-        var api =   `/api/answer/comment/${id}/edit/`;
-        return api;
-    }
+    updateAnswerReplyApi(id:number):string {
+        return `/api/answer/reply/${id}/edit/`;
+    },
 
-    updateAnswerReplyApi(id) {
-        var api = `/api/answer/reply/${id}/edit/`;
-        return api;
-    }
+    updatePostApi(id:number):string {
+        return `/api/post/${id}/edit/`;
+    },
 
+    updatePostCommentApi(id:number):string {
+        return `/api/post/comment/${id}/edit/`;
+    },
+       
+    updatePostReplyApi(id:number):string {
+        return `/api/post/reply/${id}/edit/`;
+    },
 
-    updatePostApi(id) {
-        var api = `/api/post/${id}/edit/`;
-        return api;
-    }
+    createUser():string {
+        return `/rest-auth/registration/`;
+    },
 
-    updatePostCommentApi(id) {
-        var api = `/api/post/comment/${id}/edit/`;
-        return api;
-    }
-   
+    logginUser():string {
+        return `/rest-auth/login/`;
+    },
+
+    logoutUser():string {
+        return `/rest-auth/logout/`;
+    },
+
+    passwordResetApi():string {
+        return `/rest-auth/password/reset/`;
+    },
     
-    updatePostReplyApi(id) {
-        var api = `/api/post/reply/${id}/edit/`;
-        return api;
-    }
+    passwordChangeConfirmApi():string {
+        return `/rest-auth/password/reset/confirm/`;
+    },
 
-    createUser() {
-        var url = `/rest-auth/registration/`;
-        return url;
-    }
+    accountConfirmApi(key:string):string {
+        return `/rest-auth/account-confirm-email/${key}/`;
+    },
 
-    logginUser() {
-        var url = `/rest-auth/login/`;
-        return url ;
-         
-    }
-
-    logoutUser() {
-        var url = `/rest-auth/logout/`;
-        return url ;
-         
-    }
-
-    passwordResetApi() {
-        var url = `/rest-auth/password/reset/`;
-        return url ;
-         
-    }
-    
-    passwordChangeConfirmApi() {
-        var url = `/rest-auth/password/reset/confirm/`;
-        return url ;
-  
-    }
-
-    accountConfirmApi(key) {
-        var url = `/rest-auth/account-confirm-email/${key}/`;
-        return url ;
-         
-    }
-
-    accountConfirmPhoneNumberApi(){
+    accountConfirmPhoneNumberApi():string {
         return `rest-auth/account-confirm-phone-number/`
-    }
+    },
 
-    confirmationEmailResendApi(){
+    confirmationEmailResendApi():string{
         return `/rest-auth/confirmation/resend/`;
-    }
+    },
 
-    passwordResetSmsConfirmApi(){
+    passwordResetSmsConfirmApi():string {
         return `rest-auth/password-change-confirm-sms-code/`
+    },
 
-    }
+    passwordChangeApi():string {
+        return `/rest-auth/password/change/`;
+    },
 
-    passwordChangeApi() {
-        var url = `/rest-auth/password/change/`;
-        return url ;
-    }
-
-    addEmailApi(){
+    addEmailApi():string {
         return `/rest-auth/add/email/`;
-    };
+    },
 
-    addPhoneNumberApi(){
+    addPhoneNumberApi():string {
         return `rest-auth/add/phone-number/`;
-    };
+    },
 
-    facebookLoginApi() {
-        
-        var url = `/rest-auth/facebook/`;
-        return url ;
-         
-    }
+    facebookLoginApi():string {
+        return `/rest-auth/facebook/`;
+    },
 
+    twitterLoginApi():string {
+        return `/rest-auth/twitter/`;
+    },
 
-    twitterLoginApi() {
-        
-        var url = `/rest-auth/twitter/`;
-        return url ;
-         
-    }
+    googleLoginApi():string {
+        return `/rest-auth/google/`;
+    },
 
-    googleLoginApi() {
-        
-        var url = `/rest-auth/google/`;
-        return url ;
-         
-    }
-
-    refreshTokenApi(){
+    refreshTokenApi():string {
         return `/api-token-refresh/`;
-    }
-}
+    },
+};
 
-
+export default Apis;
 

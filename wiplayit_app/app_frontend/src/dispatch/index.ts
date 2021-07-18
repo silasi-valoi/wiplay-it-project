@@ -1,13 +1,13 @@
 
  
-import Api from 'utils/api';
+import Apis from 'utils/api';
 import Axios from 'utils/axios_instance';
 import * as action  from 'actions/actionCreators';
 import * as checkType from 'helpers/check-types'; 
 import {GetLoggedInUser } from 'utils/helpers';
 import {history} from 'App';
 
-const api = new Api();
+
 const timeStamp = new Date();
 const isOnline:boolean = false;
 
@@ -19,7 +19,7 @@ export const _GetApi = (useToken:boolean, opts?:object) =>{
 
 const checkOnlineStatus = async () => {
     try {
-        let apiUrl:string = api.getDefaultProfilePicture();
+        let apiUrl:string = Apis.getDefaultProfilePicture();
         const online = await fetch(apiUrl);
         return online.status >= 200 && online.status < 300; // either true or false
 
@@ -92,7 +92,7 @@ export function getAboutInfo(options?:object) {
         };
     }
 
-    let apiUrl = api.getAboutInfoApi(); 
+    let apiUrl = Apis.getAboutInfoApi(); 
     
     return async dispatch => {
         let online = await checkOnlineStatus();
@@ -131,7 +131,7 @@ export function getAboutInfo(options?:object) {
 export function getIndex(options?:object):Function {
     let useToken:boolean = true;
     const Api  = _GetApi(useToken, {requestFor:'index'});
-    let apiUrl = api.getIndexApi(); 
+    let apiUrl = Apis.getIndexApi(); 
 
     return async dispatch => {
         let online = await checkOnlineStatus();
@@ -231,7 +231,7 @@ export function getQuestionList(questionListById:string) {
         };
     }
 
-    let apiUrl     = api.getQuestionListApi(); 
+    let apiUrl     = Apis.getQuestionListApi(); 
 
     return async dispatch => {
         let online = await checkOnlineStatus();
@@ -271,7 +271,7 @@ export function getQuestionList(questionListById:string) {
 export function getPostList(postListById:string) {
 
     let useToken:boolean = true;
-    const Api  = _GetApi(useToken);  
+    const Api = _GetApi(useToken);  
 
     if(!Api){
         return  dispatch =>{ 
@@ -279,7 +279,7 @@ export function getPostList(postListById:string) {
         };
     }
 
-    let   apiUrl:string  = api.getPostListApi();
+    let apiUrl:string = Apis.getPostListApi();
 
     return async dispatch => {
         let online = await checkOnlineStatus();
@@ -324,7 +324,7 @@ export function getQuestion(id:number) {
         };
     } 
       
-    let apiUrl:string = api.getQuestionApi(id);
+    let apiUrl:string = Apis.getQuestionApi(id);
     let questionById:string = `question${id}`;
 
     return async dispatch => {
@@ -374,8 +374,8 @@ export function getPost(id:number) {
         };
     }
 
-    let apiUrl     = id && api.getPostApi(id);
-    let postById   = id && `post${id}`
+    let apiUrl = id && Apis.getPostApi(id);
+    let postById = id && `post${id}`
 
     return async dispatch => {
         let online = await checkOnlineStatus();
@@ -416,7 +416,7 @@ export function getPost(id:number) {
 export function getUserProfile(id:number, apiUrl?:string) {
     let useToken:boolean = true;
     const Api  = _GetApi(useToken);
-    apiUrl    = !apiUrl && api.getProfileApi(id) || apiUrl;
+    apiUrl    = !apiUrl && Apis.getProfileApi(id) || apiUrl;
     
 
     if(!Api){
@@ -591,6 +591,7 @@ const removeBookmark =(data:object, bookmarkType:string)=>{
 }; 
 
 export  function  handleSubmit(params:object) {
+    console.log(params)
     
     return async dispatch => {
         let online = await checkOnlineStatus() 
@@ -673,6 +674,7 @@ function sendUpdateResquest(params:object, dispatch:Function){
     dispatch(action.updateActionPending(updateProps));
      
     Api.put(params['apiUrl'], formData).then(response => {
+        console.log(response)
         updateProps['data'] = prepPayLoad(objName, response.data);
         updateProps['successMessage'] = BuildAlertMessage(updateProps)
 
@@ -712,7 +714,7 @@ export function authenticateWithGet(params:object):Function {
 
     let key = params['key'];
     let useToken = false;
-    const apiUrl = api.accountConfirmApi(key);
+    const apiUrl = params['apiUrl']
     const Api    = _GetApi(useToken, {timeout:30000, requestFor:'authentication'}); 
 
     return async dispatch => {

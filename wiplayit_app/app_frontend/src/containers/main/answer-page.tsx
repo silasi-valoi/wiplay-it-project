@@ -19,7 +19,6 @@ class AnswerContainer extends Component {
             pageName    : "Answer",
             isAnswerBox : true,
             question    : undefined,
-            answer      : undefined,      
         };
     };
 
@@ -27,7 +26,7 @@ class AnswerContainer extends Component {
     componentDidMount() {
         console.log(this.props)
 
-        let { slug, id }  = this.props['match'].params;
+        let {slug, id}  = this.props['match'].params;
         let {state}       = this.props['location']; 
         let {answers}     = this.props['entities'];
         let {question, answer} = state;
@@ -48,40 +47,20 @@ class AnswerContainer extends Component {
 
     render() { 
         let props = {...this.props, ...this.state}
-        console.log(props)
-        
-        let {answers}    = props['entities'];
+                
+        let {answers} = props['entities'];
         let question:object = props['question'];
-        let answerListById:string = props['entities'];
-        answers          = answers   && answers[answerListById];
-        let linkPath = question && `/question/${question['slug']}/${question['id']}/`;
-        
-        let linkProps:object = {
-                linkPath,
-                state: {question},  
-        } 
-              
+        let answerListById:string = props['answerListById'];
+        answers = answers   && answers[answerListById];
+           
         return(
             <div className="app-box-container app-question-box">
                 <PartalNavigationBar {...props}/>
                 <NavigationBarBigScreen {...props} />
                 
                 <div className="answer-page" id="answer-page">
-                    <div className="answer-container">    
-                        <div className="answer-contents"> 
-                            <div className="answer-question-box">
-                                <p className="question">
-                                    <LinkButton {...linkProps}>
-                                        <span>
-                                            {question  && question['add_question'] }
-                                        </span> 
-                                    </LinkButton>
-                                </p>
-                            </div>
-                            
-                            <AvailableAnswers {...props}/>
-
-                        </div>
+                    <div className="new-answer-container">
+                        { OldAnswers(props, answers) }
                     </div>
                 </div> 
             </div>
@@ -146,7 +125,7 @@ export class AnswersBox extends Component {
         return {...this.props, ...this.state};
     };
 
-    getNumberOfAnswers(currentAnswers, newAnswers){
+    getAnswersCount(currentAnswers, newAnswers){
                     
         newAnswers            = newAnswers     && newAnswers.answerList;
         currentAnswers        = currentAnswers && currentAnswers.answerList;
@@ -165,44 +144,45 @@ export class AnswersBox extends Component {
 
     render() { 
         const props =  this.getProps();
+        const isQuestionBox = props['isQuestionBox']
        
         let newAnswerListById = props['newAnswerListById'];
         let answerListById = props['answerListById'];
-        let isQuestionBox = props['newAnswerListById,'];
 
-        let {answers}        = props['entities'];
-        let currentAnswers   = answers        && answers[answerListById];
-        let newAnswers       = answers        && answers[newAnswerListById];
-        let numberOfAnswers  = this.getNumberOfAnswers(currentAnswers, newAnswers);
-                 
+     
+        let {answers}  = props['entities'];
+        let oldAnswers = answers        && answers[answerListById];
+        let newAnswers = answers        && answers[newAnswerListById];
+        let answersCount  = this.getAnswersCount(oldAnswers, newAnswers);
+                         
         return (
-            <div className="answer-list-container">
+            <div className="">
                 <div>
-                    {numberOfAnswers !== 0 && isQuestionBox &&
-                        <ul className="number-answers-box">
-                            { numberOfAnswers > 1 && 
-                                <li className="number-of-answers">
-                                    {numberOfAnswers}  Answers
+                    {answersCount !== 0 && isQuestionBox &&
+                        <ul className="answers-count-box">
+                            { answersCount > 1 && 
+                                <li className="answers-count">
+                                    {answersCount}  Answers
                                 </li>
 
                                 ||
 
-                                <li className="number-of-answers">
-                                    {numberOfAnswers}  Answer
+                                <li className="answers-count">
+                                    {answersCount}  Answer
                                 </li>
                             }
                         </ul>
                     }
-                    <div>
-                        <NewAddedAnswers {...props}/>
-                        <AvailableAnswers {...props}/>
+                    <div className="answer-list-container">
+                        { NewAnswers(props, newAnswers) }
+                        { OldAnswers(props, oldAnswers) }
                     </div>
                 </div>
 
                 <div>
-                    {!numberOfAnswers && isQuestionBox &&
-                        <ul className="number-answers-box">
-                            <li className="number-of-answers">No answer yet</li>
+                    {!answersCount && isQuestionBox &&
+                        <ul className="answers-count-box">
+                            <li className="answers-count">No answer yet</li>
                         </ul>
                     }
                 </div>
@@ -213,32 +193,26 @@ export class AnswersBox extends Component {
 };
 
 
-const NewAddedAnswers = props => {
-   let {entities, newAnswerListById} = props;
-   let answers = entities && entities.answers[newAnswerListById]; 
-   answers     = answers && answers.answerList;
-   let isNewAnswers = true;
+const NewAnswers = (props:object, answers:object) => {
+    let isNewAnswers = true;
 
-   let answerList = answers && answers.length && answers;  
-   return answerList && Answers(props, answerList, isNewAnswers) || null;
+    let answerList:object[] = answers && answers['answerList'];   
+    return answerList && Answers(props, answerList, isNewAnswers) || null;
 };
 
-const AvailableAnswers = props => {
-   let {entities, answerListById} = props;
-   let answers = entities && entities.answers[answerListById];
-   answers     = answers && answers.answerList; 
+const OldAnswers = (props:object, answers:object) => {
    
-   let answerList = answers && answers.length && answers;  
-   return answerList && Answers(props, answerList) || null;
+    let answerList:object[] = answers && answers['answerList'];   
+    return answerList && Answers(props, answerList) || null;
 };
 
 
-export const Answers = (props, answerList, isNewAnswers=false) => {
+export const Answers = (props:object, answerList:object[], isNewAnswers=false) => {
              
     return(
-        <div className="answer-container">
+        <div className="answer-list-box">
             {answerList?.map((answer, index) => {
-                let answerProps = {answer, isNewAnswers };
+                let answerProps = {index, answer, isNewAnswers};
                 answerProps = {...props, ...answerProps}; 
       
                 return ( 
