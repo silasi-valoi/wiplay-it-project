@@ -18,7 +18,7 @@ export const PasswordChangeForm = props => {
     
     
     return(
-        <div className="password-change-box">
+        <div className="form-container password-change-box">
             <ul className="form-title-box">
                 <li className="">Password Change</li>
             </ul>
@@ -95,6 +95,9 @@ export const PasswordForm =(props)=>{
                                       handleFormChange(event, 'passwordChangeForm')}
                             required
                         />
+                        <span className="floating-label">
+                            New Password
+                        </span>
                     </div>
                     <div className="change-password-box auth-input-field">
                         <input
@@ -107,6 +110,9 @@ export const PasswordForm =(props)=>{
                                         handleFormChange(event, 'passwordChangeForm')}
                             required
                         />
+                        <span className="floating-label">
+                            Repeat New Password
+                        </span>
                     </div>
                     </div>
         
@@ -124,22 +130,6 @@ export const PasswordForm =(props)=>{
     )
 };
 
-
-
-export const PassWordChangeForms = props => {
-    
-    
-    return(
-        <div className="password-change-contents">
-            <div className="password-change-box">
-                <ul className="form-title-box">
-                    <li className="">Enter Password</li>
-                </ul>
-               <PasswordChangeForm {...props}/>
-            </div>
-        </div>
-  )
-}
 
 export const PasswordConfirmForm =(props)=>{
 
@@ -215,13 +205,14 @@ export const _PasswordConfirmForm =(props)=>{
                         <div className="confirm-password-input">
                             <input
                                 className="password"
-                                placeholder="Password"
+                                placeholder=""
                                 type="password"
                                 name="password"
                                 value={form?.password}
                                 onChange={(event)=> handleFormChange(event)}
                                 required
                             />
+                            <span className="floating-label">Password</span>
                         </div>
 
                         <button

@@ -151,20 +151,20 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         _SendSocialAuthentication = (accessToken, apiUrl):void => {
+            this.setState({isSocialAuth:true, submitting:true});
+            this.formConstructor('loginForm');
+
             const socialLoginProps:object = {
                 isSocialAuth : true,
                 form : this.helper.createFormData({"access_token": accessToken}),
                 formName:'loginForm',
                 apiUrl,
             };
-
-            
-            this.setState({isSocialAuth:true, submitting:true})
+                        
             return store.dispatch<any>(authenticate(socialLoginProps));
         };
 
         componentWillUnmount =()=> {
-            console.log('is unmounting')
             window.removeEventListener('popstate', this.closeAuthModal);
             this._isMounted = false;
             this.unsubscribe();
@@ -176,14 +176,13 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
    
 
         closeAuthModal = () => {
-            console.log('closing authentication modal')
             return closeModals()
         }
 
         componentDidMount =()=> {
             this._isMounted = true;
             this.onAuthStoreUpdate();
-            console.log(this.props)
+           
             window.addEventListener('popstate', this.closeAuthModal);
         };
 
@@ -466,7 +465,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
         render() {
             let props = this.getProps();
-            
             let fieldSetStyles = props['submitting'] && {opacity:'0.60'} || {};
           
             return (

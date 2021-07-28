@@ -24,10 +24,10 @@ export const  LoginForm = props => {
         isSocialAuth} = props;
 
 
-    form = form && form.loginForm? form.loginForm:null;
+    form = form && form.loginForm;
     if (!form) return null;
 
-    let error = form && form.error; 
+    let error = form.error; 
     formIsClean  = !onSignUpForm? formIsValid(form):false;
 
     let submitButtonStyles = submitting || onSignUpForm || !formIsClean?
@@ -58,13 +58,14 @@ export const  LoginForm = props => {
                         <div className="login-fields auth-input-field">
                             <input
                                 className="login-email-field"
-                                placeholder="Email"
+                                placeholder=""
                                 type="text"
                                 name="email"
                                 value={form.email}
                                 onChange={props.handleFormChange} 
                                 required
                             />
+                            <span className="floating-label">Email Address</span>
                         </div>
 
                         <div className="login-fields auth-input-field">
@@ -77,6 +78,7 @@ export const  LoginForm = props => {
                                 onChange={props.handleFormChange} 
                                 required
                             />
+                            <span className="floating-label">Password</span>
                         </div>
 
                         <div className="registration-btns-box">  
@@ -88,7 +90,7 @@ export const  LoginForm = props => {
                             </div>    
                         </div>
 
-                        <SignUpLink {...props}/> 
+                        <SignUpToogle {...props}/> 
                     </div>
                 </fieldset>
                 {!isSocialAuth && !onSignUpForm &&
@@ -123,7 +125,7 @@ const  PasswordResetBtn  = props => {
 }
 
 
-const _SignUpLink = (props)=>{
+const _SignUpToogle = (props)=>{
     let toggleFormProps = {
             ...props,
             toggleBtnName:'Sign Up Here',
@@ -146,7 +148,7 @@ const _SignUpLink = (props)=>{
 
 };
 
-export const SignUpLink = MatchMediaHOC(_SignUpLink , '(max-width: 980px)');
+export const SignUpToogle = MatchMediaHOC(_SignUpToogle , '(max-width: 980px)');
 
 
 

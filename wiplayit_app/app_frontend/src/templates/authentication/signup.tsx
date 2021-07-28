@@ -32,14 +32,12 @@ export const  SignUpForm = props => {
     let fieldSetStyles = submitting ? {opacity:'0.60'}:{}; 
 
     const toggleSignUpFormProps = {
-          ...props,
-          toggleBtnName:'Cancel',
-          toggleFormProps:{
-             value : false,
-             formName:'signUpForm',
-            
-          }
-
+            ...props,
+            toggleBtnName:'Cancel',
+            toggleFormProps:{
+                value : false,
+                formName:'signUpForm',
+            }
         };
     
     
@@ -72,7 +70,7 @@ export const  SignUpForm = props => {
                             <div className="username-fields">
                                 <div className="name-field-box1 auth-input-field">
                                     <input
-                                        placeholder="First Name"
+                                        placeholder=""
                                         className="first-name-input"
                                         type="text"
                                         name="first_name"
@@ -80,11 +78,12 @@ export const  SignUpForm = props => {
                                         onChange={props.handleFormChange}
                                         required
                                     />
+                                    <span className="floating-label">First Name</span>
 
                                 </div>  
                                 <div className="name-field-box2 auth-input-field">
                                     <input
-                                        placeholder="Last Name"
+                                        placeholder=""
                                         className="last-name-input"
                                         type="text"
                                         name="last_name"
@@ -92,6 +91,7 @@ export const  SignUpForm = props => {
                                         onChange={props.handleFormChange}
                                         required
                                     />
+                                    <span className="floating-label">Last Name</span>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@ export const  SignUpForm = props => {
 
                             <div className="email-box auth-input-field">
                                 <input
-                                    placeholder="Email"
+                                    placeholder=""
                                     className="email"
                                     type="text"
                                     name="email"
@@ -115,13 +115,14 @@ export const  SignUpForm = props => {
                                     onChange={props.handleFormChange}
                                     required 
                                 />
+                                <span className="floating-label">Email Address</span>
                             </div>
                         </div>
 
                         <div className="password-fields signup-fields">
                             <div className="password-box auth-input-field">
                                 <input
-                                    placeholder="Password"
+                                    placeholder=""
                                     className="password"
                                     type="password"
                                     name="password"
@@ -129,6 +130,7 @@ export const  SignUpForm = props => {
                                     onChange={props.handleFormChange}
                                     required
                                 />
+                                <span className="floating-label">Password</span>
                             </div>
                         </div>
                     </div>
@@ -142,7 +144,7 @@ export const  SignUpForm = props => {
                         </div>    
                     </div>  
             
-                    <LoginLink {...props}/>
+                    <LoginToogle {...props}/>
                 </fieldset>
 
                 {!isSocialAuth && onSignUpForm &&
@@ -158,16 +160,16 @@ export const  SignUpForm = props => {
 export default SignUpForm;
 
 
-const _LoginLink = (props)=>{
+const _LoginToogle = (props)=>{
     const toggleLoginFormProps = {
-          ...props,
-          toggleBtnName:'Login Here',
-          toggleFormProps:{
-             value : true,
-             formName:'loginForm'
-          }
-
+            ...props,
+            toggleBtnName:'Login Here',
+            toggleFormProps:{
+                value : true,
+                formName:'loginForm'
+            }
         };
+
     return(
         <ul className="login-form-toggle">
             <li>
@@ -181,6 +183,6 @@ const _LoginLink = (props)=>{
 };
 
 
-export const LoginLink = MatchMediaHOC(_LoginLink , '(max-width: 980px)');
+export const LoginToogle = MatchMediaHOC(_LoginToogle, '(max-width: 980px)');
 
 

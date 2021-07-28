@@ -63,16 +63,19 @@ class RepliesConatiner extends Component {
             let parentId:number = parent['id']
             const repliesById = this.getRepliesIds(parent);
 
-            _replies = _replies[repliesById];
+            _replies = _replies && _replies[repliesById];
+            
+
             this.setState({repliesById, parent});
             
             if (!_replies || _replies.showLink) {
+                const repliesCount:number = parent['replies_count'] || parent['child_count'];
                 const replies:object[] = parent['replies'] || parent['children'];                    
                 
                 if (replies && replies.length) {
                     let props = {
-                        actionType : 'GET_REPLY_LINK_DATA',
                         replies,
+                        repliesCount,
                         byId: repliesById,
                     }
                     store.dispatch(getRepliesLindData(props)); 
@@ -113,7 +116,7 @@ class RepliesConatiner extends Component {
         let repliesList =  replies[repliesById];
                             
         return (
-            <div>
+            <div className="replies-page">
                 { newReplies && newReplies.replyList &&
                     <div>
                         {NewReplies(props, newReplies)}
@@ -146,6 +149,7 @@ const OldReplies = (props:object, replies:object) => {
     if (!replies) {
         return null;
     }
+    console.log(replies)
     
     let replyList = replies['replyList'];
     let reply =   replies['linkData'].reply;
@@ -160,7 +164,7 @@ const OldReplies = (props:object, replies:object) => {
                ||
 
                 <div>
-                    { replies['isLoading'] &&
+                    {replies['isLoading'] &&
                         <div className="spin-loader-box">
                             <AjaxLoader/>
                         </div>

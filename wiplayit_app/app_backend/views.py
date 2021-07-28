@@ -6,14 +6,12 @@ from rest_framework import viewsets
 #from .permissions import CustomObjectPermissions
 
 from app_backend.helpers import get_objects_perms, get_model_fields
-from auth_backend.models import User
+from app_backend.models import User
 from .models import (Question,
 					 Post,
 					 Answer,
-					 AnswerComment,
-					 AnswerReply,
-	                 PostComment,
-	                 PostReply,
+					 Comment,
+					 Reply,
 	                 AnswerBookmark,
 	                 PostBookmark,
 	                 DraftEditorMediaContent )
@@ -80,9 +78,9 @@ class AnswerDetailView(AnswerView):
 
 
 class AnswerCommentView(BaseApiView):
-	queryset = AnswerComment.objects.all()
+	queryset = Comment.objects.all()
 	serializer_class = AnswerCommentSerializer
-	permissions      = get_objects_perms('answer_comment_perms')
+	permissions      = get_objects_perms('comment_perms')
 		       
 	fields_to_update = get_model_fields('answer_comment_fields') 
 	
@@ -92,13 +90,13 @@ class AnswerCommentDetailView(AnswerCommentView):
 
 
 class AnswerReplyView(BaseApiView):
-	queryset         = AnswerReply.objects.all()
+	queryset         = Reply.objects.all()
 	serializer_class = AnswerReplySerializer
-	permissions      = get_objects_perms('answer_reply_perms')
-	fields_to_update = get_model_fields('answer_reply_fields') 	
+	permissions      = get_objects_perms('reply_perms')
+	fields_to_update = get_model_fields('reply_fields') 	
 
 class AnswerChildReplyView(AnswerReplyView):
-	fields_to_update = get_model_fields('answer_reply_child_fields') 	
+	fields_to_update = get_model_fields('reply_child_fields') 	
 	
 		
 class AnswerReplyDetailView(AnswerReplyView):
@@ -118,9 +116,9 @@ class PostDetailView(PostView):
 	
 
 class PostCommentView(BaseApiView):
-	queryset         = PostComment.objects.all()
+	queryset         = Comment.objects.all()
 	serializer_class = PostCommentSerializer
-	permissions      = get_objects_perms('post_comment_perms')
+	permissions      = get_objects_perms('comment_perms')
 	fields_to_update = get_model_fields('post_comment_fields') 
 
 		       
@@ -129,13 +127,13 @@ class PostCommentDetailView(PostCommentView):
 			
 
 class PostReplyView(BaseApiView):
-	queryset = PostReply.objects.all()
+	queryset = Reply.objects.all()
 	serializer_class = PostReplySerializer
-	permissions     = get_objects_perms('post_reply_perms')
-	fields_to_update = get_model_fields('post_reply_fields') 
+	permissions     = get_objects_perms('reply_perms')
+	fields_to_update = get_model_fields('reply_fields') 
 
 class PostChildReplyView(PostReplyView):
-	fields_to_update = get_model_fields('post_reply_child_fields') 
+	fields_to_update = get_model_fields('reply_child_fields') 
 	
 	
 		       

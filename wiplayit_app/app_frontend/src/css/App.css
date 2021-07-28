@@ -15,7 +15,7 @@ body {
 }
 
 .page-error-box {
-    padding : 20px 0; 
+    padding : 10% 0; 
 }
 
 .error-box, .reload-btn-box {
@@ -24,8 +24,9 @@ body {
 }
  
 .error-text {
-    font-size : 14px;      
-    font-family: 'Raleway';   
+    font-size : 13px;      
+    font-family : 'Raleway';  
+    color : #C15757; 
 }
     
 .reload-btn {
@@ -96,7 +97,7 @@ input, textarea {
 }
 
 input:focus, input:active{
-  border: 1px solid #5384e5;
+  border: 1px solid #5384e5 !important;
 }
 
 

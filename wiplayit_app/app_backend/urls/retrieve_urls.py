@@ -36,11 +36,11 @@ urlpatterns = [
     path("api/question/list/",
          RetrieveQuestionListView.as_view({'get':'list'}), name="question_list"),
     path("api/answer/<int:pk>/comment/list/", 
-         RetrieveAnswerCommentListView.as_view({'get':'list','post':'post' }),
+         RetrieveAnswerCommentListView.as_view({'get':'list' }),
           name="comment_list"),
 
     path("api/answer/comment/<int:pk>/reply/list/",
-         RetrieveAnswerReplyListView.as_view({'get':'list','post':'post' }), 
+         RetrieveAnswerReplyListView.as_view({'get':'list'}), 
          name="reply_list"),
 
     path("api/answer/reply/<int:pk>/children/list/",

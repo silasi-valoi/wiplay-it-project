@@ -95,6 +95,10 @@ const Apis = {
         return `api/answer/${id}/bookmark/remove/`
     },   
 
+    removePostBookMarkApi(id:number):string {
+        return `api/post/${id}/bookmark/remove/`
+    },
+
     getQuestionListApi():string {
         return `/api/question/list/`;
     }, 

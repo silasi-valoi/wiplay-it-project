@@ -9,6 +9,16 @@
     width      : 100%;
     background : #edf0f3;
     border-radius: 7px;
+   
+}
+
+.email-confirm-title-box,
+.form-title-box {
+    font-weight: bold;
+    font-size: 11px;
+    text-align: center;
+    margin : 16px 0 8px;
+    padding-top: 3%;
 }
 
 .navbar-title-box {
@@ -92,12 +102,21 @@
 
 .auth-input-field {
     margin : 4px 0;
-    border : px solid red;
+    padding-top: 5%;
+    position: relative;
 }
 
 .auth-input-field input {
     border    : 1px solid #D2D2D2;
     font-size : 15px;
+
+}
+
+.auth-input-field input:active, 
+.auth-input-field input:focus {
+    border: 1px solid #5384e5 !important;
+    outline: 0 !important;
+    box-shadow: 0 !important;
 }
 
 
@@ -228,8 +247,26 @@
     font-weight : bold;
 }
 
-.form-errors {
-   
+
+.floating-label {
+    position: absolute;
+    pointer-events: none;
+    left: 2%;
+    top: 45%;
+    transition: 0.2s ease all;
+    font-size: 15px;
+    color: gray;
+    font-family: 'Peddana';
+ 
+}
+
+textarea:not(:empty)  ~ .floating-label,
+input:not([value=''])  ~ .floating-label,
+textarea:focus ~ .floating-label, 
+input:focus ~ .floating-label {
+    top: -5%;
+    left: 0;
+    font-size: 12px;
 }
 
 .country-select-box {

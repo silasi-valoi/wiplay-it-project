@@ -2,22 +2,23 @@
 
  
 @media (min-width:980px) {
+    .app-box-container {
+        border : px solid red;
+    }
 
-    .page-contents, #home-page-contents {
-        width    : 42%;
-        margin   : 25px 29%;
-    
+    .page-contents {
+        width  : 42%;
+        margin : 25px 29%;
+        
     }
     
     #page-error-box, #answer-page,     
     .question-page, .post-page,
     .question-list-page  {
-        width    : 42%;
-        margin   : 30px 29%; 
         padding-top : 10px;
         border   : 1px solid #D5D7D5; 
         border-radius : 15px;
-        z-index  : 500;
+        z-index  : 800;
         position : relative;
         background : #ffff;
     }
@@ -27,29 +28,29 @@
     .index-posts, 
     .index-user-list,
     .post-list-page {
-        margin   : 15px 0; 
         border   : 1px solid #D5D7D5; 
         border-radius : 10px;
         z-index  : 800;
         position : relative;
+        background : #ffff;
+        padding : 5px 0;
     }
 
+    .question-list-page .question-contents,
+    .index-question-contents,
     .index-post-contents,
     .index-answer-contents {
-        border-bottom : 1px solid #D5D7D5;
+        border-top : 1px solid #D5D7D5;
         border-width: thin;
-        margin-bottom: 10px;
         padding: 10px;
     }
 
-    .answer-container, .question-container, .post-container {
-        background : #ffff;
+    .post-list-page {
+        border : px solid blue;
+        margin-bottom : 10px; 
     }
-
-    .question-list-page, .post-list-page ,
-    .question-page, .post-page {
-        background : #ffff; 
-        border     : px solid  #D5D7D5;  
+    .question-list-page {
+        padding : 15px 0 10px;
     }
 
     .answer-list-container
@@ -86,17 +87,11 @@
         font-size  : 13px; 
     }
    
-    .post-body {
-        width: 100%;
-        font-size: 17px;
-    }
-
     .post-title, .question {
         font-size   : 12px;
     }
 
     .index-items-label {
-        border-bottom  :  1px solid #D5D7D5;
         padding        :  14px 15px 0px; 
         color          :  #A33F0B;
         font-family    : 'Cabin'; 

@@ -268,6 +268,11 @@ const NavBarModalMenu = props => {
 
 
 export const NavBarSmallScreen = props => {
+    let pathname:string = history.location.pathname;
+    if (pathname !== '/') {
+        return null;
+    }
+
     let {isAuthenticated, currentUser} = props;
     
     const _createPostProps     = {
@@ -504,9 +509,13 @@ export const NavigationMenuBtns =(props)=>{
 
 
 export const PartialNavBar = props =>{
-    //console.log(props)
+    let pathname:string = history.location.pathname;
+    if (pathname === '/') {
+        return null;
+    }
+    
     var {currentUser, isAuthenticated } = props;
-
+    
     let path_to_profile = `/`;
     let userProfile = {};
     const state     = {currentUser};

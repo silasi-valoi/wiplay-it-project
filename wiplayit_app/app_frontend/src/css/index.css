@@ -25,17 +25,21 @@
     margin          : 2px 0; 
 }
 
-.alert-message {
+.alert-message li {
     font-size : 14px;
+    justify-content : center;
+    display         : flex;
 }
-
 
 .page-spin-loader-box {
     justify-content : center;
     display         : flex;
-    margin          : 28px  0; 
+    margin          : 15%  0 0; 
 }
 
+.spin-loader-box {
+    margin : 3% 0; 
+}
 
 .unconfirmed-user-warn-box {
     border     : px solid red;
@@ -159,14 +163,19 @@
     font-weight : bold;
 }
 
+
+.answer,
+.post-body {
+    font-size: 13px;
+}
+
 .post-contents, .question-contents {
-    background : white;
     padding : 10px 10px 0;
     margin-top: 10px;
     border-width: thin;
-}
 
-.question-contents {
+}
+.question-page .question-contents {
     border-bottom : 1px solid  #D5D7D5;
 }
 
@@ -174,11 +183,6 @@
     margin : 5px 0 10px; 
 }
 
-.post-box, 
-.question-box, 
-.answer-box {
-    
-}
 
 .replies-level-1,
 .replies-level-2,

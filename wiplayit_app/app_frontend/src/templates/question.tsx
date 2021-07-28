@@ -131,12 +131,12 @@ export const QuestionComponent = props => {
             <div className="question">
                 {props.isQuestionBox?
                     <b className="">
-                        { question.add_question }
+                        {question.question || question.add_question }
                     </b>
                     :
                     <b className="">
                         <LinkButton {...linkProps}>
-                            <span>{ question.add_question }</span>
+                            <span>{ question.question  || question.add_question }</span>
                         </LinkButton>
                     </b>
                 }

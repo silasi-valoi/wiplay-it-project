@@ -324,7 +324,7 @@ export const ModalCloseBtn = (props:object) => {
     return(
         <button type="button" 
               style={styles}
-              onClick={()=> closeModals(true)}
+              onClick={()=> history.goBack()}
               className="nav-bar-back-bt btn-sm" >
            {props['children']}
         </button>  

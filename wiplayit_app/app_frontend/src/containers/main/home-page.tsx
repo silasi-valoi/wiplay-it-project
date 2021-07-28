@@ -2,22 +2,19 @@ import React, { Component } from 'react';
 import  * as action  from "actions/actionCreators";
 import { Link } from "react-router-dom";
 
-import { NavigationBarSmallScreen,
-         NavigationBarBottom,
-         NavigationBarBigScreen } from "templates/navBar";
 import {store } from "store/index";
-import { FollowUserBtn, LinkButton} from "templates/buttons"; 
-import { UnconfirmedUserWarning,
-         PageErrorComponent, } from "templates/partials";
+import {FollowUserBtn, LinkButton} from "templates/buttons"; 
+import { PageErrorComponent } from "templates/partials";
 import  {getIndex} from 'dispatch/index';
 import {UPDATE_USER_LIST} from 'actions/types';
 import Apis from 'utils/api';
-import { QuestionComponent} from "templates/question"
-import { PostComponent} from "templates/post"
+import {cacheExpired} from 'utils/helpers';
+import {QuestionComponent} from "templates/question"
+import {PostComponent} from "templates/post"
 import CommentsBox from "containers/main/comment-page";
 import {AnswersBox} from "containers/main/answer-page";
 import  AjaxLoader from "templates/ajax-loader";
-import { AnswersComponent } from "templates/answer";
+import {AnswersComponent } from "templates/answer";
 import GetTimeStamp from 'utils/timeStamp';
 import {history} from 'App'
 import  MainAppHoc from "containers/main/index-hoc";
@@ -38,7 +35,6 @@ class HomePage extends Component<any, any> {
             answerListById   : 'filteredAnswers',
             userListById     : 'filteredUsers',
             isReloading      : false,
-            isAutheticanting : false,
             homeTab          : {color:'#A33F0B'},      
         } 
     };
@@ -105,20 +101,19 @@ class HomePage extends Component<any, any> {
         return true;
     };
         
-
-    getTimeState(timeStamp:number){
-        const timeState = new GetTimeStamp({timeStamp});
-        return parseInt(`${timeState.menutes()}`)
-    };
-
     checkDataExist(data:object){
+        if (!data) {
+            return false;
+        }
+
         if (data['questions'] 
-            || data['users'] 
-            || data['answers']
-            || data['posts']) {
+            && data['users'] 
+            && data['answers']
+            && data['posts']) {
 
             return true;
         }
+
         return false;
     };
 
@@ -128,38 +123,30 @@ class HomePage extends Component<any, any> {
     };
 
     getIndexData(){
-        console.log('Fetching index data from api')
-        store.dispatch<any>(getIndex()); 
+        let isAuthenticated:boolean = this.props['isAuthenticated']
+        store.dispatch<any>(getIndex(isAuthenticated)); 
     };
     
     componentDidMount() {
         this.isMounted = true;
         this.onIndexUpdate();
-        
-        let cacheEntities = this.props['cacheEntities']
-        let storeEntities:object = this.props['entities']
-        let index     =  storeEntities['index'];
-        let cachedIndex  = cacheEntities?.index; 
-        let checkDataExist  = this.checkDataExist;
               
-        if (checkDataExist(cachedIndex)) {
-            let menDifference = this.getTimeState(cachedIndex.timeStamp);
-            if (menDifference <= 2) {
-                return this.updateIndexEntities(cachedIndex);
+        let storeEntities:object = this.props['cacheEntities'];
+        let index  =  storeEntities['index'];
+                    
+        if (this.checkDataExist(index)) {
+            let dataExpired:boolean = cacheExpired(index);
+            
+            if (!dataExpired) {
+                return this.updateIndexEntities(index);
             }
         }
              
-        if(checkDataExist(index)) {
-            return this.updateIndexEntities(index);
-        }
-        
         this.getIndexData();
     };
       
-    reLoader =()=>{
-        if (this.isMounted) {
-            this.setState({isReloading : true})
-        }
+    reLoader = () =>{
+        this.setState({isReloading : true, error:null})
         this.getIndexData();
     };
 
@@ -203,29 +190,34 @@ class HomePage extends Component<any, any> {
 
       
     render() {
+        if(!this.isMounted){
+            return null;
+        }
+
         let props = this.getProps();
         let { index } = props['entities'];
-                                
+                                                
         return (
             <div>
-                <NavigationBarBigScreen {...props}/>
-                <NavigationBarSmallScreen {...props}/>
-                <NavigationBarBottom {...props}/>
-                { index &&
-                    <div className="app-box-container app-index-box">
-                        <UnconfirmedUserWarning {...props}/>
+                {index &&
+                    <div className="app-index-box">
+                        <PageErrorComponent {...props}/>
 
                         {index && index.isLoading &&
                             <div className="page-spin-loader-box">
                                 <AjaxLoader {...props}/>
                             </div>
-                        }
 
-                        <PageErrorComponent {...props}/>
+                            ||
 
-                        {!index.isLoading &&
-                            <IndexComponent {...props}/>
+                            <div className=""> 
+                                {!index.isLoading && !index.errors &&
+                                    <IndexComponent {...props}/>
+                                }
+                            </div>
                         }
+                     
+                      
                     </div>
                 }           
             </div>
@@ -255,10 +247,13 @@ export const Questions = props => {
     let {questionListById, entities} = props;
     let {questions} = entities
     questions = questions && questions[questionListById];
-    let questionList = questions && questions.questionList;
-    
-    return (
+    let questionList:object[] = questions && questions.questionList;
 
+    if (questions?.isLoading) {
+        return null
+    }
+   
+    return (
         <div >
             { questionList && 
                 <div className="index-questions">
@@ -270,15 +265,16 @@ export const Questions = props => {
 
                             { questionList.map((question, index) => {
                                 let contentsProps = {
-                                        question,
-                                        questionById :questionListById
+                                    index,
+                                    question,
+                                    questionById :questionListById
                                 };
 
                                 Object.assign(contentsProps, props)  
 
                                 return (
 
-                                    <div key={index} className="question-contents">
+                                    <div key={index} className="index-question-contents">
                                         <QuestionComponent {...contentsProps}/>
                                     </div>
                                 )
@@ -293,17 +289,20 @@ export const Questions = props => {
 };
 
 
-
-
-
 export const Posts = props => {
     let { postListById, entities } = props;
-    let posts = entities.posts[postListById];
+    let posts = entities.posts;
+    posts = posts && [postListById];
+    if (posts?.isLoading) {
+        return null
+    }
+
+    let postList:object[] = posts && posts.postList;
   
     return (
 
         <div>
-            { posts && posts.postList && 
+            {postList && 
                 <div className="index-posts">
                     <div className="index-posts-box">
                        <div className="post-container">
@@ -311,10 +310,11 @@ export const Posts = props => {
                                 <b>Posts</b>
                             </div>
 
-                            {posts.postList.map((post, index) => {
+                            {postList.map((post, index) => {
                                 let postProps = {
-                                        post,
-                                        postById: postListById,
+                                    index,
+                                    post,
+                                    postById: postListById,
                                 };
 
                                 Object.assign(postProps, props)  
@@ -338,11 +338,17 @@ export const Posts = props => {
 
 export const Answers = props => {
     let { answerListById, entities } = props;
-    let answers   = entities.answers[answerListById]; 
-        
+    let answers   = entities.answers;
+    answers = answers && answers[answerListById]; 
+    if (answers?.isLoading) {
+        return null
+    }
+
+    let answerList:object[] = answers && answers.answerList;
+
     return(
         <div>
-            {answers && answers.answerList && 
+            {answerList && 
                 <div className="index-answers">
                     <div className="index-answers-box">
 
@@ -351,10 +357,11 @@ export const Answers = props => {
                                 <li>Answers</li>
                              </ul>
                   
-                            { answers.answerList.map((answer, index) => {
+                            {answerList.map((answer, index) => {
                                 let answerProps = {
                                     ...props,
                                     answer,
+                                    index,
                                     isAnswerBox:true,
                                 };
                                  
@@ -375,14 +382,12 @@ export const Answers = props => {
 };
 
 
-
-
 export const Users = props => {
-    let { userListById, entities, currentUser } = props;
+    let {userListById, entities, currentUser} = props;
     let users:object  =  entities && entities.users 
     users =  users && users[userListById]; 
 
-    if (!users) return null;
+    if (!users || users['isLoading']) return null;
 
     let userList:object[] = users['userList'];
 
@@ -394,29 +399,28 @@ export const Users = props => {
             <ul className="index-user-list-title-box">
                 <li>Discover New People</li>
             </ul>
-            <_UserList {...props}/>
+            { _UserList(props, userList) }
         </div>
     );
 };
 
 
 
-const _UserList = (props) =>{
-    let { userListById, entities, currentUser } = props;
-    let users  =  entities && entities.users 
-    users =  users[userListById]; 
+const _UserList = (props:object, userList:object[]) =>{
+    const currentUser:object = props['currentUser'];
+    let userListById:string = props['userListById'];
     const apis = Apis; 
 
     
     return(
         <div className="index-user-list-container">
-            { users.userList.map((user, index) => {
+            {userList.map((user, index) => {
                                 
-                let profile = user['profile'];
+                let profile:object = user['profile'];
                 let profile_picture = profile['profile_picture'];
 
                 const linkProps:object = {
-                    linkPath:`/profile/${user.id}/${user['slug']}/`,
+                    linkPath:`/profile/${user['id']}/${user['slug']}/`,
                     state:{user},
                 }
 
@@ -426,8 +430,9 @@ const _UserList = (props) =>{
                         obj        : user, 
                         byId       : userListById,
                         currentUser,
+                        index,
                         actionType : UPDATE_USER_LIST,
-                        apiUrl : apis.updateProfileApi(user.id),
+                        apiUrl : apis.updateProfileApi(user['id']),
                 }
                
                 let btnsProps   = {...props, editObjProps};
@@ -460,7 +465,7 @@ const _UserList = (props) =>{
                                     <li className="index-user-name">
                                         <LinkButton {...linkProps}>
                                             <span>
-                                                {user.first_name} { user.last_name }
+                                                { user['first_name']} { user['last_name'] }
                                             </span> 
                                         </LinkButton>
 
@@ -470,7 +475,7 @@ const _UserList = (props) =>{
                         </div>
                     
                         <ul className="index-user-credentials-box text-wrap">
-                            <li>{user.profile.credential}</li>
+                            <li>{profile['credential']}</li>
                         </ul>
                         <div className="index-user-follow-btn-box">
                             {UnfollowOrFollowUserBtn}

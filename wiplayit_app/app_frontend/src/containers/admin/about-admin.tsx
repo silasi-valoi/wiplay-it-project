@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import  * as action  from "actions/actionCreators";
 import { Link } from "react-router-dom";
 import {store } from "store/index";
-import {PartalNavigationBar,NavigationBarBigScreen } from "templates/navBar";
 import { OpenEditorBtn  } from "templates/buttons";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {Editor} from 'draft-js';
 import * as checkType from 'helpers/check-types'; 
-import { UnconfirmedUserWarning,
-         PageErrorComponent, } from "templates/partials";
+import {PageErrorComponent} from "templates/partials";
 import Apis from 'utils/api';
 import {UPDATE_ABOUT, CREATE_ABOUT} from 'actions/types';
 import {getAdmin}  from "dispatch/index"
@@ -108,6 +106,10 @@ class AboutAdminPage extends Component {
 
       
     render() {
+        if(!this.isMounted){
+            return null;
+        }
+        
         let props = this.getProps();
   
         let entities  = props['entities'] ;
@@ -115,9 +117,6 @@ class AboutAdminPage extends Component {
                     
         return (
             <div style={{paddingTop:'65px'}} className="about-admin-page">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props}/>
-
                 <div className="about-admin-box">
                     <AboutAdminComponent {...props}/>
                 </div>

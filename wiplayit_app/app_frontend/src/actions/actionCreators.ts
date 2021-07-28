@@ -1,11 +1,13 @@
 import  * as types  from 'actions/types';
 
+let currentTimeStamp:Date = new Date();
+let timeStamp = currentTimeStamp.getTime();
+
 
 export const createActionPending = (params:object):object => {
-    console.log(params, 'PENDING')
-    
+             
     return{
-        type : params['actionType'].PENDING,
+        type : params['actionType']?.PENDING,
         byId : params['byId'],
         payLoad: {
            isCreating : true,
@@ -14,12 +16,12 @@ export const createActionPending = (params:object):object => {
 };
 
 export const createActionSuccess = (params:object):object => {
-    console.log(params, 'success')
-    
+        
     return{
-        type : params['actionType'].SUCCESS,
+        type : params['actionType']?.SUCCESS,
         byId : params['byId'] ,
         payLoad: {
+            timeStamp,
             ...params['data'], 
             isCreating   : false,
         }
@@ -27,12 +29,15 @@ export const createActionSuccess = (params:object):object => {
 };
 
 export const createActionError = (params:object):object => {
-    console.log(params, 'ERROR')
-    
-    let error =  params['error'].detail; 
+    let error = params['error'];
+    if (error && error.detail) {
+        error = error.detail;
+    }
+
+    console.log(params)
 
     return {
-        type : params['actionType'].ERROR,
+        type : params['actionType']?.ERROR,
         byId : params['byId'],
         payLoad: {
            error,
@@ -45,7 +50,7 @@ export const createActionError = (params:object):object => {
 export const updateActionPending = (params:object):object => {
     
     return {
-        type : params['actionType'].PENDING,
+        type : params['actionType']?.PENDING,
         byId : params['byId'],
         payLoad : {
             submitting : true,
@@ -57,11 +62,12 @@ export const updateActionPending = (params:object):object => {
 export const updateActionSuccess = (params:object): object => {
 
     return {
-        type : params['actionType'].SUCCESS,
+        type : params['actionType']?.SUCCESS,
         byId: params['byId'],
         index:params['index'],
 
         payLoad: {
+            timeStamp,
             ...params['data'],
             submitting : false,
             updated    : true,
@@ -71,18 +77,24 @@ export const updateActionSuccess = (params:object): object => {
 };
 
 export const updateActionError = (params:object):object => {
-           
+    let error = params['error'];
+    if (error && error.detail) {
+        error = error.detail;
+    }
+
+    console.log(params)
+          
     return {
-        type : params['actionType'].ERROR,
+        type : params['actionType']?.ERROR,
         byId : params['byId'],
         payLoad: {
-           error: params['error'],
+           error,
            submitting : false,
         }
     }
 };
 
-export const HandleAlertMessage = (message:any):object =>({
+export const HandleAlertMessage = (message:object):object =>({
 
     type : "ALERT_MESSAGE",
     payLoad: {
@@ -114,22 +126,23 @@ export const ModalSubmitSuccess = (params:object):object => {
 };
 
 export const ModalSubmitError = (params:object):object => {
-        
+    let error:string = params['error'];
+           
     return{
         type    : "MODAL_SUBMIT_ERROR",
         byId    : params['modalName'], 
         payLoad : {
-            error:params['error'],
+            error,
             submitting : false,
             errorMessage: ``,
         }
     };
 };
 
-export const getAboutInfoPending = ():object => {
+export const getAboutInfoPending = (params?:object):object => {
 
     return{
-        type    : 'ABOUT_PENDING',
+        type : 'ABOUT_PENDING',
         payLoad : {
             isLoading : true,
         }
@@ -141,13 +154,19 @@ export const getAboutInfoSuccess = (data:object):object => {
     return{
         type    : 'ABOUT_SUCCESS',
         payLoad : {
+            timeStamp,
             isLoading : false,
-            info      : data
+            info      : data,
         }
     }
 };
 
-export const getAboutInfoError = (error:string):object => {
+export const getAboutInfoError = (params:object):object => {
+    let error = params['error'];
+
+    if (error && error.detail) {
+        error = error.detail;
+    }
 
     return{
         type    : 'ABOUT_ERROR',
@@ -169,7 +188,12 @@ export const getIndexPending = ():object => {
     }
 };
 
-export const getIndexError = (error:string):object => {
+export const getIndexError = (params:object):object => {
+    let error = params['error'];
+
+    if (error && error.detail) {
+        error = error.detail;
+    }
     
     return{
         type    : types.GET_INDEX['ERROR'],
@@ -186,6 +210,7 @@ export const getIndexSuccess = (data:object) => {
     return {
         type: types.GET_INDEX['SUCCESS'],
         payLoad : {
+            timeStamp,
             isLoading : false,
             isSuccess : true,
             ...data,
@@ -211,28 +236,56 @@ export const getQuestionSuccess = (byId:string, question:object):object => {
     let answers           = question['answers']
     let questionHasAnswer = answers && answers.length && true || false;
    
-    return{
+    return {
         type: types.GET_QUESTION['SUCCESS'],
         byId,
         payLoad: {
+            timeStamp,
             question, 
             questionHasAnswer,
             userAnswer,
             userHasAnswer,
             isLoading   : false,
 
-      }
-   };
+        }
+    };
 };
 
-export const getQuestionError = (byId:string, error:string):object => ({
-    type         : types.GET_QUESTION['ERROR'],
-    byId ,
-    payLoad: {
-      error, 
-      isLoading : false,
+export const getQuestionError = (params:object):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
     }
-});
+
+    return {
+        type : types.GET_QUESTION['ERROR'],
+        byId : params['byId'],
+        payLoad: {
+            error, 
+            isLoading : false,
+        }
+    };
+};
+
+export const getUserAnswer = (answerList:[]):any => {
+    let cacheEntities:object = JSON.parse(localStorage.getItem('@@CacheEntities')); 
+    let currentUser:object =  cacheEntities['currentUser'];
+    currentUser = currentUser && currentUser['user'];
+    var answer  = undefined; 
+      
+    if (currentUser && answerList && answerList.length) {
+        answerList.map( (item, index) => {
+
+            if (item['author']['id'] === currentUser['id']) {
+                answer = item;
+            }
+            return answer;
+        });
+    }
+
+    return answer;
+};
 
 export const getPostPending = (byId:string) => {
    
@@ -258,19 +311,27 @@ export const getPostSuccess = (byId:string ,post:object):object => {
         payLoad: {
             post, 
             isLoading : false,
-
+            timeStamp,
         }
     };
 };
 
-export const getPostError = (byId:string, error:string) => ({
-    type : types.GET_POST['ERROR'],
-    byId,
-    payLoad: {
-       error, 
-       isLoading : false,
+export const getPostError = (params:object) => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
     }
-});
+
+    return {
+        type : types.GET_POST['ERROR'],
+        byId : params['byId'],
+        payLoad: {
+           error, 
+           isLoading : false,
+        }
+    }
+};
 
 export const getUserProfilePending = (byId:string):object => {
   
@@ -291,51 +352,61 @@ export const getUserProfileSuccess = (byId:string, userProfile:object):object =>
         payLoad: {
             user      : userProfile,
             isLoading : false,
+            timeStamp,
         }
     };
 };
 
-export const getUserProfileError = (byId:string, error:string) => ({
-    type : types.GET_USER_PROFILE['ERROR'],
-    byId,
-    payLoad: {
-       error, 
-       isLoading : false,
+export const getUserProfileError = (params:object) => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
     }
-});
 
-export const deleteQuestionPending = (id :number):object => ({
-  type:  types.DELETE_QUESTION['PENDING'],
-  payLoad: {
-    id
-  }
+    return {
+        type : types.GET_USER_PROFILE['ERROR'],
+        byId: params['byId'],
+        payLoad: {
+            error, 
+            isLoading : false,
+        }
+    };
+};
+
+export const deleteQuestionPending = (id:number):object => ({
+    type:  types.DELETE_QUESTION['PENDING'],
+    payLoad: {
+        id
+    }
 });
 
 
 export const deleteQuestionSuccess= ({ success }) => ({
-  type:  types.DELETE_QUESTION['SUCCESS'],
-  payLoad: {
-     success,
-  }
+    type:  types.DELETE_QUESTION['SUCCESS'],
+    payLoad: {
+        success,
+    }
 });
 
-export const deleteQuestionError = ({error}) => ({
-  type:  types.DELETE_QUESTION['ERROR'],
-  payLoad: {
-    error,
-  }
+export const deleteQuestionError = (params:object) => ({
+    type:  types.DELETE_QUESTION['ERROR'],
+    payLoad : {
+        error : params['byId'],
+    }
 });
 
 export const getQuestionListSuccess = (byId:string, questionList:[]):object => {
     
-    return{
-	   type: types.GET_QUESTION_LIST['SUCCESS'],
-      byId,
-      payLoad: {
-         questionList,
-         isLoading   : false,
-      }
-   }
+    return {
+	    type: types.GET_QUESTION_LIST['SUCCESS'],
+        byId,
+        payLoad: {
+            questionList,
+            isLoading : false,
+            timeStamp,
+        }
+    }
 };
 
 export const getQuestionListPending = (byId:string):object => ({
@@ -343,29 +414,37 @@ export const getQuestionListPending = (byId:string):object => ({
     byId,
     payLoad: {
         isLoading    : true,
-      
     }
 });
 
-export const getQuestionListError = (byId:string, error:string):object =>({
-	type: types.GET_QUESTION_LIST['ERROR'],
-    byId,
-    payLoad: {
-        error,
-        isLoading: false,
+export const getQuestionListError = (params:object):object =>{
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
     }
 
-});
+    return{
+	    type: types.GET_QUESTION_LIST['ERROR'],
+        byId : params['byId'],
+        payLoad: {
+            error,
+            isLoading: false,
+        }
+    };
+
+};
 
 export const getPostListSuccess = (byId:string, postList:[]):object => {
     return{
-      type: types.GET_POST_LIST['SUCCESS'],
-      byId,
-      payLoad: {
-         postList,
-         isLoading : false,
-      }
-   }
+        type: types.GET_POST_LIST['SUCCESS'],
+        byId,
+        payLoad: {
+            timeStamp,
+            postList,
+            isLoading : false,
+        }
+    }
 };
 
 export const getPostListPending = (byId:string):object => ({
@@ -377,15 +456,23 @@ export const getPostListPending = (byId:string):object => ({
     }
 });
 
-export const getPostListError = (byId:string, error:string):object =>({
-    type: types.GET_POST_LIST['ERROR'],
-    byId,
-    payLoad: {
-        error,
-        isLoading: false,
+export const getPostListError = (params):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
     }
 
-});
+    return{
+        type: types.GET_POST_LIST['ERROR'],
+        byId : params['byId'],
+        payLoad: {
+            error,
+            isLoading: false,
+        }
+    };
+
+};
 
 export const getAnswerListSuccess = (byId:string, answerList:object[]):object => {
 
@@ -393,6 +480,7 @@ export const getAnswerListSuccess = (byId:string, answerList:object[]):object =>
         type: types.GET_ANSWER_LIST['SUCCESS'],
         byId,
         payLoad: {
+            timeStamp,
             answerList,
             isLoading : false,
         }
@@ -400,96 +488,120 @@ export const getAnswerListSuccess = (byId:string, answerList:object[]):object =>
 };
 
 export const getAnswerListPending = (byId:string):object => ({
-   type: types.GET_ANSWER_LIST['PENDING'],
-   byId,
-   payLoad: {
-      isLoading: true,
-   }
-});
-
-export const getAnswerListError = (byId:string, error:string):object =>({
-    type: types.GET_ANSWER_LIST['ERROR'],
+    type: types.GET_ANSWER_LIST['PENDING'],
     byId,
     payLoad: {
-        error,
-        isLoading: false,
+        isLoading: true,
     }
-
 });
 
-export const getCommentListSuccess = (byId:string, comments:[]):object => {
-   
+
+export const getAnswerListError = (params:object):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
+    }
+
+    return{
+        type: types.GET_ANSWER_LIST['ERROR'],
+        byId:params['byId'],
+        payLoad: {
+            error,
+            isLoading: false,
+        }
+    };
+
+};
+
+export const getCommentListSuccess = (byId:string, commentList:[]):object => {
+ 
     return{
         type: types.GET_COMMENT_LIST['SUCCESS'],
         byId,
         payLoad: {
-            comments,
-            showLink : false,
+            commentList,
+            showLink  : false,
+            isLoading : false,
         }
     };
 };
 
 export const getCommentListPending = (byId:string):object => {
   
-  return{
-    type: types.GET_COMMENT_LIST['PENDING'],
-    byId,
-    payLoad: {
-        showLink    : false,
-    }
-  };
+    return{
+        type: types.GET_COMMENT_LIST['PENDING'],
+        byId,
+        payLoad: {
+            isLoading : true,
+        }
+    };
 };
 
-export const getCommentListError = (byId:string, error:string) =>({
-   type: types.GET_COMMENT_LIST['ERROR'],
-   byId,
-   payLoad: {
-    error,
-    isLoading: false,
-  }
+export const getCommentListError = (params:object) => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
+    }
+    
+    return{
+        type: types.GET_COMMENT_LIST['ERROR'],
+        byId : params['byId'],
+        payLoad: {
+            error,
+            isLoading: false,
+            showLink:true,
+        }
+    };
 
-});
+};
 
-export const getReplyListPending = (actionType:any, byId:string) => ({
-   type    : actionType.PENDING,
-   byId,
-   payLoad : {
-      showLink    : false,
-   },
+export const getReplyListPending = (byId:string) => ({
+    type : types.GET_REPLY_LIST['PENDING'],
+    byId,
+    payLoad : {
+        showLink  : false,
+        isLoading : true,
+    },
    
 });
 
-export const getReplyListSuccess = (actionType:any, byId:string, replyList:[]):object => {
+export const getReplyListSuccess = (byId:string, replyList:[]):object => {
+
     return{
-      type    : actionType.SUCCESS,
-      byId,
-      payLoad : {
-         replyList  : replyList,
-         isLoading  : false, 
-      }
-   };
+        type    : types.GET_REPLY_LIST['SUCCESS'],
+        byId,
+        payLoad : {
+            replyList,
+            isLoading  : false, 
+        }
+    };
 };
 
-export const getReplyListError = (actionType:any, byId:string, error:string):object =>({
-   type    : actionType.ERROR,
-   byId,
-   payLoad : {
-      error,
-      isLoading   : false,
-   }
-});
+export const getReplyListError = (params:object):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
+    }
+    
+    return{
+        type : types.GET_REPLY_LIST['ERROR'],
+        byId :  params['byId'],
+        payLoad : {
+            error,
+            isLoading : false,
+        }
+    }
+};
 
-
-export const handleError  = (error?:string, errorParams?:object):object => {
-    console.log(error)
-    let byId = errorParams && errorParams['byId'];
-
-    if (!error) {
-        error = 'Something wrong happened.'
+export const handleError  = (error?:any, opts?:object):object => {
+    if (typeof error === 'object') {
+        error = error['detail']    
     }
     
     return {
-        
         type: types.SERVER['ERROR'],
         payLoad: {
             error,
@@ -497,25 +609,22 @@ export const handleError  = (error?:string, errorParams?:object):object => {
     };
 };
 
-export const authenticationPending = (
-                isSocialAuth:boolean=false, 
-                isTokenRefresh:boolean=false):object => ({
+export const authenticationPending = (params?:object):object => ({
 
     type   : types.USER_AUTHENTICATION['PENDING'],
     payLoad : {
         isLoading : true,
-        isSocialAuth,   
-        isTokenRefresh, 
+        isSocialAuth : params['isSocialAuth'],   
+        isTokenRefresh : params['isTokenRefresh'], 
     }
 });
 
-export const authenticationSuccess = (data:object, 
-                                      isSocialAuth:boolean=false,
-                                      isTokenRefresh:boolean=false):object => {
-        
+export const authenticationSuccess = (data:object, isSocialAuth?:boolean):object => {
+          
     return {
-        type   : types.USER_AUTHENTICATION['SUCCESS'],
+        type : types.USER_AUTHENTICATION['SUCCESS'],
         payLoad : {
+            timeStamp,
             ...data,
             isLoading  : false,
             isSocialAuth,
@@ -523,13 +632,20 @@ export const authenticationSuccess = (data:object,
     };
 };
 
-export const authenticationError = (
-                            error:object, 
-                            formName?:string,
-                            isSocialAuth?:boolean, 
-                            isTokenRefresh?:boolean):object => {
+export const authenticationError = (params:object):object => {
+
+    let error = params['error'];
+    let isSocialAuth:boolean = params['isSocialAuth'];
+    let isTokenRefresh:boolean = params['isTokenRefresh'];
+    let formName:string = params['formName'];
 
     console.log(error, isTokenRefresh, isSocialAuth)
+    if(isSocialAuth && error['non_field_errors']){
+        error = error.non_field_errors[0]
+    }
+
+    
+    console.log(error)
     return {
         type   : types.USER_AUTHENTICATION['ERROR'],
         payLoad : {
@@ -548,6 +664,7 @@ export const getCurrentUserSuccess = (user:object):object => {
         type    : types.GET_CURRENT_USER['SUCCESS'],
         payLoad : {
             user,
+            timeStamp,
             isLoading   : false,
         }
     };
@@ -563,6 +680,23 @@ export const getCurrentUserPending = ():object => {
     };
 };
 
+
+export const getCurrentUserError = (params:object):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
+    }
+    
+    return {
+        type   :types.GET_CURRENT_USER['ERROR'],
+        payLoad : {
+            error, 
+            isLoading: false,
+        }
+    };
+};
+
 export const getUserListSuccess = (byId:string, users:[]):object => {
     
     return{
@@ -571,8 +705,9 @@ export const getUserListSuccess = (byId:string, users:[]):object => {
         payLoad: {
             userList    : users,
             isLoading   : false,
+            timeStamp,
        }
-    }
+    };
 };
 
 export const getUserListPending = (byId:string):object => ({
@@ -583,76 +718,73 @@ export const getUserListPending = (byId:string):object => ({
     }
 });
 
-export const getUserListError = (byId:string, error:string):object =>({
-    type: types.GET_USER_LIST['ERROR'],
-    byId,
-    payLoad: {
-        error,
-        isLoading: false,
+export const getUserListError = (params:object):object =>{
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
     }
-
-});
-
-export const getCurrentUserError = (error:object):object => {
-    console.log(error)
-    return {
-        type   :types.GET_CURRENT_USER['ERROR'],
-        payLoad : {
-            error: error['data'], 
+    
+    return{
+        type: types.GET_USER_LIST['ERROR'],
+        byId : params['byId'],
+        payLoad: {
+            error,
             isLoading: false,
         }
-    };
+    }
+
 };
 
-export const getCommentLindData = (byId:string, comments:object[]):object => {
+
+export const getCommentLindData = (params:object):object => {
+    const comments = params['comments'];
+    const commentsCount:number = params['commentsCount'];
+
+    const byId:string = params['commentsById'];
           
     return {     
         type   : 'GET_COMMENT_LINK_DATA',
         byId,
         payLoad : {
-
-            showLink         : comments.length > 1,
+            showLink         : commentsCount > 1,
             commentList      : comments,
             isLoading        : false,
-            error            : '',
-            linkData : {
-                comment         : comments[0],
-                numOfComments   : comments.length,
-            
-            },
+            commentsCount,
         }
     };
 };
 
-export const getRepliesLindData = (props:object) => {
+export const getRepliesLindData = (params:object) => {
    //console.log(props)
-   const replies:object[] = props['replies'];
+   const replies:object[] = params['replies'];
    var reply:object =  replies && replies[0];
-   var byId:string = props['byId'];
+   var byId:string = params['byId'];
+   const repliesCount:number = params['repliesCount']
    
     return {
-        type : props['actionType'],
         byId,
+        type : 'GET_REPLY_LINK_DATA',
         payLoad : {
             replyList  : replies,
-            showLink   : replies && replies.length !== 0,
+            showLink   : repliesCount !== 0,
             isLoading  : false,
             linkData   : {
                 reply,
-                totalReplies : replies && replies.length,
+                repliesCount,
             }
         },
     };
 };
 
 
-export const showModal = (byId:string, isOpening:boolean):object =>{
-    
+export const showModal = (byId:string, opening:boolean):object =>{
+        
     return {
         type : 'MODAL_ROUTER',
         byId,
         payLoad : {
-        modalIsOpen  : isOpening,
+        modalIsOpen  : opening,
         
       }
    };
@@ -670,17 +802,22 @@ export const getAdminPending = ():object => {
 
 export const getAdminSuccess = (data:object):object => {
 
-    
     return {
         type    : 'ADMIN_SUCCESS',
         payLoad : {
             ...data,
             isLoading: false,
+            timeStamp,
         }
     };
 };
 
-export const getAdminError = (error:object):object => {
+export const getAdminError = (params:object):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
+    }
     
     return {
         type    : 'ADMIN_ERROR',
@@ -715,7 +852,12 @@ export const sendMessageSuccess = (data:object):object => {
     };
 };
 
-export const sendMessageError = (error:string):object => {
+export const sendMessageError = (params:string):object => {
+    let error = params['error'];
+    
+    if (error && error.detail) {
+        error = error.detail;
+    }
     
     return {
         type    : 'SEND_MESSAGE_ERROR',
@@ -726,24 +868,7 @@ export const sendMessageError = (error:string):object => {
     };
 };
 
-export const getUserAnswer = (answerList:[]):any => {
-    let cacheEntities:object = JSON.parse(localStorage.getItem('@@CacheEntities')); 
-    let currentUser:object =  cacheEntities['currentUser'];
-    currentUser = currentUser && currentUser['user'];
-    var answer  = undefined; 
-      
-    if (currentUser && answerList && answerList.length) {
-        answerList.map( (item, index) => {
 
-            if (item['author']['id'] === currentUser['id']) {
-                answer = item;
-            }
-            return answer;
-        });
-    }
-
-    return answer;
-};
 
 
 

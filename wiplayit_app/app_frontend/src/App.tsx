@@ -37,9 +37,6 @@ export const history = createBrowserHistory();
 export const isProduction = process.env.NODE_ENV === 'production';
 export const isDevelopment = process.env.NODE_ENV === 'development';
 
-console.log('Is Production :',isProduction)
-console.log('isDevelopment :', isDevelopment)
-console.log(process.env.NODE_ENV)
 
 function App() {
         

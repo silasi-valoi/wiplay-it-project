@@ -49,7 +49,11 @@ export const CommentsComponent = props => {
     }
 
 
-    let editorState = helper.convertFromRaw(comment.comment)  
+    let editorState;
+    if (comment.comment) {
+        editorState = helper.convertFromRaw(comment.comment)  
+    
+    }
    
 
     let commentRepliesById = isAnswerBox && `answerReplies${comment.id}` 
@@ -154,11 +158,13 @@ export const CommentsComponent = props => {
                         <AuthorDetails {...authorProps}/>
                       
                         <div className="comment-body">
-                            <Editor
-                                blockRendererFn={pageMediaBlockRenderer}
-                                editorState={editorState} 
-                                readOnly={true}
-                            />
+                            { editorState &&
+                                <Editor
+                                    blockRendererFn={pageMediaBlockRenderer}
+                                    editorState={editorState} 
+                                    readOnly={true}
+                                />
+                            }
                         </div>
                     </div>
                     <ButtonsBox {...btnsList}/>

@@ -194,13 +194,12 @@ export const EnablePageScrool =()=>{
 
 
 export const matchMediaSize =(mediaSize)=> {
-        let size = `(${mediaSize})`;
-        return window.matchMedia(size).matches;
+    let size = `(${mediaSize})`;
+    return window.matchMedia(size).matches;
 };
 
 
 export const displaySuccessMessage =(self, message:string)=> {
-    
     if (!message) return;
     
     const successMessage:object = {textMessage:message, messageType:'success'}
@@ -212,7 +211,7 @@ export const displayErrorMessage =(self, message:string) => {
     displayAlertMessage(self, errorMessage)
 };
 
-const displayAlertMessage = (self, message:object) => {
+export const displayAlertMessage = (self, message:object) => {
     self.setState({ displayMessage : true, message });
         
     setTimeout(()=> {
@@ -241,7 +240,7 @@ export const pushToRouter = (params:object, event?:React.MouseEvent<HTMLAnchorEl
 };
 
 
-export const cacheExpired = (cache:object):boolean => {
+export const cacheExpired = (cache:object, duration?:number):boolean => {
     if (!cache) {
         return true;    
     }
@@ -249,6 +248,41 @@ export const cacheExpired = (cache:object):boolean => {
     let timeStamp = cache['timeStamp'];
     const getTimeState = new GetTimeStamp({timeStamp});
     let menutes = parseInt(`${getTimeState.menutes()}`);
-    return menutes >= 1
+    let _cacheExpired:boolean = duration && menutes >= duration || menutes >= 1;
+
+    return _cacheExpired;
     
+}
+
+
+export const cacheStoreData = (cacheKey:string, byId:string, data:object)=> {
+    let cacheEntities = localStorage.getItem('@@CacheEntities');
+    cacheEntities = cacheEntities && JSON.parse(cacheEntities) || {};
+    let cacheData =  cacheEntities[cacheKey];
+    let newCache:object = {};
+    
+    if (byId) {
+
+        let _cache = cacheData && cacheData[byId] || {};
+        let _data:object = {..._cache, ...data[byId]};
+
+         _data = {
+            value : _data, 
+            writable : true,
+            configurable : true,
+            enumerable   : true,
+        };
+      
+        newCache =  Object.defineProperty({}, byId, _data);
+        newCache = {...cacheData, ...newCache};
+        
+    }else{
+        newCache = {...cacheData, ...data}
+    }
+
+    cacheEntities[cacheKey] = newCache;
+
+
+    localStorage.setItem('@@CacheEntities', JSON.stringify(cacheEntities));  
+
 }

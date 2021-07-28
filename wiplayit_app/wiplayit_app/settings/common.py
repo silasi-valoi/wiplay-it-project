@@ -19,11 +19,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #SECRET_KEY = os.getenv("SECRET_KEY")
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-AUTH_USER_MODEL = 'auth_backend.User'
+AUTH_USER_MODEL = 'app_backend.User'
 
 GUARDIAN_MONKEY_PATH = False
 ANONYMOUS_USER_NAME = "Anonymous"
-GUARDIAN_GET_INIT_ANONYMOUS_USER = 'auth_backend.models.get_anonymous_user_instance'
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'app_backend.registrations.models.get_anonymous_user_instance'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
@@ -33,9 +33,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-ACCOUNT_ADAPTER             = 'auth_backend.custom_adapter.CustomAccountAdapter'
+ACCOUNT_ADAPTER             = 'app_backend.registrations.adapter.CustomAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP   = True
-SOCIALACCOUNT_ADAPTER       = 'auth_backend.custom_adapter.CustomSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER       = 'app_backend.registrations.adapter.CustomSocialAccountAdapter'
 SOCIALACCOUNT_QUERY_EMAIL   = True
 ACCOUNT_LOGOUT_ON_GET       = True
 ACCOUNT_EMAIL_VERIFICATION  =  'optional'
@@ -43,6 +43,8 @@ ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 SOCIALACCOUNT_AVATAR_SUPPORT = True
 ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
+
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
@@ -67,6 +69,10 @@ SOCIALACCOUNT_PROVIDERS = {
         'LOCALE_FUNC': 'path.to.callable',
         'VERIFIED_EMAIL': False,
         'VERSION': 'v2.12',
+        "APP": {
+            "client_id": "<client_id>",
+            "secret": "<secret>",
+        },
     },
      'google': {
         'SCOPE': [
@@ -75,7 +81,12 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-        }
+        },
+
+        "APP": {
+            "client_id": "<client_id>",
+            "secret": "<secret>",
+        },
     }
 }
 
@@ -89,6 +100,7 @@ AUTHENTICATION_BACKENDS = (
         )
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'app_backend.helpers.custom_exception_handler',
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
@@ -106,10 +118,10 @@ REST_FRAMEWORK = {
 
 
 REST_AUTH_SERIALIZERS = {
-   'USER_DETAILS_SERIALIZER'   : 'auth_backend.serializers.BaseUserSerializer',
-   'TOKEN_SERIALIZER'          : 'auth_backend.serializers.TokenSerializer',
-   'PASSWORD_RESET_SERIALIZER' : 'auth_backend.serializers.CustomPasswordResetSerializer',
-   'PASSWORD_RESET_CONFIRM_SERIALIZER': 'auth_backend.serializers.CustomPasswordResetConfirmSerializer',
+   'USER_DETAILS_SERIALIZER'   : 'app_backend.registrations.serializers.BaseUserSerializer',
+   'TOKEN_SERIALIZER'          : 'app_backend.registrations.serializers.TokenSerializer',
+   'PASSWORD_RESET_SERIALIZER' : 'app_backend.registrations.serializers.CustomPasswordResetSerializer',
+   'PASSWORD_RESET_CONFIRM_SERIALIZER': 'app_backend.registrations.serializers.CustomPasswordResetConfirmSerializer',
 
 }
 
@@ -127,7 +139,7 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=365),
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=365),
 
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'auth_backend.views.jwt_response_payload_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'app_backend.registrations.views.jwt_response_payload_handler',
     
 }
 
@@ -142,7 +154,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auth_backend',
     'app_backend',
     'rest_framework',
     'rest_auth',

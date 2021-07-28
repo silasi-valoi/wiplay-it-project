@@ -48,8 +48,14 @@ export const AnswersComponent = props => {
          color      : '#4A4A4A',
          margin     : '0 0 2px'
     };
-  
-   const editorState  = helper.convertFromRaw(answer.add_answer);
+
+    let editorState;
+
+    let answerText:string = answer.answer ||  answer.add_answer
+
+    if (answerText) {
+        editorState  = helper.convertFromRaw(answerText);
+    }
 
     let usersById =  `answerUpVoters${answer.id}`;
     let apiUrl    =  Apis.getAnswerUpVotersListApi(answer.id);
@@ -173,18 +179,20 @@ export const AnswersComponent = props => {
                 <ul className="answer-question-box">
                     <li className="question">
                         <LinkButton {...linkProps}>
-                            <span>{ question['add_question'] }</span>
+                            <span>{ question['question'] || question['question'] }</span>
                         </LinkButton>
                     </li>
                 </ul>
             }
 
             <div className="answer">
-                <Editor
-                    blockRendererFn={pageMediaBlockRenderer}
-                    editorState={editorState}
-                    readOnly={true}
-                />
+                {editorState &&
+                    <Editor
+                        blockRendererFn={pageMediaBlockRenderer}
+                        editorState={editorState}
+                        readOnly={true}
+                    />
+                }
             </div>
             <div className="">
                <ButtonsBox {...btnsList}/>   

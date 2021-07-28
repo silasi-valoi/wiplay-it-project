@@ -8,9 +8,6 @@ import {GetLoggedInUser } from 'utils/helpers';
 import {history} from 'App';
 
 
-const timeStamp = new Date();
-const isOnline:boolean = false;
-
 export const _GetApi = (useToken:boolean, opts?:object) =>{
     const axios     = new Axios({useToken, ...opts});
     return axios.instance()
@@ -31,51 +28,30 @@ const checkOnlineStatus = async () => {
 
 export function sendMessage(params:object):Function {
     let useToken:boolean = true;
-    let opts = {}
-    const Api    = _GetApi(useToken,{timeout:120000});
-    
-    if(!Api){
-        console.log(!Api)
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
-    
+    const Api = _GetApi(useToken,{timeout:120000});
+     
     const apiUrl:string = params['apiUrl'];;
     const formData:object = params['formData'];   
     
     return async dispatch => {
-         let online = await checkOnlineStatus();
+        const errorOpts:object = {
+            dispatch,
+            action:action.sendMessageError,
+        };
 
+        let online = await checkOnlineStatus();
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
+            handleErrors({online}, errorOpts);
+
         }else{
 
             dispatch(action.sendMessagePending());
 
             Api.post(apiUrl, formData).then(response => {
-                console.log(response)  
                 dispatch(action.sendMessageSuccess(response.data)); 
             
             }).catch(error => {
-                            
-                if (error.response) {
-                    error = error.response.data;
-                    console.log(error)
-                    dispatch(action.sendMessageError(error));
-
-                }else if(error.request){
-                    console.log(error.request)
-                    error = 'The server took to long to respond.';
-                    dispatch(action.handleError(error));
-                    dispatch(action.sendMessageError(error));
-
-                }else{
-                    console.log(error)
-                    error = 'Something wrong happened.';
-                    dispatch(action.handleError(error));
-                }
+                handleErrors(error, errorOpts)
             })
         }        
     };
@@ -95,13 +71,15 @@ export function getAboutInfo(options?:object) {
     let apiUrl = Apis.getAboutInfoApi(); 
     
     return async dispatch => {
-        let online = await checkOnlineStatus();
+        const errorOpts:object = {
+            dispatch,
+            action:action.getAboutInfoError,
+        };
 
+        let online = await checkOnlineStatus();
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getAboutInfoError(error));
-      
+            handleErrors({online}, options)
+                  
         }else{
             dispatch(action.getAboutInfoPending());
 
@@ -109,38 +87,27 @@ export function getAboutInfo(options?:object) {
                 console.log(response)  
                 dispatch(action.getAboutInfoSuccess(response.data)); 
             }).catch(error => {
-            
-                if (error.response) {
-                    error = error.response.data;
-                    console.log(error)
-                    dispatch(action.getAboutInfoError(error.detail));
-
-                }else if(error.request){
-                    error = 'The server took to long to respond.';
-                    dispatch(action.getAboutInfoError(error));
-
-                }else{
-                    dispatch(action.handleError());
-                }
+                handleErrors(error, errorOpts)
             })
         }       
     };
 };
 
 
-export function getIndex(options?:object):Function {
-    let useToken:boolean = true;
-    const Api  = _GetApi(useToken, {requestFor:'index'});
+export function getIndex(authenticated:boolean=false, options?:object):Function {
+    
+    const Api  = _GetApi(authenticated, {requestFor:'index'});
     let apiUrl = Apis.getIndexApi(); 
 
     return async dispatch => {
-        let online = await checkOnlineStatus();
+        const errorOpts:object = {
+            dispatch,
+            action:action.getIndexError,
+        };
 
+        let online = await checkOnlineStatus();
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getIndexError(error));
-            
+            handleErrors({online}, errorOpts)         
 
         }else{
             dispatch(action.getIndexPending());
@@ -149,26 +116,7 @@ export function getIndex(options?:object):Function {
                 dispatch(action.getIndexSuccess(response.data)); 
            
             }).catch(error => {
-                                               
-                if (error.response) {
-                    let errorResponse = error.response
-                    console.log(errorResponse)
-                    if (errorResponse.status === 500) {
-                        error = errorResponse.statusText
-                    }else{
-                        error = errorResponse.data.detail;
-                    }
-
-                }else if(error.request){
-                    console.log(error.request)
-                    error = 'The server took to long to respond.';
-                    
-                }else{
-                    console.log(error)
-                    error = 'Something wrong happened.'
-                }
-              
-                dispatch(action.getIndexError(error));
+                handleErrors(error, errorOpts)  
             }); 
         }
     };
@@ -185,15 +133,18 @@ export function getUserList(props:UserListProps) {
     let {apiUrl, usersById} = props;
     
     return async dispatch => {
-        let online = await checkOnlineStatus();
+        const errorOpts:object = {
+            dispatch,
+            action:action.getUserListError,
+            byId:usersById,
+        };
 
+        let online = await checkOnlineStatus();
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getUserListError(usersById, error));
-     
+            handleErrors({online}, errorOpts)
+             
         }else{
-            let useToken:boolean = true;
+            let useToken:boolean = false;
             const Api  = _GetApi(useToken);
 
             dispatch(action.getUserListPending(usersById))
@@ -202,19 +153,7 @@ export function getUserList(props:UserListProps) {
                 dispatch(action.getUserListSuccess(usersById, response.data))
 
             }).catch(error => {
-
-                console.log(error)
-                if (error.response) {
-                    error = error.response.data.detail;
-                    
-                }else if(error.request){
-                    error = 'The server took to long to respond.';
-                
-                }else{
-                    error = 'Something wrong happened.'
-                }
-
-                dispatch(action.getUserListError(usersById, error));
+                handleErrors(error, errorOpts)
             }); 
         }
     };
@@ -223,43 +162,29 @@ export function getUserList(props:UserListProps) {
 
 
 export function getQuestionList(questionListById:string) {
-    let useToken:boolean = true;
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken);  
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
-
     let apiUrl     = Apis.getQuestionListApi(); 
 
     return async dispatch => {
+        const errorOpts:object = {
+            dispatch,
+            action:action.getQuestionListError,
+            byId:questionListById,
+        };
+
         let online = await checkOnlineStatus();
 
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getQuestionListError(questionListById, error));
-            
-
+            handleErrors({online}, errorOpts)
+              
         }else{
             dispatch(action.getQuestionListPending(questionListById))
 	        Api.get(apiUrl).then(response =>{
                 dispatch(action.getQuestionListSuccess(questionListById, response.data));
 
             }).catch(error => {
-                console.log(error)
-      	        if (error.response) {
-                    error = error.response.data;
-                    dispatch(action.getQuestionListError(questionListById, error.detail));
-
-                }else if(error.request){
-                    error = 'The server took to long to respond.';
-                    dispatch(action.getQuestionListError(questionListById, error));
-
-                }else{
-                    dispatch(action.handleError());
-                }
+                handleErrors(error, errorOpts)
             });
         } 
     };
@@ -270,24 +195,22 @@ export function getQuestionList(questionListById:string) {
 
 export function getPostList(postListById:string) {
 
-    let useToken:boolean = true;
+    let useToken:boolean = false;
     const Api = _GetApi(useToken);  
-
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
 
     let apiUrl:string = Apis.getPostListApi();
 
     return async dispatch => {
+        const errorOpts:object = {
+            dispatch,
+            action:action.getPostListError,
+            byId:postListById,
+        };
+
         let online = await checkOnlineStatus();
 
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getPostListError(postListById, error));
+            handleErrors({online}, errorOpts)
           
         }else{
             dispatch(action.getPostListPending(postListById))
@@ -295,19 +218,8 @@ export function getPostList(postListById:string) {
             Api.get(apiUrl).then(response => {
                 dispatch(action.getPostListSuccess(postListById, response.data))
             }).catch(error => {
-      	   
-                if (error.response) {
-                    error = error.response.data;
-                    dispatch(action.getPostListError(postListById, error.detail));
-
-                }else if(error.request){
-                    error = 'The server took to long to respond.';
-                    dispatch(action.getPostListError(postListById, error));
-
-                }else{
-                    dispatch(action.handleError());
-                }
-            });
+                handleErrors(error, errorOpts)
+      	    });
         } 
     };
 };
@@ -315,26 +227,22 @@ export function getPostList(postListById:string) {
 
 
 export function getQuestion(id:number) {
-    let useToken:boolean = true;
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken); 
-
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    } 
-      
+  
     let apiUrl:string = Apis.getQuestionApi(id);
     let questionById:string = `question${id}`;
 
     return async dispatch => {
-        let online = await checkOnlineStatus();
+        const errorOpts:object = {
+            dispatch,
+            action:action.getQuestionError,
+            byId:questionById,
+        };
 
+        let online = await checkOnlineStatus();
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getQuestionError(questionById, error));
-            
+          handleErrors({online}, errorOpts)            
 
         }else{
             dispatch(action.getQuestionPending(questionById))
@@ -342,21 +250,7 @@ export function getQuestion(id:number) {
                     dispatch(action.getQuestionSuccess( questionById, response.data))
 
             }).catch(error => {
-                    
-                if (error.response) {
-                    console.log(error.response)
-                    error = error.response.data;
-                    dispatch(action.getQuestionError( questionById, error.detail));
-
-                }else if(error.request){
-                    console.log(error.request)
-                    error = 'The server took to long to respond.';
-                    dispatch(action.getQuestionError(questionById, error));
-
-                }else{
-                    error = 'Something wrong happened.';
-                    dispatch(action.handleError());
-                }
+                handleErrors(error, errorOpts)
             });
         }
     };
@@ -365,46 +259,31 @@ export function getQuestion(id:number) {
 
 
 export function getPost(id:number) {
-    let useToken:boolean = true;
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken);  
-
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
 
     let apiUrl = id && Apis.getPostApi(id);
     let postById = id && `post${id}`
 
     return async dispatch => {
-        let online = await checkOnlineStatus();
+        const errorOpts:object = {
+            dispatch,
+            action:action.getPostError,
+            byId:postById,
+        };
 
+        let online = await checkOnlineStatus();
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getPostError(postById, error));
+          handleErrors({online}, errorOpts)
        
         }else{
             dispatch(action.getPostPending(postById))
 
 	        Api.get(apiUrl).then(response =>{
-                console.log(response)
                 dispatch(action.getPostSuccess(postById, response.data));
             
             }).catch(error => {
-                console.log(error)
-                if (error.response) {
-                    error = error.response.data;
-                    dispatch(action.getPostError(postById ,error.detail));
-
-                }else if(error.request){
-                    error = 'The server took to long to respond.';
-                    dispatch(action.getPostError(postById ,error));
-
-                }else{
-                    dispatch(action.handleError());
-                }
+                 handleErrors(error, errorOpts)               
             });
         } 
     };
@@ -414,29 +293,22 @@ export function getPost(id:number) {
 
 
 export function getUserProfile(id:number, apiUrl?:string) {
-    let useToken:boolean = true;
+    let useToken:boolean = false;
     const Api  = _GetApi(useToken);
     apiUrl    = !apiUrl && Apis.getProfileApi(id) || apiUrl;
-    
-
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
-  
-    
     let profileById:string = `userProfile${id}`;
     
     return async dispatch => {
+        const errorOpts:object = {
+            dispatch,
+            action:action.getUserProfileError,
+            byId:profileById,
+        };
+
         let online = await checkOnlineStatus();
-
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.getUserProfileError(profileById, error));
-            
-
+          handleErrors({online}, errorOpts)
+        
         }else{
             dispatch(action.getUserProfilePending(profileById));
 
@@ -444,145 +316,172 @@ export function getUserProfile(id:number, apiUrl?:string) {
         	    dispatch(action.getUserProfileSuccess(profileById ,response.data));
             
             }).catch(error => {
-                if (error.response) {
-                    console.log(error.response)
-                    error = error.response.data.detail;
-      		    
-                }else if(error.request){
-                    console.log(error.request)
-                    error = 'The server took to long to respond.';
-                
-                }else{
-                    console.log(error)
-                    error = 'Something wrong happened.'
-                }
-
-                dispatch(action.getUserProfileError(profileById, error))
+                handleErrors(error, errorOpts)
             });
         }
     };
 };
 
-export function getCommentList(byId:string) {
-    
-    return dispatch => {
-        dispatch(action.getCommentListPending(byId))
-	}
+interface commetParams {
+    commentsById:string,
+    apiUrl:string
+}
+
+export function getCommentList(params:commetParams) {
+    let useToken:boolean = false;
+    const Api    = _GetApi(useToken); 
+
+    let apiUrl:string = params['apiUrl']; 
+    let byId:string = params['commentsById'];
+   
+    return async dispatch => {
+        dispatch(action.getCommentListPending(byId));
+                
+        let errorOpts:object = {
+                action : action.getCommentListError,
+                dispatch,
+                byId,
+            };
+
+        let online = await checkOnlineStatus();
+        if(!online){
+          handleErrors({online}, errorOpts);
+
+        }else{
+            Api.get(apiUrl).then(response => {
+                console.log(response)
+                dispatch(action.getCommentListSuccess(byId, response.data));
+
+            }).catch(error => {
+                handleErrors(error, errorOpts)
+            }) 
+        }
+    }
 };
 
 
 export function getReplyList(params:object) {
-    console.log(params)
-    
-    let actionType = params['actionType'];
     let byId:string = params['byId'];
-    let replies = params['replies'];
- 
-    if (replies && replies['length']) {
-        return dispatch => {
-            dispatch(action.getReplyListPending(actionType, byId));
-        };
-        
-    }
-    
-    let useToken:boolean = true;
+    const apiUrl:string = params['apiUrl'];
+
+    let useToken:boolean = false;
     const Api    = _GetApi(useToken);  
 
     return async dispatch => {
+        dispatch(action.getReplyListPending(byId));
+
+        let errorOpts:object = {
+                action : action.getReplyListError,
+                dispatch,
+                byId,
+            };
+
         let online = await checkOnlineStatus();
-
-        if (online) {
-            dispatch(action.getReplyListPending(actionType, byId));
-
-	        Api.get(params['apiUrl']).then(response => {
-                dispatch(action.getReplyListSuccess(actionType, byId, response.data));
-            }).catch(error => {
-                dispatch(action.getReplyListError(actionType, byId, error));
-            }) 
+        if(!online){
+          handleErrors({online}, errorOpts);
 
         }else{
-            let error:string = 'Your internet connection is offline';
-            await dispatch(action.handleError(error));
-
+	        Api.get(params['apiUrl']).then(response => {
+                console.log(response)
+                dispatch(action.getReplyListSuccess(byId, response.data));
+                
+            }).catch(error => {
+                handleErrors(error, errorOpts)
+            }) 
         }
     };
 };
 
 
-export function getCurrentUser():Function {
-    let useToken = true
-    const Api  = _GetApi(useToken); 
+export function getCurrentUser(authenticated:boolean=true):Function {
+    
+    const Api  = _GetApi(authenticated); 
 
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }   
-
-    return dispatch => {
+    return async dispatch => {
 	    dispatch(action.getCurrentUserPending());
 
-		Api.get(`/api/current/user/`)
-            .then(response => {
+        let errorOpts:object = {
+            action : action.getCurrentUserError,
+            dispatch,
+        };
+
+        if (!authenticated) {
+            return dispatchErrorActions({}, errorOpts);
+        }
+
+        let online = await checkOnlineStatus();
+        if(!online){
+          handleErrors({online}, errorOpts);
+
+        }else {
+            Api.get(`/api/current/user/`).then(response => {
       	        dispatch(action.getCurrentUserSuccess(response.data)) 
             })
             .catch(error =>{
-                if (error.response && error.response.data) {
-                    dispatch(action.getCurrentUserError(error.response.data));
-
-      	        }else{
-                    dispatch(action.handleError(error.request))
-      	        }
+                handleErrors(error, errorOpts)
+               
             });
+        }
     };
 	
 };
 
-const UserIsConfirmed =(currentUser:object)=> {
-    return currentUser && currentUser['is_confirmed'];
-
-}
 
 export const Delete = (params:object)=>{
     let apiUrl = params['apiUrl'];
+    let objName:string = params['objName'];
     const Api  = _GetApi(true); 
    
-    return dispatch => {
-        
-        Api.delete(apiUrl, {})
-            .then(response => {
+    return async  dispatch => {
+        let errorOpts:object = {
+                action : action,
+                dispatch,
+                global:true,
+            };
+
+        let online = await checkOnlineStatus();
+        if(!online){
+          handleErrors({online}, errorOpts);
+
+        }else{
+
+            Api.delete(apiUrl, {}).then(response => {
                 console.log(response, params) 
                 let bookmarks = removeBookmark(params['obj'], params['bookmarkType'])
          
-                dispatch(action.getIndexSuccess(bookmarks))
-                
+                dispatch(action.getIndexSuccess(bookmarks));
+                let bookmarkType:string;
+                if(objName === 'AnswerBookmark'){
+                    bookmarkType = 'Answer';
+
+                }else if(objName === 'PostBookmark'){
+                    bookmarkType = 'Post';       
+                }
+                                
                 let alertMessage = {
-                    textMessage : 'Bookmark successfully removed.',
+                    textMessage : `${bookmarkType} removed from your bookmarks.`,
                     messageType : 'success'
                 }
                 dispatch(action.HandleAlertMessage(alertMessage))
-            })
-            .catch(error =>{
-                if (error.response && error.response.data) {
-                    console.log(error)
 
-                }else{
-                    console.log(error)
-                    dispatch(action.handleError(error.request))
-                }
+            }).catch(error =>{
+                handleErrors(error, errorOpts)
             });
+        }
     };
 }; 
 
 const removeBookmark =(data:object, bookmarkType:string)=>{
-    let cache = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
-    let index = cache?.index
+    let cache:object = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
+    let index:object = cache['index'];
     
-    let bookmarks = index?.bookmarks || []
-    let bookmarksCache = bookmarks[bookmarkType] || []
-    bookmarks[bookmarkType] = bookmarksCache.filter((bookmark)=> {
-                                     return bookmark.id !== data['id'];
-                                    })
+    let bookmarks = index && index['bookmarks'];
+    if (bookmarks) {
+        let bookmarksCache:object[] = bookmarks[bookmarkType];
+        bookmarks[bookmarkType] = bookmarksCache.filter((bookmark)=> {
+                                    return bookmark['id'] !== data['id'];
+                                });
+    }
     
     index['bookmarks'] = bookmarks
     index['bookmarkRemoved'] = true
@@ -592,22 +491,28 @@ const removeBookmark =(data:object, bookmarkType:string)=>{
 
 export  function  handleSubmit(params:object) {
     console.log(params)
+    const isPut:boolean = params['isPut'];
+    const isPost:boolean = params['isPost'];
     
     return async dispatch => {
         let online = await checkOnlineStatus() 
        
-        if (online && params['isPut']) {
-           await sendUpdateResquest(params, dispatch);
-
-        }else if(online && params['isPost']){
-
-           await sendPostRequest(params, dispatch);
+        if (online){
+            isPut && await sendUpdateResquest(params, dispatch);
+            isPost &&  await sendPostRequest(params, dispatch);
            
-        }else if(!online){
-            let error:string = 'Your internet connection is offline'
-           await dispatch(action.handleError(error));
+        }else{
+            const _action:Function = isPut && action.updateActionError 
+                                           || action.createActionError;
+            let errorOpts:object = {
+                ...params,
+                action : _action,
+                dispatch,
+            };
+
+            handleErrors({online}, errorOpts)
         }  
-    }          
+    };          
 
 };
 
@@ -628,6 +533,7 @@ function sendPostRequest(params:object, dispatch:Function){
     dispatch(action.createActionPending(createProps));
 
     Api.post(params['apiUrl'], params['formData']).then(response => {
+        console.log(response)
         createProps['data'] = prepPayLoad(objName, response.data); 
         createProps['successMessage'] = BuildAlertMessage(createProps);
 
@@ -635,24 +541,25 @@ function sendPostRequest(params:object, dispatch:Function){
         dispatch(action.createActionSuccess(createProps));
                  
     }).catch(error => {
-                                
-        if (error.response && error.response.data) {
-            createProps['error'] = error.response.data;
-            isModal  && dispatch(action.ModalSubmitError(createProps))
-            dispatch(action.createActionError(createProps));
-              
-        }else if(error.request){
-            error = 'The server took to long to respond.';
-            createProps['error'] = error;
-            isModal && dispatch(action.handleError(error));
-                    
-        }else{
-            dispatch(action.handleError());
-            createProps['error'] = 'Something wrong happened.'
+        let global = !isModal;
+
+        let errorOpts:object = {
+                ...createProps,
+                action : action.createActionError,
+                dispatch,
+                global,
+            };
+
+        handleErrors(error, errorOpts);
+
+        if (isModal) {
+            errorOpts = {
+                ...errorOpts, 
+               action : action.ModalSubmitError
+            };
+            handleErrors(error, errorOpts);
         }
 
-        dispatch(action.createActionError(error));
-        isModal && dispatch(action.ModalSubmitError(createProps))
     });
     
 };
@@ -674,7 +581,7 @@ function sendUpdateResquest(params:object, dispatch:Function){
     dispatch(action.updateActionPending(updateProps));
      
     Api.put(params['apiUrl'], formData).then(response => {
-        console.log(response)
+        
         updateProps['data'] = prepPayLoad(objName, response.data);
         updateProps['successMessage'] = BuildAlertMessage(updateProps)
 
@@ -682,27 +589,24 @@ function sendUpdateResquest(params:object, dispatch:Function){
         dispatch(action.updateActionSuccess(updateProps));
        
     }).catch(error => {
-        
-        if (error.response) {
-            error = error.response.data;
-            updateProps['error'] = error.detail;
+        let global = !isModal;
 
-            isModal  && dispatch(action.ModalSubmitError(updateProps));
-            dispatch(action.updateActionError(updateProps));
+        let errorOpts:object = {
+                ...updateProps,
+                action : action.updateActionError,
+                dispatch,
+                global,
+            };
 
-        }else if(error.request){
-            error = 'The server took to long to respond.';
-            updateProps['error'] = error;
-            dispatch(action.updateActionError(updateProps));
-            isModal && dispatch(action.ModalSubmitError(updateProps));
+        handleErrors(error, errorOpts);
 
-            dispatch(action.handleError(error));
+        if (isModal) {
+            errorOpts = {
+                ...errorOpts, 
+               action : action.ModalSubmitError
+            };
 
-        }else{
-            console.log(error)
-            dispatch(action.handleError());
-            updateProps['error'] = 'Something wrong happened.'
-            isModal && dispatch(action.ModalSubmitError(updateProps));
+            handleErrors(error, errorOpts);
         }
     });
     
@@ -711,23 +615,27 @@ function sendUpdateResquest(params:object, dispatch:Function){
 
 
 export function authenticateWithGet(params:object):Function {
-
-    let key = params['key'];
+  
     let useToken = false;
     const apiUrl = params['apiUrl']
     const Api    = _GetApi(useToken, {timeout:30000, requestFor:'authentication'}); 
 
     return async dispatch => {
+        const errorOpts:object = {
+                formName:params['formName'], 
+                action : action.authenticationError,
+                dispatch,
+            };
+
         let online = await checkOnlineStatus();
 
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
-            dispatch(action.authenticationError({error}));
-            
-
+            handleErrors({online}, errorOpts)
+           
         }else{
-            dispatch(action.authenticationPending());
+            dispatch(action.authenticationPending(params));
+
+
             Api.get(apiUrl).then(response => { 
                 let {data}  = response;
                 
@@ -735,16 +643,12 @@ export function authenticateWithGet(params:object):Function {
                 handleLogin(data, dispatch);
 
             }).catch(error => {
-                console.log(error)
-                if (error.response) {
-                    console.log(error.response)
-                    let _error = error.response.data
-                    dispatch(action.authenticationError(_error.detail, ''));
-                } 
+                handleErrors(error, errorOpts)
+               
             });
         }
     };
-}
+};
 
 export function authenticate(params:object):Function {
    
@@ -754,24 +658,26 @@ export function authenticate(params:object):Function {
     const apiUrl:string = params['apiUrl'];
     const form:object = params['form'];
     const useToken:boolean = params['useToken']
-     
-    
+       
     const Api = _GetApi(useToken, {timeout:120000, requestFor:'authentication'});   
-    if(!Api){
-        return  dispatch =>{ 
-            dispatch(action.handleError());
-        };
-    }
+   
 
     return async dispatch => {
+        let errorOpts:object = {
+                formName, 
+                isSocialAuth,
+                isTokenRefresh,
+                action : action.authenticationError,
+                dispatch,
+            };
+
         let online = await checkOnlineStatus();
 
         if(!online){
-            let error:string = 'Your internet connection is offline';
-            dispatch(action.handleError(error));
+            handleErrors({online}, errorOpts)
 
         }else{ 
-            dispatch(action.authenticationPending( isSocialAuth, isTokenRefresh));
+            dispatch(action.authenticationPending(params));
         
             Api.post(apiUrl, form).then(response => {
                 let {data}  = response;
@@ -781,52 +687,72 @@ export function authenticate(params:object):Function {
                 handleSuccessAuth(formName, data, dispatch);
 
             }).catch(error =>{
-
-                let _error;
-                if (error.response) {
-                    console.log(error.response)
-                    if (error.response.status == 500) {
-                        _error = error.response.statusText
-                        dispatch(action.authenticationError(_error,formName, isSocialAuth));
-                        return dispatch(action.handleError(_error));
-                    }
-
-                    _error = error.response.data;
-                    dispatch(
-                        action.authenticationError(
-                            _error,
-                            formName,
-                            isSocialAuth,
-                            isTokenRefresh
-                        )
-                    );
-                    
-                    isSocialAuth && dispatch(
-                            action.handleError(_error.non_field_errors[0])
-                            );
-
-                }
-                else if (error.request)  {
-                    console.log(error.request)
-                    error = 'The server took to long to respond.';
-                
-                    dispatch(
-                        action.authenticationError(
-                            _error, 
-                            formName,
-                            isSocialAuth,
-                            isTokenRefresh
-                        )
-                    );
-                    dispatch(action.handleError(_error));
-
-                }else{
-                    dispatch(action.handleError());
-                }
+                handleErrors(error, errorOpts)
             });
         }
     }
 }; 
+
+export const handleErrors  = (error:object, options?:object) => {
+    console.log(error)
+           
+    let online:boolean = error['online'];
+    const response:object = error && error['response'];
+    const request:object = error && error['request'];
+    
+    if (response) {
+        console.log(response)
+       return handleErrorResponse(response, options);
+        
+    }else if (request){
+        return handleErrorRequest(request, options);
+
+    }else if(online === false){
+        let _error:string = 'Your internet connection is offline';
+        return dispatchErrorActions(_error, {...options, global:true})
+        
+    }else {
+        let _error:string = 'Something wrong happenned. Please try again';
+        return dispatchErrorActions(_error, {...options, global:true})
+    }
+}
+
+const handleErrorResponse = (response:object, options?:object) => {
+    let error:string;
+    
+    if (response['status'] === 500) {
+        error = 'Something wrong happenned. Please try again';
+        options = {...options, global:true,};
+
+    }else if(response['status'] === 401){
+        options = {...options, global:true,};
+
+    }else{
+        error = response['data']
+    }
+
+    dispatchErrorActions(error, options)
+};
+
+const handleErrorRequest = (request:object, options?:object) => {
+    let _error = 'The server took to long to respond.';
+    dispatchErrorActions(_error, {...options, global:true,})
+
+}
+
+const dispatchErrorActions = (error:any, options:object) => {
+    const dispatch:Function = options['dispatch'];
+    const _action:Function = options['action'];
+    const isGlobal:boolean = options['global']
+
+    if (dispatch && action) {
+        isGlobal && dispatch(action.handleError(error, options));
+
+        dispatch(_action({error, ...options}));
+    }
+};
+
+
 
 const handleSuccessAuth = (formName:string, data:object, dispatch:Function):object => {
     switch(formName){
@@ -860,10 +786,14 @@ const handleSuccessAuth = (formName:string, data:object, dispatch:Function):obje
 }
 
 
+let timeStamp:Date = new Date();
+
+
 const handleLogin = (data:object, dispatch:Function):object => {
 
     let isLoggedIn:boolean = false;
     let tokenKey:string = null;
+
     if (data['token'] || data['key']) {
        isLoggedIn = true;
        tokenKey = data['token'] || data['key'];
@@ -874,13 +804,15 @@ const handleLogin = (data:object, dispatch:Function):object => {
         tokenKey,
         successMessage : data['detail'] || '',
         isConfirmed : data['isConfirmed'] || false,
-        timeStamp      : timeStamp.getTime(),
-    }
+        timeStamp   : timeStamp.getTime(),
+    };
 
-    if (data['user']) {
-        let isSuperUser:boolean = data['user'].is_superuser;
-        isSuperUser  && dispatch(action.getAdminSuccess({loginAuth}))
-        dispatch(action.getCurrentUserSuccess(data['user']))
+    let user:object = data['user']
+    if (user) {
+        let isSuperUser:boolean = user['is_superuser'];
+        isSuperUser 
+        && dispatch(action.getAdminSuccess({loginAuth}))
+        dispatch(action.getCurrentUserSuccess(user));
     }
           
     return dispatch(action.authenticationSuccess({loginAuth}));

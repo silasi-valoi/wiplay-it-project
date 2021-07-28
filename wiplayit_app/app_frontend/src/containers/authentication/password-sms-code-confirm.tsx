@@ -157,10 +157,12 @@ const PasswordChange =(props)=>{
               
                 ||
                 
-                <SmsCodeForm {...props}>
-                    <SmsCodeHelperText {...props}/>
-                    <OpenAuthModalBtn {...authenticationProps}/>
-                </SmsCodeForm>
+                <div className="form-container">
+                    <SmsCodeForm {...props}>
+                        <SmsCodeHelperText {...props}/>
+                        <OpenAuthModalBtn {...authenticationProps}/>
+                    </SmsCodeForm>
+                </div>
             }
         </div>
     )

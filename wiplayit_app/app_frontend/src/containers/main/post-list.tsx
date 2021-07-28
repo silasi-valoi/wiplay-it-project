@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
+import {MatchMediaHOC } from 'react-match-media';
 
 import { PostComponent} from "templates/post";
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
 import  MainAppHoc from "containers/main/index-hoc";
-import { MatchMediaHOC } from 'react-match-media';
-import { UnconfirmedUserWarning,PageErrorComponent, } from "templates/partials";
+import {PageErrorComponent, } from "templates/partials";
 import {OpenEditorBtn}  from "templates/buttons";
 import {CREATE_POST} from 'actions/types';
 
-import {PartalNavigationBar,
-        createPostProps,
-        NavigationBarBottom,
-        NavigationBarBigScreen } from "templates/navBar";
+import {createPostProps} from "templates/navBar";
 import  AjaxLoader from "templates/ajax-loader";
 import { getPostList } from 'dispatch/index';
 
@@ -26,14 +23,13 @@ class  PostListPage extends Component  {
         super(props);
 
         this.state = {
-            isPostListBox   : true,
-            postListById    : 'filteredPosts',
-             pageName       : "Posts", 
-            isReloading     : false,
-            
-        }
-     
-    }
+            isPostListBox : true,
+            postListById  : 'filteredPosts',
+             pageName     : "Posts", 
+            isReloading   : false,
+            error         : null,
+        };
+    };
 
     public get isMounted() {
         return this.isFullyMounted;
@@ -41,7 +37,7 @@ class  PostListPage extends Component  {
 
     public set isMounted(value:boolean) {
         this.isFullyMounted = value;
-    }
+    };
  
     
 
@@ -53,9 +49,9 @@ class  PostListPage extends Component  {
             let {entities }    = storeUpdate;
             let postListById =  this.state['postListById'];
             let posts          =  entities['posts'];
-            let postListData = posts[postListById];
+            let postListData = posts && posts[postListById];
 
-            if (Object.keys(postListData)) {
+            if (postListData) {
                 let isReloading = postListData['isLoading'];
                 this.setState({isReloading}); 
 
@@ -84,7 +80,7 @@ class  PostListPage extends Component  {
         var postListById = this.state['postListById'];
         let cacheEntities = this.props['cacheEntities'];
         let { posts, currentUser } = cacheEntities;
-        posts  =  posts[postListById]
+        posts  = posts && posts[postListById]
 
         let postList = posts && posts.postList;
 
@@ -112,41 +108,33 @@ class  PostListPage extends Component  {
     };
 
     render() {
+        if(!this.isMounted){
+            return null;
+        }
         let props = this.getProps();
         var posts  = props['entities'].posts;
-        posts  = posts[props['postListById']];
+        posts  = posts && posts[props['postListById']];
         let postList = posts && posts.postList;
         
         return (
             <div>
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} /> 
-                 <NavigationBarBottom {...props}/>
-                <div className="app-box-container">
-                    <div className="page-contents">
-                    <UnconfirmedUserWarning {...props}/>
-                        
-                    { posts && posts.isLoading && 
-                        <div  className="page-spin-loader-box partial-page-loader">
-                            <AjaxLoader/>
-                        </div>
-                    }
+                {posts && posts.isLoading && 
+                    <div  className="page-spin-loader-box partial-page-loader">
+                        <AjaxLoader/>
+                    </div>
+                }
 
-                    { posts && posts.error &&
-                        <PageErrorComponent {...props}/>
-                    }
-                       
-                    
-                    { postList && postList.map(( post, index )  => {
-    
-                        return (
-                            <div key={post.id} 
-                                 className="post-list-page" id="post-list-page">
-                                <div className="post-container">
-                                    <div className="post-contents">
-                                        <PostComponent {...{...props, post}}/>
-                                    </div>
+                <PageErrorComponent {...props}/>
+                             
+                {postList && postList.map(( post, index )  => {
+                    return (
+                        <div key={post.id} 
+                             className="post-list-page" id="post-list-page">
+                            <div className="post-container">
+                                <div className="post-contents">
+                                    <PostComponent {...{...props, post}}/>
                                 </div>
+                            </div>
                         </div>
                     )})
                     
@@ -165,9 +153,8 @@ class  PostListPage extends Component  {
                         </div>
                     </div>
                 }
-                </div>
             </div>
-            </div>
+            
         );
     };
 
@@ -181,7 +168,8 @@ const Posts = props => {
     let {entities, postListById} = props;
     let {posts} =  entities;
     posts       =  posts && posts[postListById];
-    let postList = posts && posts.postList;
+    let postList = [] //posts && posts.postList;
+    console.log(postList)
   
     return (
         <div className="post-list-page" id="post-list-page">

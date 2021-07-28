@@ -17,10 +17,9 @@ from app_backend.mixins.views_mixins import CreateMixin
 from app_backend.admin_api.views import AboutView 
 from app_backend.models import ( Question, Post,BugReport,
 								 FeedBack,ContactAdmin,
-                                 Answer, AnswerComment, 
-                                 AnswerReply, PostComment,
-                                 AnswerBookmark,PostBookmark,
-                                 PostReply, DraftEditorMediaContent )
+                                 Answer, Comment, 
+                                 Reply, AnswerBookmark,PostBookmark,
+                                 DraftEditorMediaContent )
 
 from app_backend.views import (BaseApiView, PostView,
                                PostCommentView, PostReplyView,
@@ -78,7 +77,7 @@ class CreatePostCommentView(CreateMixin, PostCommentView):
 class CreatePostReplyView(CreateMixin,  PostReplyView):
 		
 	def get_object(self):
-		return get_object_or_404(PostComment, id=self.kwargs['pk'])  
+		return get_object_or_404(Comment, id=self.kwargs['pk'])  
    
 
 
@@ -86,7 +85,7 @@ class CreatePostReplyView(CreateMixin,  PostReplyView):
 class CreatePostReplyChildView(CreateMixin, PostChildReplyView):
 		
 	def get_object(self):
-		return get_object_or_404(PostReply, id=self.kwargs['pk'])  
+		return get_object_or_404(Reply, id=self.kwargs['pk'])  
     
 		
 
@@ -114,14 +113,14 @@ class CreateAnswerReplyView(CreateMixin, AnswerReplyView):
 	
 	def get_object(self):
 		
-		return get_object_or_404(AnswerComment, id=self.kwargs['pk'])  
+		return get_object_or_404(Comment, id=self.kwargs['pk'])  
     
 
 class CreateAnswerReplyChildView(CreateMixin , AnswerChildReplyView):
 		
 	def get_object(self):
 		
-		return get_object_or_404(AnswerReply, id=self.kwargs['pk'])  
+		return get_object_or_404(Reply, id=self.kwargs['pk'])  
     
 			
 
@@ -140,6 +139,12 @@ class DeleteAnswerBookMarkView(AnswerBookMarkView):
 
 	def get_object(self):
 		return get_object_or_404(AnswerBookmark, answer=self.kwargs['pk'])
+
+    
+class DeletePostBookMarkView(PostBookMarkView):
+
+	def get_object(self):
+		return get_object_or_404(PostBookmark, post=self.kwargs['pk'])
 
 class CreateDraftEditorContentsView(CreateMixin, BaseApiView):
 	queryset = DraftEditorMediaContent.objects.all()

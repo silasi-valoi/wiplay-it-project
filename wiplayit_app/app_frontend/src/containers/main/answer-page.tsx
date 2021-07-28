@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import { AnswersComponent } from 'templates/answer';
 import CommentsBox from "containers/main/comment-page";
-import {PartalNavigationBar,NavigationBarBigScreen } from "templates/navBar";
 import  MainAppHoc from "containers/main/index-hoc";
 import { LinkButton } from "templates/buttons"; 
 
@@ -11,6 +10,7 @@ import  * as action  from 'actions/actionCreators';
 
 
 class AnswerContainer extends Component {
+    public isFullyMounted:boolean = false;
 
     constructor(props) {
         super(props);
@@ -22,8 +22,21 @@ class AnswerContainer extends Component {
         };
     };
 
+    public get isMounted() {
+        return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+        this.isFullyMounted = value;
+    }
+
+    componentWillUnmount() {
+        this.isMounted = false;
+    };
+
 
     componentDidMount() {
+        this.isMounted = true;
         console.log(this.props)
 
         let {slug, id}  = this.props['match'].params;
@@ -46,6 +59,10 @@ class AnswerContainer extends Component {
     }
 
     render() { 
+        if(!this.isMounted){
+            return null;
+        }
+
         let props = {...this.props, ...this.state}
                 
         let {answers} = props['entities'];
@@ -54,15 +71,10 @@ class AnswerContainer extends Component {
         answers = answers   && answers[answerListById];
            
         return(
-            <div className="app-box-container app-question-box">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} />
-                
-                <div className="answer-page" id="answer-page">
-                    <div className="new-answer-container">
-                        { OldAnswers(props, answers) }
-                    </div>
-                </div> 
+            <div className="answer-page" id="answer-page">
+                <div className="new-answer-container">
+                    { OldAnswers(props, answers) }
+                </div>
             </div>
         )
     };
@@ -73,6 +85,7 @@ class AnswerContainer extends Component {
 export default MainAppHoc(AnswerContainer);
 
 export class AnswersBox extends Component {
+    public isFullyMounted:boolean = false;
 
     constructor(props) {
         super(props);
@@ -84,6 +97,14 @@ export class AnswersBox extends Component {
             newAnswerListById : '',
         };
     };
+
+    public get isMounted() {
+        return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+        this.isFullyMounted = value;
+    }
    
    
     componentDidCatch(error, info) {
@@ -91,8 +112,13 @@ export class AnswersBox extends Component {
         console.log(error, info);
     }
 
+    componentWillUnmount() {
+        this.isMounted = false;
+    };
+
 
     componentDidMount() {
+        this.isMounted = true;
         
         let questionById:string = this.props['questionById'];
         let question:object = this.props['question'];
@@ -143,6 +169,10 @@ export class AnswersBox extends Component {
 
 
     render() { 
+        if(!this.isMounted){
+           return null;
+        }
+
         const props =  this.getProps();
         const isQuestionBox = props['isQuestionBox']
        

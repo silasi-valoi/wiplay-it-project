@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 
-import {PartalNavigationBar,
-    NavigationBarBottom,
-    NavigationBarBigScreen } from 'templates/navBar';
-
 import  AjaxLoader from 'templates/ajax-loader';
 import CommentsBox from 'containers/main/comment-page';
 import {PostComponent} from 'templates/post';
 import  MainAppHoc from "containers/main/index-hoc";
 
-import {UnconfirmedUserWarning, PageErrorComponent} from 'templates/partials';
+import {PageErrorComponent} from 'templates/partials';
 
 import  * as action  from 'actions/actionCreators';
 import { getPost } from 'dispatch/index';
@@ -80,8 +76,9 @@ class  PostPage extends Component  {
 
     getPostFromCache(postById:string):object{
         let cache = this.props['cacheEntities'];
-        let postCache = cache['post'];
+        let postCache = cache && cache['post'];
         postCache = postCache && postCache[postById];
+        
         return postCache;
     }
     
@@ -114,7 +111,7 @@ class  PostPage extends Component  {
    
     reLoader =()=>{
         let id = this.state['id'];   
-        this.isMounted && this.setState({isReloading : true})
+        this.isMounted && this.setState({isReloading : true, error:null})
         return store.dispatch<any>(getPost(id));
     };
    
@@ -128,6 +125,10 @@ class  PostPage extends Component  {
     };
 
     render() {
+        if(!this.isMounted){
+            return null;
+        }
+
         let props = this.getProps();
         const post = props['postData'];
         if (!post) {
@@ -136,25 +137,20 @@ class  PostPage extends Component  {
                              
         return (
             <div>
-               <PartalNavigationBar {...props}/>
-               <NavigationBarBigScreen {...props} />
-                <NavigationBarBottom {...props}/>
-                <div  className="app-box-container">
-                    <UnconfirmedUserWarning {...props}/>
-                    { post.isLoading &&
-                        <div className="page-spin-loader-box partial-page-loader">
-                            <AjaxLoader/>
-                        </div>
-                    }
+                
+                {post.isLoading &&
+                    <div className="page-spin-loader-box partial-page-loader">
+                        <AjaxLoader/>
+                    </div>
+                }
 
-                    { post.error &&
-                        <PageErrorComponent {...props}/>
-                    }
+                { post.error &&
+                    <PageErrorComponent {...props}/>
+                }
                       
-                    {!post.isLoading &&
-                        <Post {...props}/>
-                    }
-                </div>
+                {!post.isLoading &&
+                    <Post {...props}/>
+                }
             </div>
         );                   
       
@@ -168,7 +164,7 @@ export default MainAppHoc(PostPage);
 
 export const Post = props => {
     const postData = props['postData'];
-    let post      = postData.post;
+    let post = postData.post;
     var postProps = {
             ...props,
             post

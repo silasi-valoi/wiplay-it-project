@@ -22,7 +22,7 @@ export default class Axios {
         this.cacheEntities = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
         this.DOMAIN_URL    =  window.location.origin; 
         this.useToken      =  props['useToken'];
-        this.timeout       =  props['timeout'] || 15000; 
+        this.timeout       =  props['timeout'] || 20000; 
         this.requestFor    =  props['requestFor'];
     };
 
@@ -61,7 +61,7 @@ export default class Axios {
         if (this.tokenExpired()) {
             let loginAuth = this._getAuth();
             let token = this.getToken(loginAuth);
-            if (!token) return
+            if (!token) return;
            
             const authProps:object ={
                 apiUrl :Apis.refreshTokenApi(), 
@@ -71,7 +71,7 @@ export default class Axios {
                 useToken : false,
             };
 
-            store.dispatch<any>(authenticate(authProps))
+            store.dispatch<any>(authenticate(authProps));
         }
     };
    

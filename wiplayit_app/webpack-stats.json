@@ -1,1 +1,1 @@
-{"status":"done","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/app_frontend/app.bundle.js"}]}}
+{"status":"done","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/app_frontend/app.bundle.js"}]},"error":"unknown-error","message":"[tsl] ERROR in /home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_frontend/src/containers/main/home-page.tsx(395,25)\n      TS2339: Property 'isLoading' does not exist on type 'object'."}

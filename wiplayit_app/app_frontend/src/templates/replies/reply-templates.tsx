@@ -27,18 +27,16 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
          isAuthenticated,
          isPostBox } = props;
 
-   let {byId, index, newRepliesById, reply,} = replyProps && replyProps  
+   let {byId, index, newRepliesById, reply} = replyProps && replyProps  
 
     if (!reply || !reply.reply) {
         return null;
     }
     
     const editorState  = helper.convertFromRaw(reply.reply);
-  
     
-
-    var createApiUrl = '';
-    var updateUrl    = ''; 
+    let createApiUrl:string = '';
+    let updateUrl:string  = ''; 
 
     if(isAnswerBox) {
         updateUrl    = Apis.updateAnswerReplyApi(reply.id);
@@ -149,10 +147,12 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
                         <AuthorDetails {...authorProps}/>
                     </div>         
                     <div className="reply-body">
+                    {editorState &&
                         <Editor
                             blockRendererFn={pageMediaBlockRenderer}
                             editorState={editorState} 
                             readOnly={true} />
+                    }
                     </div>
                 </div>
                 <ButtonsBox {...btnsList}/>
@@ -166,26 +166,32 @@ export const Reply = (props, replyProps, isNewReply:boolean) => {
 export const RepliesLink = (props:object) => {
     let linkData:object = props['linkData'];
     let reply:object = linkData['reply'];
+
     let replyAuthor:object = reply && reply['author'];
     let authorProfile:object = replyAuthor && replyAuthor['profile']; 
-    const editorState  = helper.convertFromRaw(reply['reply']);
-    let replyCount;
+        
+    let count:number = linkData['repliesCount'];
+    let repliesCount:string;
+
     if(linkData['totalReplies'] > 1){
-        replyCount = `${linkData['totalReplies']}-Replies`;
+        repliesCount = `${count} Replies`;
+
     }else {
-        replyCount = `${linkData['totalReplies']}-Reply`;
+        repliesCount = `${count} Reply`;
     }
    
     return (
         <div className="replies-link">
             <ul className="replies-loader">
-                <li className="reply-author">
-                    {replyAuthor['first_name']} 
-                    {replyAuthor['last_name']} {' '} <span>{'- Replied'}</span>
-                </li>
+                {replyAuthor &&
+                    <li className="reply-author">
+                        {replyAuthor['first_name']} 
+                        {replyAuthor['last_name']} {' '} <span>{'- Replied'}</span>
+                    </li>
+                }
                
                 <li className="replies-count">
-                    {replyCount}
+                    {repliesCount}
                 </li>
             </ul>
         </div>
@@ -196,13 +202,11 @@ export const RepliesLink = (props:object) => {
 export const RepliesToggle = (props:object, replies:object) => {
     let replyList:object[] = replies['replyList'];
     let parent:object = props['parent'];
-    let linkData:object  =  replies['linkData'];
-         
+            
     const replyProps = {
         actionType : types.GET_REPLY_LIST,
         apiUrl : getRepliesApi(props),
         byId : props['repliesById'],
-        replies : replies['replyList'],
     };
 
     const getReplyList:Function = props['getReplyList'];

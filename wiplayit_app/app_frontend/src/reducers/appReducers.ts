@@ -1,34 +1,38 @@
-import Helper from 'utils/helpers';
+import Helper, {cacheStoreData} from 'utils/helpers';
 import  * as types  from 'actions/types';
 
 
 const helper   = new Helper();
 
 const updateStateEntyties = (stateEntintieKey:string, 
-                             params:object, 
+                             action:object, 
                              state:object ):object => {
 
-    const byId:string = params['byId'];
-    const payLoad:object = params['payLoad'];
+    const byId:string = action['byId'];
+    const payLoad:object = action['payLoad'];
     let oldState:object = state;
     let newState:object = {};
     let stateEntintie:object = oldState[stateEntintieKey];
                                       
-    if (stateEntintie && byId) {
-                      
-        if(stateEntintie[byId]){
-            stateEntintie[byId] = {...stateEntintie[byId], ...payLoad};
-                    
+    if (byId) {
+        let  entintieData:object = stateEntintie[byId];
+                  
+        if(entintieData){
+           stateEntintie[byId] = {...entintieData, ...payLoad};
+
         }else {
-            let newEntitie = CreateNewEntities(params);
-            stateEntintie = {...stateEntintie, ...newEntitie}
+            let newEntitie = CreateNewEntities(action);
+            stateEntintie = {...stateEntintie, ...newEntitie};
         }
 
     }else{
-        stateEntintie = {...stateEntintie,...payLoad}
+        stateEntintie = {...stateEntintie,...payLoad};
+    
     }
-
+    
+    payLoad['timeStamp'] && cacheStoreData(stateEntintieKey, byId, stateEntintie);
     newState[stateEntintieKey] =  stateEntintie;
+
     return {...oldState, ...newState};
 };
 
@@ -36,18 +40,18 @@ const updateStateEntyties = (stateEntintieKey:string,
 const CreateNewEntities = (action:object):object =>{
         
     let key = action['byId'];
-    let value =  {
+    let data:object =  {
             value        : action['payLoad'], 
             writable     : true,
             configurable : true,
             enumerable   : true,
     }
         
-    return  Object.defineProperty({}, key, value );
+    return  Object.defineProperty({}, key, data);
 };
 
 
-const InitialState = ():object => {
+export const InitialState = ():object => {
   
     return {
         userAuth    : {},
@@ -74,13 +78,6 @@ const InitialState = ():object => {
 
 export function entities(state:object=InitialState(), action:object):object {
 
-    let currentTimeStamp:Date = new Date();
-
-    if (action['payLoad']) {
-        action['payLoad'].timeStamp = currentTimeStamp.getTime();
-    }
-       
-   
     let newStateEntintie;
 
     const index:number = action['index']    
@@ -129,6 +126,7 @@ export function entities(state:object=InitialState(), action:object):object {
         case types.GET_CURRENT_USER['SUCCESS']:
         case types.GET_CURRENT_USER['ERROR']:
         case types.GET_CURRENT_USER['PENDING']:
+        
             return updateStateEntyties('currentUser', action, state);
               
        
@@ -290,23 +288,24 @@ export function entities(state:object=InitialState(), action:object):object {
                
             let newAnswer:object =  payLoad['answer'];
             let newAnswerList  =  [newAnswer];
-            let currentAnswers =  state['answers'][byId];
-            currentAnswers     =  currentAnswers['answerList'];
+            let previousAnswers =  state['answers'][byId];
 
-            newAnswerList =  currentAnswers.length &&
-                                  currentAnswers.unshift(newAnswer) || newAnswerList;
+            const answerList:object[] = previousAnswers['answerList'] || [];
+            answerList.unshift(newAnswer);
            
-            payLoad['answerList'] = Array.isArray(newAnswerList) && 
-                        newAnswerList || currentAnswers;
+            payLoad['answerList'] = answerList;
             delete payLoad['answer']; 
-            return  updateStateEntyties('answers', {byId, payLoad}, state)|| state;  
+            return  updateStateEntyties('answers', {byId, payLoad}, state) || state;  
             
 
 
         case types.UPDATE_ANSWER['SUCCESS']:
             let answers:object[] = state['answers'][byId].answerList;
+            let updatedAnswer:object = payLoad['answer'] || {};
+
+            delete updatedAnswer['question'];
           
-            answers[index] = {...answers[index], ...payLoad['answer']};
+            answers[index] = {...answers[index], ...updatedAnswer};
             payLoad['answerList'] = answers;
            
             delete payLoad['answer'];
@@ -325,18 +324,14 @@ export function entities(state:object=InitialState(), action:object):object {
 
     
         case types.CREATE_COMMENT['SUCCESS']:
-             
-            let newComment           = payLoad['comment'];
-            let newComments          = [newComment];  
-
-            let currentNewComments = state['comments'][byId];
-            currentNewComments = currentNewComments?.commentList;
-            
-
-            newComments = currentNewComments?.length &&
-                          currentNewComments.unshift(newComment) || newComments;
-                        
-            payLoad['commentList'] = Array.isArray(newComments) && newComments;
+            let newComment = payLoad['comment'];
+            let newComments = [newComment];  
+            let previousComments = state['comments'][byId];
+      
+            let commentList:object[] = previousComments?.commentList || [];
+            commentList.unshift(newComment)
+                
+            payLoad['commentList'] = commentList;
             delete payLoad['comment'];
             return updateStateEntyties('comments', { byId, payLoad }, state) || state; 
 
@@ -357,8 +352,9 @@ export function entities(state:object=InitialState(), action:object):object {
             return updateStateEntyties('comments', {byId, payLoad }, state)|| state; 
       
             
-
+        case  types.GET_REPLY_LIST['SUCCESS']:
         case  types.GET_REPLY_LIST['PENDING']:
+        case  types.GET_REPLY_LIST['ERROR']:
         case  types.CREATE_REPLY['PENDING']:
         case  types.CREATE_REPLY['ERROR']:
         case  types.UPDATE_REPLY['PENDING']:
@@ -368,16 +364,16 @@ export function entities(state:object=InitialState(), action:object):object {
 
 
         case types.CREATE_REPLY['SUCCESS']:
-             
-            let newReply            = payLoad['reply'];
-            let newReplies          = [newReply];
-            let currentNewReplies   = state['replies'][byId];
-            currentNewReplies       = currentNewReplies?.replyList;
+            let newReply:object = payLoad['reply'];
+            let newReplies:object[] = [newReply];
 
-            newReplies = currentNewReplies?.unshift(newReply)
-                                                  || newReplies;  
-                       
-            payLoad['replyList'] = Array.isArray(newReplies) && newReplies;
+            let previousReplies = state['replies'][byId];
+            
+            const replyList:object[] = previousReplies?.replyList || [];
+
+            replyList.unshift(newReply); 
+                              
+            payLoad['replyList'] = replyList;
             delete payLoad['reply'];
             return updateStateEntyties('replies', {byId, payLoad }, state) || state;    
 
@@ -400,41 +396,72 @@ export function entities(state:object=InitialState(), action:object):object {
             return state
 
         case types.CREATE_BOOKMARK['SUCCESS']:
-            let bookmarksType = '';
+            let bookmarksType:string;
 
             if (byId === 'bookmarkedAnswers') {
                 bookmarksType = 'answers'
                    
-            } else {
+            }else{
                 bookmarksType = 'posts'
             }
 
-            let cache = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
-            let indexData = cache?.index
-            delete indexData.index
-
-            let bookmarks = indexData.bookmarks
-            let bookmarksCache = bookmarks[bookmarksType]
-            let newBookmarks = payLoad[bookmarksType]
+            let cache:object = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
+            let indexData:object = cache['index'];
             
+            let bookmarks:object = indexData && indexData['bookmarks'];
+            let bookmarksCache:object[] = bookmarks && bookmarks[bookmarksType];
+
+            let newBookmarks = payLoad[bookmarksType].bookmarks;
+                                   
             for (var i = 0; i < bookmarksCache.length; i++) {
-                if (bookmarksCache[i]?.id ===  newBookmarks[0]?.id) {
+                let bookmark:object = bookmarksCache[i];
+                let _newBookmark = newBookmarks[i];
+                
+                if (_newBookmark && bookmark['id'] ===  _newBookmark['id']) {
                     newBookmarks = []
+                    break
                 }
             }
 
-            bookmarksCache = [...bookmarksCache, ...newBookmarks]
-            delete  action['payLoad'][bookmarksType]
+            bookmarksCache = [...bookmarksCache, ...newBookmarks];
+            
+            delete action['payLoad'][bookmarksType]
             delete action['byId']
 
             bookmarks[bookmarksType] = bookmarksCache
-       
+                  
             indexData['bookmarks'] = bookmarks
             action['payLoad'] = {...indexData};
+            
+            updateStateEntyties('index', action, state);
 
-            return updateStateEntyties('index', action, state);
+            let message = getBookmarkSuccessMsg(bookmarksType);
+            let alertMessageAction:object =  {
+                payLoad:{
+                    message
+                }
+            };
+
+            return updateStateEntyties('alertMessage', alertMessageAction, state)
             
         default:
             return state; 
     }
 }
+
+
+const getBookmarkSuccessMsg = (messageType:string) =>{
+    let textMessage:string;
+    let bookmarkType:string;
+     
+    if (messageType === 'answers') {
+        bookmarkType = 'Answer';
+           
+    } else if(messageType === 'posts'){
+        bookmarkType = 'Post';
+    }
+
+    textMessage = `${bookmarkType} added to your bookmarks.`;
+
+    return {textMessage, messageType:'success'};
+};

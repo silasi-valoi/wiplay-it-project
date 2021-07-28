@@ -34,6 +34,7 @@ export const ProfileComponent = props => {
     
     userProfile = userProfile && userProfile.user;
     if (!userProfile) return null;
+    //console.log(userProfile, currentUser)
          
     let profile  = userProfile.profile;
     let apiUrl   = Apis.getQuestionFollowersListApi(userProfile?.id);
@@ -127,6 +128,8 @@ export const ProfileComponent = props => {
             authenticationType : 'AccountConfirmation',
             currentUser,
     };
+
+    let userCanEdit:boolean = currentUser.id === userProfile.id;
         
     return (
         <div className="profile-container">
@@ -147,7 +150,7 @@ export const ProfileComponent = props => {
                                          className="profile-image"/>
                                     </div>
 
-                                {userProfile.user_can_edit && props.isMouseInside?
+                                {userCanEdit && props.isMouseInside &&
                                     <div className="edit-img-btn-box"
                                          onMouseEnter={props.mouseEnter}
                                          onMouseLeave={props.mouseLeave}>
@@ -159,8 +162,7 @@ export const ProfileComponent = props => {
                                             />
                                         </div>
                                     </div>
-                                    :
-                                    null
+                                                                        
                                 }
                             </div>    
 
@@ -207,7 +209,7 @@ export const ProfileComponent = props => {
 
                                 <div className="edit-credential-btn-box">
                         
-                                    { userProfile?.user_can_edit && userIsConfirmed &&
+                                    {userCanEdit && userIsConfirmed &&
                                         <div>
                                             <EditorModalBtnBigScreen {...editObjProps}/>
                                             <EditorModalBtnSmallScreen/>
@@ -284,8 +286,7 @@ export const UserProfileFollowingList = props => {
            
         };
     let UserProfileFollowersBtn =  <OpenUsersModalBtn {...userProfileFollowersProps}/>; 
-    //console.log(users.userList,userList)
-
+    
     return (
         <div className="profile-user-list-box">
             <div className="partial-user-list-box-header">
@@ -295,9 +296,12 @@ export const UserProfileFollowingList = props => {
             { userList && userList.length?
                 <div>
                     { userList.map(( user, index )  => {
-                        let userProps = {user  : user, objIndex:index};
-
-                        Object.assign(userProps, props);           
+                        let userProps:object = {
+                            ...props,
+                            user, 
+                            index
+                        };
+                                
                         return(
                             <div style={props.userListBoxStyles}
                                 key={index}
@@ -323,7 +327,7 @@ export const UserProfileFollowingList = props => {
 
 
 export const PartialUserList = props => {
-        let {user, usersById, currentUser} = props
+        let {user, usersById, index, currentUser} = props
         
         let profile         = user && user.profile;
         let profile_picture = profile &&  profile.profile_picture;
@@ -334,6 +338,7 @@ export const PartialUserList = props => {
             obj        : user, 
             byId       : usersById,
             currentUser,
+            index,
             actionType : types.UPDATE_USER_LIST,
             apiUrl : Apis.updateProfileApi(user.id),
         }
@@ -353,7 +358,7 @@ export const PartialUserList = props => {
                 <div className="partial-user-list-contents">
                     <div className="partial-user-list-img-box">
                         <div className="partail-user-list-img user-list-img">
-                            { profile_picture &&
+                            {profile_picture &&
                                 <LinkButton {...linkProps}>
                                     <img src={`${profile_picture}`} alt="" 
                                         className="user-list-photo"/> 
@@ -395,10 +400,13 @@ export const UserList = props => {
 
     return (
         <div className="">
-            {userList?.map(( user, index )  => {
-                let userProps = {user  : user, objIndex:index};
-                Object.assign(userProps, props);
-
+            {userList?.map((user, index)  => {
+                let userProps:object = {
+                    ...props,
+                    user,
+                    index
+                };
+               
                 return(
                     <div key={index}>
                         <UsersComponent{...userProps}/>
@@ -442,9 +450,13 @@ export const UserAnswers = props =>{
 
                     <div>
                         {usersAnswers.answerList.map((answer, index) => {
-                            let answerProps = {answer, answerListById }
-                            Object.assign(answerProps, props)
-
+                            let answerProps:object = {
+                                ...props,
+                                answer, 
+                                index, 
+                                answerListById 
+                            }
+                        
                             return(
                                 <div key={answer.id} 
                                      className="answer-contents profile-activites "> 
@@ -493,9 +505,12 @@ export const UserQuestions = props => {
                     </div> 
      
                     {questionList?.map((question, index) => {
-                        let questionProps = {question, questionListById }
-                        Object.assign(questionProps, props)
-
+                        let questionProps:object = {
+                            ...props
+                            ,question, 
+                            questionListById 
+                        };
+                        
                         return (
                             <div key={question.id} className="profile-activites"> 
                                 <QuestionComponent {...questionProps}/>
@@ -535,9 +550,14 @@ export const UserPosts = props => {
                         }
                     </div> 
       
-                    { posts.postList.map((post, index) => {
-                        let postProps = { post, postListById}
-                        Object.assign(postProps, props)
+                    {posts.postList.map((post, index) => {
+                        let postProps:object = {
+                            ...props,
+                            index,
+                            post,
+                            postListById
+                        };
+                       
                         return(
                             <div key={index} className="profile-activites"> 
                             <PostComponent {...postProps}  />
@@ -558,6 +578,7 @@ export const UserPosts = props => {
 export const UsersComponent = props => {
 
     let {user,
+         index,
          usersById,
          currentUser,
          redirectToUserProfile} = props
@@ -574,6 +595,7 @@ export const UsersComponent = props => {
             obj        : user, 
             byId       : usersById,
             currentUser,
+            index,
             actionType : types.UPDATE_USER_LIST,
             apiUrl : Apis.updateProfileApi(user.id),
             
@@ -680,7 +702,7 @@ export const UserFollowers = props => {
 
     let usersById   = `userFollowers${userProfile.id}`
     let users       = props.entities.users[usersById];
-    let userListProps     = {...props, ...{ usersById }}
+    let userListProps     = {...props, usersById}
   
     return (
         <div>

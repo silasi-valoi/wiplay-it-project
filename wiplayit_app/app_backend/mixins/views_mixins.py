@@ -14,47 +14,37 @@ class BaseMixin(object):
             
     def update_text_field(self, instance=None):
     	data = dict()
+    	text_field:str = None
+
     	if hasattr(self, 'fields_to_update'):
-    		related_field  = self.fields_to_update.get('related_field', None) 
     		text_field     = self.fields_to_update.get('text_field', None)
      	 
     	if  hasattr(self, 'is_user'):
     		data = self.update_user_fields(instance)
     		
     	elif text_field:
-    		data[text_field ]  = self.request.data.get(text_field, None)
-    		add_post     = self.request.data.get("add_post", None)
-    		add_question     = self.request.data.get("add_question", None)
-
-    		if add_question or add_post:
+    		field = self.request.data.get(text_field, None)
+    		data[text_field ]  = field
+    	
+    		if text_field == 'add_question':
 
     			if instance is not None:
-    				data['slug']   = self.update_slug_field(instance)
+    				data['slug'] = self.update_slug_field(instance, field)
 
-    			if add_post:
-    				data['add_title'] = self.request.data.get("add_title") 
+    		if text_field == 'add_post':
+    			title = self.request.data.get("title")
+    			data['title'] =  title
+    			data['slug'] = update_slug_field(instance, title)
+
     	return data 
 
 
-    def update_slug_field(self, instance):
+    def update_slug_field(self, instance, slug_field):
     	
-    	field_to_slugify = ''
+    	if slug_field:
+    		return generate_unique_slug(instance.__class__, slug_field)
 
-    	if hasattr(self, 'is_user'):
-    		first_name = self.request.data.get('first_name')
-    		last_name  = self.request.data.get('last_name')
-    		field_to_slugify = '{0} {1}'.format(first_name, last_name)
-
-    	elif self.request.data.get("add_post", False):
-    		field_to_slugify = self.request.data['add_title']
-
-    	elif  self.request.data.get("add_question", False):
-    		field_to_slugify = self.request.data['add_question']
-
-    	if field_to_slugify != '':
-    		return generate_unique_slug(instance.__class__, field_to_slugify)
-
-    	return	
+    	return None	
         	
     def remove_perm(self, perm, instance, author=None):
     	if author is None:
@@ -164,9 +154,13 @@ class UpdateObjectMixin(BaseMixin):
 			self.assign_perm(upvotes_perm, instance )
 			
 		data['upvotes']  = instance.upvotes
-		return data 
+		return data
 
-		
+	def get_user_slug(self):
+		first_name = self.request.data.get('first_name')
+		last_name  = self.request.data.get('last_name')
+
+		return '{0} {1}'.format(first_name, last_name)		
 		
 	def update_user_fields(self, instance=None):
 		profile     = dict()
@@ -183,13 +177,13 @@ class UpdateObjectMixin(BaseMixin):
 				data[field] = request_field
 
 				if request_field == 'first_name':
-					data['slug']       = self.update_slug_field(instance)
+					slug_field = self.get_user_slug()					
+					data['slug'] = self.update_slug_field(instance, slug_field)
 
 		for field in profile_fields:
 			request_field = self.request.data.get(field, False)
 					
 			if request_field:
-				#print(request_field)
 				profile[field]  = request_field
 						
 
@@ -199,23 +193,22 @@ class UpdateObjectMixin(BaseMixin):
 		
 	def put(self, request, *args, **kwargs):
 	 	instance = self.get_object()
-	 	#kwargs['instance'] = 
-	 	print(request.data)
-	 		 		 	
+	 		 		 		 	
 	 	if  request.data.get("followers", False):
 	 		kwargs['data'] = self.update_followers_fields(instance)
 	 		
 	 	elif  request.data.get("upvotes", False):
 	 		kwargs['data'] = self.update_upvotes_fields(instance)
-	 		 		
+
 	 	else:
 	 		kwargs['data'] = self.update_text_field(instance)
 
-	 	return self.update( request, *args, **kwargs)
+	 	return self.update(request, *args, **kwargs)
 	 	
 	 	
 	def update(self, request, *args, **kwargs):
 		data = kwargs.pop("data", None)
+		print(data)
 		instance = self.get_object()
 		
 		serializer = self.get_serializer(
@@ -251,6 +244,8 @@ class CreateMixin(BaseMixin):
 			if related_field and instance:
 				data[related_field] = instance.id
 
+		print(data)
+
 		serializer = self.create(data)
 		return serializer
 	
@@ -263,12 +258,11 @@ class CreateMixin(BaseMixin):
 		if not serializer.is_valid():
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-		if data and data.get('about_text', None) is None:
+		if data.get('about_text', None) is None:
 			instance = serializer.save(author=author)
 			
 		else:
 			instance = serializer.save()
-	
 
 		if  hasattr(self, 'permissions'):
 			edit_perms = self.permissions.get('edit_perms',None)
@@ -277,12 +271,12 @@ class CreateMixin(BaseMixin):
 			if not is_superuser and edit_perms is not None:
 				for perm in edit_perms:
 					self.assign_perm(perm, instance)
-				
+						
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 		          
 class RetrieveMixin(BaseMixin):
 	permission_classes = (AllowAny,)
-
+	
 	def get_obj_permissions(self, obj_perms=None, perm_to=None):
 		permissions = get_objects_perms(obj_perms)
 
@@ -290,6 +284,18 @@ class RetrieveMixin(BaseMixin):
 			return permissions.get(perm_to)
 
 		return None
+
+class DestroyMixin(BaseMixin):
+
+	def destroy(self, request, *args, **kwargs):
+		instance = self.get_object()
+		self.perform_destroy(instance)
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+	def perform_destroy(self, instance):
+		instance.deleted = True
+		instance.save()
+		
 	
 	
 	

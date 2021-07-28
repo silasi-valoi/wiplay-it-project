@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import  * as action  from "actions/actionCreators";
 import { Link } from "react-router-dom";
 import {store } from "store/index";
-import {PartalNavigationBar,NavigationBarBigScreen } from "templates/navBar";
 
-import { UnconfirmedUserWarning,
-         PageErrorComponent, } from "templates/partials";
+import {PageErrorComponent} from "templates/partials";
 
 import {getAdmin}  from "dispatch/index"
 import{history} from 'App';
@@ -108,14 +106,15 @@ class AdminPage extends Component {
 
       
     render() {
+        if(!this.isMounted){
+            return null;
+        }
+
         let props = this.getProps();
         let entities   = props['entities'] ;
                       
         return (
             <div style={{paddingTop:'65px'}} className="admin-page" id="admin-page">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props}/>
-
                 <div className="admin-container-box">
                     <AdminComponent {...props}/>
                 </div>

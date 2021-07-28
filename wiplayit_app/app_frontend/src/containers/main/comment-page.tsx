@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import  AjaxLoader from "templates/ajax-loader";
 import  * as action  from 'actions/actionCreators';
+import  {GET_COMMENT_LIST}  from 'actions/types';
+
 import Helper from 'utils/helpers';
 import {  CommentsComponent } from "templates/comment"
 import {Editor, EditorState} from 'draft-js';
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {store} from "store/index";
-
-
+import Apis from 'utils/api';
 
 
 const helper   = new Helper();
@@ -42,7 +43,7 @@ class CommentsBox extends Component {
 
     componentDidMount() {
         this.isMounted = true;
-
+        
         let answer = this.props['answer'];
         let post = this.props['post'];
 
@@ -71,10 +72,11 @@ class CommentsBox extends Component {
             });
          
             let comments:object[] = parent['comments'];
+            let commentsCount:number = parent['comments_count'];
             if (comments && comments.length) {
                 
                 store.dispatch<any>(
-                    action.getCommentLindData(commentsById, comments)
+                    action.getCommentLindData({commentsById, comments, commentsCount})
                 );
             }
         }
@@ -94,29 +96,16 @@ class CommentsBox extends Component {
         }
 
         let props  = this.getProps();
-        //console.log(props)
-        
+                
         let commentsById = props['commentsById'];
         let newCommentsById = props['newCommentsById'];
             
         let comments  =  props['entities']['comments'];
         let newComments = comments && comments[newCommentsById]; 
         let oldComments = comments && comments[commentsById];
-
-        let commentsTitle:string; 
-        if(newComments  && newComments.commentList){
-            commentsTitle = 'Comments';
-
-        }else if(oldComments && oldComments.commentList){
-            commentsTitle = 'Comments';
-        }
-
-        //<p className="comments-title">{commentsTitle}</p>
-                             
+                                   
         return (
             <div className="comment-page">
-                
-                            
                 <div className="new-comments-box">
                     { NewComments(props, newComments) }
                 </div>
@@ -145,42 +134,61 @@ const NewComments = (props:object, comments:object) => {
 };
 
 
-const OldComments = (props, comments:object) => {
-    let {commentsById, parent} = props;
+const OldComments = (props:object, comments:object) => {
     let commentList:object[] = comments && comments['commentList'] || []; 
 
     if (!commentList.length) {
         return null;
     }
 
-    let linkData = comments['linkData'];
-                  
-    const commentProps:object = {
-        ...props, 
-        comment:linkData.comment,
+    let commentsById:string = props['commentsById'];
+    let parent:object = props['parent'];
+
+    let apiUrl:string;
+    let id:number = parent && parent['id'];
+
+    if (props['isAnswerBox']) { 
+       apiUrl =  Apis.getAnswerCommentListApi(id);
+
+    }else{
+       apiUrl = Apis.getPostCommentListApi(id);
     }
 
+    const commentsLoaderProps:object = {
+        apiUrl,
+        commentsById,
+    } 
+
+    const getCommentList:Function = props['getCommentList'];
+   
+    
     return(
-        <div>
+        <div className="">
             {comments['showLink'] &&
-                <div>
-                    <CommentsComponent {...commentProps}/>
-                    <ul className="comments-loader"
-                        onClick={()=> props.getCommentList(commentsById)}>
-                        <li>Click to view {commentList.length - 1} more comments</li>
-                    </ul>
+                <div className="">
+                    { Comments(props, commentList) }
+
+                    {!comments['isLoading'] &&
+                        <ul className="comments-loader"
+                            onClick={()=> getCommentList(commentsLoaderProps)}>
+                            <li>
+                                Click to view {comments['commentsCount'] - 1} more comments
+                            </li>
+                        </ul>
+
+                        ||
+
+                        <div className="spin-loader-box">
+                            <AjaxLoader/>
+                        </div>
+                    }
                 </div>
 
                 ||
 
-                <div>
-                    { comments['isLoading'] &&
-                        <div className="spin-loader-box">
-                            <AjaxLoader/>
-                        </div>
-
-                        ||
-                        <div>
+                <div className="">
+                    {!comments['isLoading'] &&
+                        <div className="">
                             {Comments(props, commentList)}
                         </div>
                        
@@ -196,7 +204,7 @@ const Comments = (props, commentList) => {
                                            
     return (
         <div>
-            {commentList && commentList.map( (comment, index) => {
+            {commentList?.map( (comment, index) => {
                 if(parent){
                     let isParentComment = parent['id'] === comment.answer ||
                                           parent['id'] === comment.post

@@ -80,7 +80,7 @@ const EmailForm = props => {
                             <p></p>
                                 <div className="email-box auth-input-field">
                                     <input
-                                        placeholder="Email or Phone Number"
+                                        placeholder=""
                                         className="email"
                                         type="text"
                                         name="email"
@@ -89,6 +89,7 @@ const EmailForm = props => {
                                         required
                        
                                     />
+                                    <span className="floating-label">Email Address</span>
                                 </div>
                             </div>
 
@@ -212,7 +213,7 @@ export const SmsCodeForm = props => {
                             }
                             <div className="email-box auth-input-field">
                                 <input
-                                    placeholder="Enter code"
+                                    placeholder=""
                                     className="number-input"
                                     type="number"
                                     name="sms_code"
@@ -220,6 +221,7 @@ export const SmsCodeForm = props => {
                                     onChange={handleFormChange}
                                     required
                                 />
+                                <span className="floating-label">Code</span>
                             </div>
                         </div>
 

@@ -63,13 +63,15 @@ class UserProfileContainer extends Component {
             let profileById  = id? `userProfile${id}`:null;
             let answers      = entities['answers'];
 
-            let userProfile:object = profileById && entities['userProfile'][profileById];
+            let userProfile:object =  entities['userProfile'];
             
             if (userProfile) {
-                this.setErrors(userProfile); 
-                this.setState({userProfile});
+                userProfile = userProfile[profileById];
 
-                let user:object = userProfile['user'];
+                userProfile && this.setErrors(userProfile); 
+                userProfile && this.setState({userProfile});
+
+                let user:object = userProfile && userProfile['user'];
                 if (user && !userProfile['answersDispatched']) {
                     userProfile['answersDispatched'] = true;
 
@@ -83,8 +85,9 @@ class UserProfileContainer extends Component {
     }
     
     setErrors =(userProfile:object) => {
-        let isLoading:boolean = userProfile['isLoading'];
-        let isUpdating:boolean =userProfile['isUpdating'];
+       
+        let isLoading:boolean  = userProfile['isLoading'];
+        let isUpdating:boolean = userProfile['isUpdating'];
         let error:string = userProfile['error'];
 
         if (isUpdating) return
@@ -100,6 +103,13 @@ class UserProfileContainer extends Component {
 
     componentDidUpdate(prevProps, nextProps){
         if(!this.isMounted) return;
+        let pageContents = document.getElementById('page-contents');
+        
+        if (pageContents) {
+            pageContents.style.margin = 'auto';
+            pageContents.style.width = 'auto';
+                       
+        }
         
         let {slug, id} = this.props['match'].params;
         let profileById  = `userProfile${id}`;
@@ -163,9 +173,11 @@ class UserProfileContainer extends Component {
     }
     
     getUserProfileCache(profileById:string){
-        let cacheEntities = this.props['cacheEntities'];
-        let {userProfile, users}   = cacheEntities;
-        return userProfile[profileById]
+        let cacheEntities:object = this.props['cacheEntities'];
+        let userProfile:object   = cacheEntities && cacheEntities['userProfile'];
+        userProfile = userProfile && userProfile[profileById];
+        
+        return userProfile;
 
     }
 
@@ -251,13 +263,14 @@ class UserProfileContainer extends Component {
         };
     };
 
-    reLoader =()=>{
+    reLoader = () =>{
         if(!this.isMounted) return;
 
         let id = this.state['id'];   
         this.isMounted && this.setState({isReloading : true, error:undefined})
         return store.dispatch<any>(getUserProfile(id));
     };
+
 
     mouseEnter = () =>{
         this.setState({isMouseInside: true})
@@ -285,26 +298,22 @@ class UserProfileContainer extends Component {
 
         let   props = this.getProps();
         const userProfile = props['userProfile'];
+
+        if (!userProfile) {
+            return null;
+        }
                              
         return (
-            <div>
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} />
-                <NavigationBarBottom {...props}/> 
-                { userProfile &&
-                    <div  className="app-box-container app-profile-box">
-                        <UnconfirmedUserWarning {...props}/> 
-                        {userProfile.isLoading &&
-                            <div className="page-spin-loader-box partial-page-loader">
-                                 <AjaxLoader/>
-                            </div>
-                            ||
-                            <div className="profile-page" id="profile-page">
-                                <ProfileComponent {...props}/> 
-                            </div>
-                        }
-
-                        <PageErrorComponent {...props}/>
+            <div className="profile-page" id="profile-page">
+                {userProfile.isLoading &&
+                    <div className="page-spin-loader-box partial-page-loader">
+                        <AjaxLoader/>
+                    </div>
+                
+                    ||
+                
+                    <div>
+                        <ProfileComponent {...props}/> 
                     </div>
                 }
             </div>

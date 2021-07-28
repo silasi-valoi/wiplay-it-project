@@ -8,6 +8,7 @@ import  LoginForm from "templates/authentication/login";
 import  SignUpForm  from "templates/authentication/signup";
 import  EmailForm  from "templates/authentication/email-form";
 import {ModalCloseBtn, LinkButton} from 'templates/buttons';
+import { NonFieldErrors } from 'templates/authentication/errors';
 
 import { SpinLoader, ToogleAuthFormBtn } from  'templates/authentication/utils'
 
@@ -60,9 +61,12 @@ const RegistrationSmall = props => {
         }else if(onPasswordResetForm){
             toggleEmailFormProps = {...toggleEmailFormProps, ...props }
    
-            return  <EmailForm {...props}>
-                       <ToogleAuthFormBtn {...toggleEmailFormProps}/>
-                    </EmailForm>
+            return  <div className="form-container">
+                        <EmailForm {...props}>
+                            <ToogleAuthFormBtn {...toggleEmailFormProps}/>
+                        </EmailForm>
+                    </div>
+            
         }else if(onLoginForm){
             return <LoginForm {...props}/>
         }
@@ -171,7 +175,8 @@ const TermsAndContionTextComponent = props => {
                By signing up you indicate that you read and agree 
                to wiplayit <LinkButton {...linkProps}>
                    <span>Terms and Conditions</span>
-               </LinkButton> and <LinkButton {...linkProps}> <span>Privacy</span></LinkButton>
+               </LinkButton> and <LinkButton {...linkProps}>
+               <span>Privacy</span></LinkButton>
             </p>
               
         </div>
@@ -197,12 +202,18 @@ const WelcomeTextComponent = props => {
 
 
 const SocialLogin = props =>  {
-    let {isSocialAuth} = props
+    let {isSocialAuth, form} = props
+    form = form && form.loginForm;
+    let error = form && form.error; 
 
     return(
         <div className="social-login-container">
             {isSocialAuth && 
                 <SpinLoader {...props}/>
+            }
+
+            { error && !isSocialAuth &&
+                <NonFieldErrors {...error}/>
             }
     
             <div className="social-login">

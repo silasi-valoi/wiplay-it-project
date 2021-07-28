@@ -188,13 +188,7 @@
         margin    : 14px 0;
     }
 
-    .email-confirm-title-box,
-    .form-title-box {
-        font-weight : bold;
-        font-size   : 11px;
-        text-align  : center;
-        margin      : 16px 0 8px;
-    }
+   
 
     .sms-code-form,.email-confirm-box,
     .success-message-box, .password-change-form,

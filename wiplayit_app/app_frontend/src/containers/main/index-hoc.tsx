@@ -18,8 +18,14 @@ import {handleSubmit,
 
 import  * as action  from 'actions/actionCreators';
 import { closeModals}   from  'containers/modal/helpers';
-import {NavigationBarBottom} from 'templates/navBar';
-import { AlertComponent } from 'templates/partials';
+
+import { PartalNavigationBar,
+         NavigationBarBottom,
+         NavigationBarSmallScreen,
+         NavigationBarBigScreen } from "templates/navBar";
+
+
+import {AlertComponent, UnconfirmedUserWarning} from 'templates/partials';
 import * as checkType from 'helpers/check-types'; 
 
 import {store} from 'store/index';
@@ -28,6 +34,7 @@ import GetTimeStamp from 'utils/timeStamp';
 import Apis from 'utils/api';
 import {isAuthenticated, isAdmin, getUserFromCache} from 'utils/authService';
 import Helper, { IsBookMarked,
+                 displayAlertMessage,
                  displaySuccessMessage,
                  displayErrorMessage } from 'utils/helpers';
 
@@ -50,9 +57,8 @@ export function MainAppHoc(Component) {
                 userIsConfirmed    : false, 
                 userAuth           : {},
                 cacheEntities      : this._cacheEntities(), 
-                isAuthenticated    : isAuthenticated(),
-                isAutheticanting   : true,
-                isAdmin            : isAdmin(),
+                isAuthenticated    : this.authenticated(),
+                isAdmin            : this.isSuperUser(),
                 displayMessage     : false,
                 passwordChanged    : false,
                 message            : null,
@@ -68,23 +74,37 @@ export function MainAppHoc(Component) {
         public set isMounted(value:boolean) {
             this.isFullyMounted = value;
         }
- 
-        _SetCurrentUser =(currentUser=undefined)=>{
-            if(!this.isMounted) return;
-                            
-            if (!currentUser) {
-                currentUser = getUserFromCache();
-            }
 
-            const userIsConfirmed:boolean = currentUser && 
-                                            currentUser.is_confirmed || false;
-                       
-            this.setState({currentUser, userIsConfirmed})
+        isSuperUser =():boolean  => {
+            let entities:object = this._cacheEntities();
+            let admin:object = entities && entities['admin'];
 
-            return currentUser;  
+            return isAdmin(admin)
         };
 
-        _cacheEntities = ()=>{
+        authenticated = ():boolean => {
+           let entities:object = this._cacheEntities();
+           let userAuth:object = entities && entities['userAuth'];
+
+           return isAuthenticated(userAuth);
+        };
+
+ 
+        _GetCurrentUser = ():object =>{
+            let entities:object = this._cacheEntities();
+            let currentUser:object =  entities && entities['currentUser'];
+            currentUser = currentUser && currentUser['user'];
+            
+            return currentUser;
+            
+        };
+
+        _userIsConfirmed =(user:object):boolean=>{
+            return user && user['is_confirmed'] || false;
+
+        }
+ 
+         _cacheEntities = ():object => {
             return JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
         }
 
@@ -116,29 +136,31 @@ export function MainAppHoc(Component) {
 
         componentDidUpdate(prevProps, nextProps) {
         };
-
-       
+      
                 
         componentDidMount() {
             this.isMounted = true;
             this.onStoreUpdate() //Subscribe on store change 
-            let { entities } = this.props;
-           
+      
             window.onpopstate = (event) => {
-                // Everytime a browser back button id hit, 
-                // We close a if an of the modals are open 
+                // Everytime a browser back button is hit, 
+                // Close modals if any is open 
                 closeModals();
             }
-           
-            let currentUser = this._SetCurrentUser();
-            if (!currentUser) {
-                store.dispatch<any>(getCurrentUser());
+
+            let currentUser = this._GetCurrentUser();
+
+            if (currentUser) {
+                let userIsConfirmed:boolean = this._userIsConfirmed(currentUser);
+                this.setState({currentUser, userIsConfirmed});
+
+            }else{
+                store.dispatch<any>(getCurrentUser(this.authenticated()));
             }
         };
         
         onStoreUpdate = () => {
-            if (!this.isMounted) return;
-
+           
             const onStoreChange = () => {
                 
                 
@@ -162,13 +184,13 @@ export function MainAppHoc(Component) {
                 let dropImageModal   = modal['dropImage'];
                 let userListModal    = modal['userList'];
                 let smsCodeFormModal = modal['smsCodeForm']; 
-              
+                              
                 if (userAuth) {
                     this.handleAuth(userAuth);
                 }
 
-                if (errors.error) {
-                    console.log(errors)
+                if (errors && errors.error) {
+                    
                     if (editorModal && editorModal.modalIsOpen ||
                         dropImageModal && dropImageModal.modalIsOpen){
                         //We avoid handling errors if any of these modal are open
@@ -178,17 +200,20 @@ export function MainAppHoc(Component) {
                     }
                 }
 
+                this.handleAlertMessage(alertMessage);
                 this.handleMessageSuccess(message)
-                //displayAlertMessage(this, alertMessage)
-                
+                                
                 this.handleCreateSuccess(editorModal);
                 this.handleUpdateSuccess(editorModal);
                 this.handleUpdateSuccess(dropImageModal);
+
+                currentUser = currentUser &&  currentUser['user'];
                 
-                if (currentUser && currentUser.user) {
-                    this._SetCurrentUser(currentUser.user)
+                if (currentUser) {
+                    let userIsConfirmed:boolean = this._userIsConfirmed(currentUser);
+
+                    this.setState({currentUser, userIsConfirmed})
                 }
-                                
             };
         
             this.unsubscribe = store.subscribe(onStoreChange);
@@ -197,7 +222,8 @@ export function MainAppHoc(Component) {
 
         handleAuth = (userAuth:object) =>{
 
-            userAuth && this.setState({userAuth});  
+            userAuth && this.setState({userAuth}); 
+
             this.confirmLogout(userAuth);
             this.confirmLogin(userAuth);
             this.handlePasswordChangeSuccess(userAuth);
@@ -208,6 +234,20 @@ export function MainAppHoc(Component) {
                           
             displayErrorMessage(this, errors['error']);
             delete errors['error'];
+        }
+
+        handleAlertMessage(alertMessage:object){
+
+            if (!alertMessage) {
+                return;
+            }
+            
+            let message:object = alertMessage['message'];
+            
+            if (message) {
+                displayAlertMessage(this, message);
+                delete alertMessage['message'];  
+            }      
         }
 
         handleMessageSuccess =(message:object)=> {
@@ -302,6 +342,7 @@ export function MainAppHoc(Component) {
         };
 
         handleNewPost =(params:object)=> {
+
             let data:object = params['data'];
             let post:object = data && data['post'];
 
@@ -316,6 +357,7 @@ export function MainAppHoc(Component) {
         };
 
         handleNewAnswer =(params:object)=> {
+
             let data:object     = params['data'];
             let question:object = params['obj'];
             let answer:object = data && data['answer'];
@@ -376,8 +418,9 @@ export function MainAppHoc(Component) {
             if (error && isTokenRefresh) return true;
         };
 
-        confirmLogin =( userAuth:object) => {
+        confirmLogin =(userAuth:object) => {
             let loginAuth:object = userAuth['loginAuth'];
+
             if (loginAuth && loginAuth['isLoggedIn']) {
                 this.setState({isAuthenticated:true})
             }
@@ -386,28 +429,36 @@ export function MainAppHoc(Component) {
                 delete loginAuth['isConfirmed']
                 closeModals(true);
 
-                let textMessage = 'You successfully confirmed your account'
-                let message = {textMessage, messageType:'success'}
-                this.displayAlertMessage(message)
+                let successMessage:string = 'You successfully confirmed your account'
+                displaySuccessMessage(this, successMessage);
             }
         };
 
         confirmLogout =(userAuth:object)=> {
-
+            if (!userAuth || !userAuth['loginAuth']) {
+                return;
+            }
+            
             let isLoggedOut:boolean    = this.isLoggedOut(userAuth);
             let isTokenRefresh:boolean = this.isTokenRefresh(userAuth);
+           
+            if (isLoggedOut) {
+                this.setState({isAuthenticated:false});
+                let successMessage:string = userAuth['loginAuth'].successMessage;
+                displaySuccessMessage(this, successMessage);
+                
+            }
 
             if (isLoggedOut || isTokenRefresh) {
                 this.clearItemFromStore("user");
                 this.clearItemFromStore('loginAuth')
             }
 
-            if (isLoggedOut) {
-                this.setState({isAuthenticated:false});
-                closeModals(true);
-            }
+
+            closeModals(true);
                         
         };
+   
 
         loginUser = () => {
             history.push('/user/registration');
@@ -509,13 +560,11 @@ export function MainAppHoc(Component) {
             };
         };
 
-        onBeforeUnload =()=>{
-            console.log('Component is unloading')
-        };
-  
-
         render() {
-            if(!this.isMounted) return null;
+            if(!this.isMounted){
+                return null;
+            }
+
             let props = this.getProps();
             let alertMessageStyles = props['displayMessage']?{ display : 'block'}:
                                                              { display : 'none' };
@@ -525,17 +574,24 @@ export function MainAppHoc(Component) {
                       
             return (
                 <div  className="app-container">
-                    <fieldset style={ onModalStyles } 
-                              disabled={ props['modalIsOpen'] } >
+                    <div className="app-box-container">
+                        <UnconfirmedUserWarning {...props}/>
+                        <div style={alertMessageStyles}>
+                            <AlertComponent {...props}/>
+                        </div>
                         
-                       <Component {...props}/>                    
-
-                    </fieldset>
-
-                    <div style={alertMessageStyles}>
-                       <AlertComponent {...props}/>
+                        <div className="page-contents" id="page-contents">
+                            <fieldset style={ onModalStyles } 
+                                      disabled={props['modalIsOpen']}>
+                                <NavigationBarSmallScreen  {...props}/>      
+                                <PartalNavigationBar {...props}/>
+                                <NavigationBarBigScreen {...props} />
+                                <NavigationBarBottom {...props}/>
+                                
+                                <Component {...props}/>                    
+                            </fieldset>
+                        </div>
                     </div>
-                    
                 </div> 
 
             );

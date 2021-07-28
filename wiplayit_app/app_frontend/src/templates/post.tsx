@@ -43,8 +43,12 @@ export const PostComponent = props => {
         postListById}     =    props;
 
     if(!post) return null;
+    let postText:string = post.post || post.add_post;
 
-    const editorState  = helper.convertFromRaw(post.add_post);
+    let editorState;
+    if (postText) {
+        editorState  = helper.convertFromRaw(postText);
+    }
    
     let usersById       = post && `postUpVoters${post.id}`;
     let apiUrl          = post && Apis.getPostUpVotersListApi(post.id);
@@ -166,14 +170,14 @@ export const PostComponent = props => {
                         <ul className="post-title">
                             {props.isPostBox && 
                                 <li>
-                                    {post.add_title}
+                                    {post.title || post.add_title}
                                 </li>
 
                                 ||
 
                                 <li>
                                     <LinkButton {...linkProps}>
-                                        <span>{post.add_title}</span>
+                                        <span>{post.title || post.add_title}</span>
                                     </LinkButton>
                                 </li>
                             }
@@ -181,11 +185,14 @@ export const PostComponent = props => {
 
                     </div>
                     <div className="post-body">
-                        <Editor
-                            blockRendererFn={pageMediaBlockRenderer}
-                            editorState={editorState} 
-                            readOnly={true} 
-                        />
+                        {editorState &&
+                            <Editor
+                                blockRendererFn={pageMediaBlockRenderer}
+                                editorState={editorState}
+                                readOnly={true}
+                            />
+                        }
+                        
                     </div>
                     <ButtonsBox {...btnsList}/>
             </div>

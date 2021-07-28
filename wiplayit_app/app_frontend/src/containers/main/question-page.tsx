@@ -2,17 +2,14 @@ import React, { Component } from 'react';
 
 import  * as action  from 'actions/actionCreators';
 import { getQuestion } from 'dispatch/index';
-import {PartalNavigationBar,
-    NavigationBarBottom,
-        NavigationBarBigScreen } from 'templates/navBar';
+
 import  AjaxLoader from 'templates/ajax-loader';
 import { QuestionComponent} from 'templates/question';
 import {store} from "store/index";
 import { AnswersBox } from 'containers/main/answer-page';
 import GetTimeStamp from 'utils/timeStamp';
 import {cacheExpired} from 'utils/helpers';
-import { UnconfirmedUserWarning, 
-         PageErrorComponent } from 'templates/partials';
+import {PageErrorComponent} from 'templates/partials';
 import  MainAppHoc from "containers/main/index-hoc";
 
 
@@ -31,9 +28,9 @@ class QuestionPage extends Component {
             pageName      : "Question", 
             questionById  : '',
             error         : '',
+            isReloading   : false,
             questionData  : null,
             isNewQuestion : false,
-            isReloading   : false,
         };
 
     };
@@ -79,11 +76,13 @@ class QuestionPage extends Component {
         this.unsubscribe = store.subscribe(onStoreChange);
     };
     
-    getQuestionFromCache(questionById:string):object{
-        let cache = this.props['cacheEntities'];
-        let questionCache = cache['question'];
-        questionCache = questionCache[questionById];
-        return questionCache;
+    getQuestionFromStore(questionById:string):object{
+        let entities:object = this.props['entities'];
+     
+        let question:object = entities['question'];
+        question = question && question[questionById];
+
+        return question;
     }
 
     componentDidMount() {
@@ -93,7 +92,7 @@ class QuestionPage extends Component {
         let questionById = `question${id}`;
         this.setState({questionById, id})
                         
-        let questionData = this.getQuestionFromCache(questionById)
+        let questionData = this.getQuestionFromStore(questionById)
         let _cacheExpired:boolean = cacheExpired(questionData);
 
         if(!_cacheExpired){
@@ -101,7 +100,7 @@ class QuestionPage extends Component {
         }
 
         let questionStore:object = this.props['entities'].question;
-        questionData = questionStore[questionById];
+        questionData = questionStore && questionStore[questionById];
 
         if (questionData && questionData['question']) {
             return this.setState({questionData})
@@ -122,7 +121,7 @@ class QuestionPage extends Component {
 
     reLoader =()=>{
         let id = this.state['id'];   
-        this.isMounted && this.setState({isReloading : true})
+        this.setState({isReloading : true, error:null})
         return store.dispatch<any>(getQuestion(id));
     };
     
@@ -135,32 +134,29 @@ class QuestionPage extends Component {
     };
 
     render() {
+        if(!this.isMounted){
+            return null;
+        }
+
         const props = this.getProps();
         const questionData = props['questionData'];
+
         if (!questionData) {
             return null;
         }
-                      
+
         return (
             <div>
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} />
-                <NavigationBarBottom {...props}/>
-                {questionData &&
-                    <div className="app-box-container app-question-box">
-                        <UnconfirmedUserWarning {...props}/>
-                        { questionData.isLoading &&
-                            <div className="page-spin-loader-box partial-page-loader">
-                                <AjaxLoader/>
-                            </div>
-                        }
-                        <PageErrorComponent {...props}/>
-
-                        {!questionData.isLoading &&
-                           <Questions {...props}/>
-                        }
+                {questionData.isLoading &&
+                    <div className="page-spin-loader-box partial-page-loader">
+                        <AjaxLoader/>
                     </div>
-                }           
+                }
+                <PageErrorComponent {...props}/>
+
+                {!questionData.isLoading &&
+                    <Questions {...props}/>
+                }
             </div>
         );
     };
@@ -174,14 +170,13 @@ export const Questions = props => {
     const questionData = props['questionData'];
     let question = questionData && questionData.question;
     if (!question) return null;
-    const questionProps = {...props, question}; 
-   
+    const questionProps = {...props, question};
+      
     return (
-        <div className="question-page" id="question-page">
+        <div className="question-page">
             <div className="question-container">
                 <div className="question-contents">
                     <QuestionComponent {...questionProps}/>
-                    
                 </div>
                 <AnswersBox {...questionProps}/>
             </div>

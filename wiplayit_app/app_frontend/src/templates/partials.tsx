@@ -98,7 +98,14 @@ export const AuthorDetails = (props:object)=>{
 
 export const PageErrorComponent = props => {
     let {error, isReloading } = props;
-    if (isReloading || !error || !checkType.isString(error)) return null;
+ 
+    if (isReloading) {
+       return null;
+    }
+
+    if (!error || !checkType.isString(error)){
+        return null;
+    }
    
     return(
         <div className="page-error-box" id="page-error-box">
@@ -120,10 +127,7 @@ export const PageErrorComponent = props => {
         </div>
     )
 
-}
-
-
-
+};
 
 
 export const AlertComponent =(props)=> {

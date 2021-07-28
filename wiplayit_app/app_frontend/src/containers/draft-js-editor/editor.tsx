@@ -134,6 +134,7 @@ export default  class AppEditor extends Component{
    
     submit = () => {
         let contentIsEmpty:boolean = this.state['contentIsEmpty'];
+        this.setState({hasErrors : false, message:null});
 
         if (contentIsEmpty) {
             let message = {

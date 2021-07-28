@@ -7,15 +7,10 @@ import {PostComponent} from 'templates/post';
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
 import {displaySuccessMessage} from 'utils/helpers';
-import {PartalNavigationBar,
-        NavigationBarBottom,
-        NavigationBarBigScreen } from "templates/navBar";
-
-
 
 
 class  BookmarkContainer extends Component  {
-    public isMounted:boolean = false;
+    public isFullyMounted = false;
     private subscribe;
     private unsubscribe;
 
@@ -29,6 +24,14 @@ class  BookmarkContainer extends Component  {
             answerListById: '',
             postListById:'',
         };       
+    }
+
+    public get isMounted() {
+        return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+        this.isFullyMounted = value;
     }
 
     onStoreUpdate = ()=> {
@@ -52,11 +55,13 @@ class  BookmarkContainer extends Component  {
     }
 
     componentWillUnmount() {
+        this.isMounted = false;
         this.unsubscribe();
     }
 
 
     componentDidMount() {
+        this.isMounted = true;
       
         this.onStoreUpdate()
         console.log(this.props)
@@ -97,12 +102,18 @@ class  BookmarkContainer extends Component  {
     }
 
     render(){
+        if (!this.isMounted) {
+            return null;
+        }
+
         let props = {
                 ...this.props,
                 ...this.state,
                 toogleBookmarkContents:this.toogleBookmarkContents.bind(this)
             }
+
         let bookmarks = props['bookmarks'];
+        
         let BookmarkBox = <Bookmark {...props}/>
 
         if (!bookmarks?.answers?.length && !bookmarks?.posts?.length ) {
@@ -113,14 +124,9 @@ class  BookmarkContainer extends Component  {
 
 
         return(
-            <div className="app-box-container">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} />
-                <NavigationBarBottom {...props}/>
-                <div className="bookmark-page">
-                    <div className="bookmark-container">
-                        {BookmarkBox}
-                    </div>
+            <div className="bookmark-page">
+                <div className="bookmark-container">
+                    {BookmarkBox}
                 </div>
             </div>
         )

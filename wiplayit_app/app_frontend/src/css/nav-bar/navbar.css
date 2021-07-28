@@ -97,8 +97,6 @@
     width         : 35px;
     height        : 35px; 
     margin-left   : 18px; 
-    border: 1px solid  green;
-   
 }
 
 .menu-img {
@@ -252,7 +250,6 @@
     }
 
     .partial-navbar-login-link button {
-        border     : 1px solid red;
         margin-top : 5px; 
     }
     

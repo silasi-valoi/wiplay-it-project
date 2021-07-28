@@ -9,6 +9,7 @@ from app_backend.api_views.api_create_views import ( CreateQuestionView,
                                                      AddAnswerBookMarkView,
                                                      AddPostBookMarkView,
                                                      DeleteAnswerBookMarkView,
+                                                     DeletePostBookMarkView,
                                                      BugReportView,
                                                      FeedBackView,
                                                      ContactAdminView,
@@ -59,6 +60,9 @@ urlpatterns = [
 
     path("api/answer/<int:pk>/bookmark/remove/",
        DeleteAnswerBookMarkView.as_view({'delete':'destroy'})),
+
+    path("api/post/<int:pk>/bookmark/remove/",
+      DeletePostBookMarkView.as_view({'delete':'destroy'})),
 
     path("api/bug/report/", BugReportView.as_view(), name="bug_report"),
     path("api/feedback/", FeedBackView.as_view(), name="feedback"),

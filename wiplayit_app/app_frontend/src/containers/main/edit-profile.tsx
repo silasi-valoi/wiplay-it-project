@@ -348,21 +348,26 @@ const ProfileEditComponent = props => {
                     </ul>
 
                     <div className="profile-name-input-box input-box">
-                        <input
-                            type="text" 
-                            className="profile-name-input"
-                            name="first_name"
-                            value={props.form.first_name}
-                            onChange={props.handleChange}
-                        />
-
-                        <input
-                            type="text" 
-                            className="profile-name-input"
-                            name="last_name"
-                            value={props.form.last_name}
-                            onChange={props.handleChange}
-                        />
+                        <div className="">
+                            <input
+                                type="text" 
+                                className="profile-name-input"
+                                name="first_name"
+                                value={props.form.first_name}
+                                onChange={props.handleChange}
+                            />
+                            <span className="floating-label">Email Address</span>
+                        </div>
+                        
+                        <div className="">
+                            <input
+                                type="text" 
+                                className="profile-name-input"
+                                name="last_name"
+                                value={props.form.last_name}
+                                onChange={props.handleChange}
+                            />
+                        </div>
                     </div>
 
                 </div>

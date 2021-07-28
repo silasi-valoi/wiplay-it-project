@@ -6,13 +6,10 @@ import {getQuestionList} from 'dispatch/index';
 import {store} from 'store/index';
 import  MainAppHoc from "containers/main/index-hoc";
 import {OpenEditorBtn}  from "templates/buttons";
-import {UnconfirmedUserWarning, PageErrorComponent} from 'templates/partials';
+import {PageErrorComponent} from 'templates/partials';
 import { MatchMediaHOC } from 'react-match-media';
 import {CREATE_QUESTION} from 'actions/types';
-import {PartalNavigationBar, 
-        createQuestionProps,
-        NavigationBarBottom,
-        NavigationBarBigScreen} from 'templates/navBar';
+import {createQuestionProps} from 'templates/navBar';
 import  AjaxLoader from 'templates/ajax-loader';
  
 
@@ -113,36 +110,28 @@ class  QuestionListPage extends Component  {
     };
 
     render() {
+        if(!this.isMounted){
+           return null;
+        }
+
         let props = this.getProps();
         var { questions }  = props['entities'];
         let questionListById = this.state['questionListById']; 
-        questions  = questions[questionListById];
+        questions  = questions && questions[questionListById];
            
       
         return (
-            <div style={{}}>
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} /> 
-                <NavigationBarBottom {...props}/>
-                
-                { questions &&
-                    <div  className="app-box-container">
-                        <UnconfirmedUserWarning {...props}/>
-                        
-                        { questions.isLoading && 
-                            <div  className="page-spin-loader-box partial-page-loader">
-                                <AjaxLoader/>
-                            </div>
-                        } 
-                        { questions.error && !questions.error &&
-                            <PageErrorComponent {...props}/>
-                        }
-                        
-                        <Questions {...props}/>   
-                    </div>
-                
+            <div>
+                { questions.isLoading && 
+                    <div className="page-spin-loader-box partial-page-loader">
+                        <AjaxLoader/>
+                   </div>
                 }
+
+                <PageErrorComponent {...props}/>
+                <Questions {...props}/> 
             </div>
+            
         );
     };
 
@@ -161,7 +150,7 @@ const Questions = props => {
    
     return (
         <div className="question-list-page" id="question-list-page">
-            { questionList && questionList.length &&
+            {questionList && questionList.length &&
                 QuestionList(props, questionList)
 
                 ||

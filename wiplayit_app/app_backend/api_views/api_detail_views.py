@@ -9,18 +9,19 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 from app_backend.helpers import get_users_with_permissions
-from auth_backend.models import User  
+from app_backend.registrations.models import User  
 
-from app_backend.models import (Question, Post, Answer, AnswerComment,
-								AnswerReply, DefaultProfilePicture,
-								PostComment, PostReply, AboutCompany )
+from app_backend.models import (Question, Post,
+								Answer,Comment,
+								Reply, DefaultProfilePicture,
+								AboutCompany )
 
 from app_backend.views import ( BaseView, BaseApiView, QuestionView, PostDetailView,
                                 PostCommentDetailView,PostReplyDetailView,
 	                            QuestionDetailView, AnswerCommentDetailView, 
 	                            AnswerReplyDetailView )
 
-from auth_backend.views import UserView
+from app_backend.registrations.views import UserView
 from app_backend.serializers import ( IndexSerializer, AboutSerializer,
 									  DefaultProfilePictureSerializer )
 from app_backend.mixins.views_mixins import RetrieveMixin
@@ -61,7 +62,7 @@ class IndexView(BaseView, APIView):
 	def get(self, *args, **kwargs):
 		kwargs['context'] = self.get_serializer_context()
 		serializer = self.serializer_class(*args, **kwargs)
-
+		
 		return Response(serializer.data,  status=status.HTTP_200_OK )
 		
 class RetrievePostListView(RetrieveMixin, PostDetailView):
@@ -78,7 +79,7 @@ class RetrievePostView(RetrieveMixin, PostDetailView):
 	pass
 		
 
-class RetrieveQuestionView(QuestionDetailView):
+class RetrieveQuestionView(RetrieveMixin, QuestionDetailView):
 	permission_classes = (AllowAny,)
 
 	def get_action_data(self, request):
@@ -86,24 +87,23 @@ class RetrieveQuestionView(QuestionDetailView):
 		return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RetrieveAnswerCommentListView(AnswerCommentDetailView):
+class RetrieveAnswerCommentListView(RetrieveMixin, AnswerCommentDetailView):
 		
 	def get_queryset(self):
-		return AnswerComment.objects.filter(answer=self.kwargs['pk'])
+		return Comment.objects.filter(answer=self.kwargs['pk'])
 			
 		
 
-class RetrieveAnswerReplyListView(AnswerReplyDetailView):
+class RetrieveAnswerReplyListView(RetrieveMixin, AnswerReplyDetailView):
 	
 	def get_queryset(self):
-		return  AnswerReply.objects.filter(comment=self.kwargs['pk'])
+		return  Reply.objects.filter(comment=self.kwargs['pk'])
 		
 		
 class RetrieveAnswerReplyChildrenListView(RetrieveAnswerReplyListView):
 	
 	def get_queryset(self):
-		return AnswerReply.objects.filter(parent=self.kwargs['pk'])
-			
+		return Reply.objects.filter(parent=self.kwargs['pk'])
 	
 
 
@@ -133,7 +133,7 @@ class RetrieveAnswerUpVoters(RetrieveMixin, UserView):
 class RetrieveAnswerCommentUpVoters(RetrieveMixin, UserView):
 
 	def get_queryset(self):
-		comment = get_object_or_404(AnswerComment, pk=self.kwargs['pk'])
+		comment = get_object_or_404(Comment, pk=self.kwargs['pk'])
 		upvotes_perm = self.get_obj_permissions('answer_comment_perms', 'upvotes_perms')
 		return get_users_with_permissions(comment, upvotes_perm)
 		
@@ -149,17 +149,17 @@ class RetrieveAnswerReplyUpVoters(RetrieveMixin, UserView):
 
 
 
-class RetrievePostCommentListView(PostCommentDetailView):
+class RetrievePostCommentListView(RetrieveMixin, PostCommentDetailView):
 		
 	def get_queryset(self):
-		return PostComment.objects.filter(post=self.kwargs['pk'])
+		return Comment.objects.filter(post=self.kwargs['pk'])
 		
 	
 
-class RetrievePostReplyListView(PostReplyDetailView):
+class RetrievePostReplyListView(RetrieveMixin, PostReplyDetailView):
 	
 	def get_queryset(self):
-		return  PostReply.objects.filter(comment=self.kwargs['pk'])
+		return  Reply.objects.filter(comment=self.kwargs['pk'])
 		
 		
 
@@ -167,7 +167,7 @@ class RetrievePostReplyListView(PostReplyDetailView):
 class RetrievePostReplyChildrenListView(RetrievePostReplyListView):
 	
 	def get_queryset(self):
-		return PostReply.objects.filter(parent=self.kwargs['pk'])
+		return Reply.objects.filter(parent=self.kwargs['pk'])
 		
 
 
@@ -186,7 +186,7 @@ class RetrievePostUpVoters(RetrieveMixin, UserView ):
 class RetrievePostCommentUpVoters(RetrieveMixin, UserView):
 
 	def get_queryset(self):
-		comment = get_object_or_404(PostComment, pk=self.kwargs['pk'])
+		comment = get_object_or_404(Comment, pk=self.kwargs['pk'])
 		upvotes_perm = self.get_obj_permissions('post_comment_perms', 'upvotes_perms')
 		return get_users_with_permissions(comment, upvotes_perm)
 		
@@ -198,7 +198,7 @@ class RetrievePostCommentUpVoters(RetrieveMixin, UserView):
 class RetrievePostReplyUpVoters(RetrieveMixin, UserView):
 
 	def get_queryset(self):
-		reply = get_object_or_404(PostReply, pk=self.kwargs['pk'])
+		reply = get_object_or_404(Reply, pk=self.kwargs['pk'])
 		upvotes_perm = self.get_obj_permissions('post_reply_perms', 'upvotes_perms')
 		return get_users_with_permissions(reply, upvotes_perm)
 		

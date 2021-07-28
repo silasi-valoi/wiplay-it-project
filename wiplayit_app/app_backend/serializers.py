@@ -3,14 +3,14 @@ from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
-from auth_backend.models import User
-from .models import ( Question, Post, Answer, AnswerComment, AnswerReply,
-	                  PostComment, PostReply, DraftEditorMediaContent,
-	                  AnswerBookmark,PostBookmark, AboutCompany, DefaultProfilePicture,
+from app_backend.registrations.models import User
+from .models import ( Question, Post, Answer, Comment,Reply,
+	                  DraftEditorMediaContent, AnswerBookmark,
+	                  PostBookmark, AboutCompany, DefaultProfilePicture,
 	                  BugReport, FeedBack, ContactAdmin)
 
 from .mixins.serializer_mixins import   SerialiizerMixin
-from auth_backend.serializers import  BaseUserSerializer, UserSerializer
+from app_backend.registrations.serializers import  BaseUserSerializer, UserSerializer
 from .helpers import get_users_with_permissions,  has_perm
 
 
@@ -67,22 +67,22 @@ class BaseReplySerializer(BaseChildSerializer):
 class AnswerReplySerializer(BaseChildSerializer):
 		
 	class Meta:
-		model = AnswerReply 
+		model = Reply 
 		fields = '__all__'
 
 	def update_perms(self):
-		self.update_serializer_obj_perms('answer_reply_perms')
+		self.update_serializer_obj_perms('reply_perms')
 
 		
 class AnswerReplyReadSerializer(BaseReplySerializer):
 
 	class Meta:
-		model = AnswerReply 
+		model = Reply 
 		fields = '__all__'
 	
 			
 	def children_serializer(self, children_queryset=[]):
-		self.update_serializer_obj_perms('answer_reply_perms')
+		self.update_serializer_obj_perms('reply_perms')
 		return AnswerReplyReadSerializer(
 				children_queryset, 
 				context=self.context,
@@ -93,11 +93,11 @@ class AnswerCommentSerializer(BaseChildSerializer):
 		
 
 	class Meta:
-		model = AnswerComment
+		model = Comment
 		fields = '__all__'
 
 	def update_perms(self):
-		self.update_serializer_obj_perms('answer_comment_perms')
+		self.update_serializer_obj_perms('comment_perms')
 
 
 class AnswerCommentReadSerializer(AnswerCommentSerializer):
@@ -108,7 +108,7 @@ class AnswerCommentReadSerializer(AnswerCommentSerializer):
 		return obj.replies.count()
 
 	def get_replies(self, obj):
-		self.update_serializer_obj_perms('answer_reply_perms')
+		self.update_serializer_obj_perms('reply_perms')
 		replies = obj.replies.all()[:1]
 
 		return AnswerReplyReadSerializer(
@@ -120,22 +120,22 @@ class AnswerCommentReadSerializer(AnswerCommentSerializer):
 class PostReplySerializer(BaseChildSerializer):
 	
 	class Meta:
-		model = PostReply 
+		model = Reply 
 		fields = '__all__'
 
 	def update_perms(self):
-		self.update_serializer_obj_perms('post_reply_perms')
+		self.update_serializer_obj_perms('reply_perms')
 
 
 
 class PostReplyReadSerializer(BaseReplySerializer):
 	
 	class Meta:
-		model = PostReply 
+		model = Reply 
 		fields = '__all__'
 		
 	def children_serializer(self, children_queryset=[]):
-		self.update_serializer_obj_perms('post_reply_perms')
+		self.update_serializer_obj_perms('reply_perms')
 		return PostReplyReadSerializer(
 					children_queryset,
 					context=self.context, 
@@ -145,11 +145,11 @@ class PostReplyReadSerializer(BaseReplySerializer):
 class PostCommentSerializer(BaseChildSerializer):
 
 	class Meta:
-		model = PostComment 
+		model = Comment 
 		fields = '__all__'
 
 	def update_perms(self):
-		self.update_serializer_obj_perms('post_comment_perms')
+		self.update_serializer_obj_perms('comment_perms')
 
 
 
@@ -161,7 +161,7 @@ class PostCommentReadSerializer(PostCommentSerializer):
 		return obj.replies.count() 
 
 	def get_replies(self, obj):
-		self.update_serializer_obj_perms('post_reply_perms')
+		self.update_serializer_obj_perms('reply_perms')
 		replies =  obj.replies.all()[:1]
 
 		return PostReplyReadSerializer(
@@ -187,7 +187,7 @@ class PostReadSerializer(PostSerializer):
 		return obj.comments.count() 
 
 	def get_comments(self, obj):
-		self.update_serializer_obj_perms('post_comment_perms')
+		self.update_serializer_obj_perms('comment_perms')
 		comments =  obj.comments.all()[:1]
 
 		return PostCommentReadSerializer(
@@ -215,7 +215,7 @@ class AnswerReadSerializer(AnswerSerializer):
 		return obj.comments.count() 
 
 	def get_comments(self, obj):
-		self.update_serializer_obj_perms('answer_comment_perms')
+		self.update_serializer_obj_perms('comment_perms')
 		comments =  obj.comments.all()[:1]
 		
 		return AnswerCommentReadSerializer(
@@ -285,7 +285,7 @@ class DraftEditorContentsSerializer(BaseModelSerializer):
 
 
 class AnswerBookmarkSerializer(BaseModelSerializer):
-	bookmark = serializers.SerializerMethodField()
+	bookmarks = serializers.SerializerMethodField()
 
 	class Meta:
 		model = AnswerBookmark
@@ -297,21 +297,22 @@ class AnswerBookmarkSerializer(BaseModelSerializer):
 				
 		return instance
 
-	def get_bookmark(self, obj):
+	def get_bookmarks(self, obj):
 		if not self.current_user().is_authenticated: 
 			return []
-
-		answer_bookmarks = Answer.objects.filter(
-								answer_bookmarks__author=self.current_user(),
-								answer_bookmarks=obj.id
+		
+		answers = Answer.objects.filter(
+								answers__author=self.current_user(),
+								answers=obj.id
 
 							)
-		
-		answer_bookmarks_serialiser = AnswerReadSerializer(
-											answer_bookmarks, 
-											context=self.context,
-											many=True).data	
-		return answer_bookmarks_serialiser
+			
+		serializer = AnswerReadSerializer(
+							    answers, 
+								context=self.context,
+								many=True
+							)
+		return serializer.data
 
 
 class PostBookmarkSerializer(BaseModelSerializer):
@@ -333,13 +334,13 @@ class PostBookmarkSerializer(BaseModelSerializer):
 			return []
 
 		post_bookmarks = Post.objects.filter(
-								post_bookmarks__author=self.current_user(),
-								post_bookmarks=obj.id
+								posts__author=self.current_user(),
+								posts=obj.id
 
 							)
 		
 		post_bookmarks_serialiser = PostReadSerializer(
-											post_bookmarks, 
+											post_bookmark, 
 											context=self.context,
 											many=True).data	
 		return post_bookmarks_serialiser
@@ -355,15 +356,19 @@ class IndexSerializer(BaseSerializer):
 
 	def get_bookmarks(self, obj):
 		if not self.current_user().is_authenticated: 
-			return []
 
+			return {
+				'answers':[],
+				'posts':[]
+			}
 		
 		answer_bookmarks = Answer.objects.filter(
-								answer_bookmarks__author=self.current_user()
+								answers__author=self.current_user()
 
 							)
 		post_bookmarks = Post.objects.filter(
-							post_bookmarks__author=self.current_user())
+								posts__author=self.current_user()
+							)
 		answer_bookmarks_serialiser = AnswerReadSerializer(
 											answer_bookmarks, 
 											context=self.context,
