@@ -17,7 +17,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 
 from .managers import UserManager, PhoneNumberManager
 from app_backend.slug_generator import generate_unique_slug
-from auth_backend.utils import (_get_pin,
+from app_backend.registrations.utils import (_get_pin,
                                 send_pin,
                                 get_national_number_format,
                                 get_inter_number_format,

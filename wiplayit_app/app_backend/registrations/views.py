@@ -36,7 +36,7 @@ from rest_auth.app_settings import (TokenSerializer,
 from rest_auth.utils import jwt_encode
 
 
-from auth_backend.utils import (is_using_phone_number,
+from app_backend.registrations.utils import (is_using_phone_number,
 								is_using_email_address)
 
 from app_backend.mixins.views_mixins import RetrieveMixin, UpdateObjectMixin
