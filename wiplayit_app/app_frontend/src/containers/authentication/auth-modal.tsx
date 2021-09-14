@@ -5,54 +5,67 @@ import PasswordResetPage from 'containers/authentication/password-reset';
 import AccountConfirmationResendPage from 
                                    'containers/authentication/account-confirmation-resend';
 import AccountConfirmationPage from 'containers/authentication/account-confirmation';
-
-import  EmailForm   from 'templates/authentication/email-form'; 
-import {NavBar}  from 'templates/authentication/utils';
+import AuthenticationPage from 'containers/authentication/index';
 import {ModalCloseBtn} from 'templates/buttons';
 import AuthenticationHoc from 'containers/authentication/auth-hoc';
 
 
 class AuthenticationModalPage extends Component{
+    public isFullyMounted:boolean = false;
 
     constructor(props) {
       super(props);
 
         this.state = {
-            pageTitle :  'Confirmation Resend',
-            navbarTitle      :  'Confirm Account',
-            formDescription  :  ['Enter Your email address'],
+            
         };
     }
 
-    componentDidMount() {
-        const _formConstructor = this.props['formConstructor']
-        return _formConstructor('emailResendForm');
+    public get isMounted() {
+        return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+        this.isFullyMounted = value;
     }
 
-    getAuthContents(modalName:string):React.Component {
-        return
-        /*
-        switch (modalName) {
+    componentWillUnmount =()=> {
+        this.isMounted = false;
+    };
+
+    componentDidMount() {
+        this.isMounted = true;
+           
+    }
+
+    getAuthContents(authenticationType:string) {
+        
+        
+        switch (authenticationType) {
             case "accountConfirmation":
                 return AccountConfirmationPage;
-                break;
-
+             
             case "passwordReset":
                 return PasswordResetPage;
-                break;
-            
+
+            case "Login":
+                return AuthenticationPage;  
+
+            case "confirmationResend":
+                return AccountConfirmationResendPage;
+
             default:
                 // code...
                 return null;
         }
-        */
+        
 
     }
    
     render(){
         let props = {...this.props, ...this.state}
-        let modalName = this.props['modalName'];
-        const AuthContents = this.getAuthContents(modalName);
+        let authenticationType:string = this.props['authenticationType'];
+        const AuthContents = this.getAuthContents(authenticationType);
 
         if (!AuthContents) {
             return null;
@@ -66,7 +79,7 @@ class AuthenticationModalPage extends Component{
                     </ModalCloseBtn>
                 </div>
                 <div className="auth-modal-container">
-                    
+                    <AuthContents {...props}/>
                 </div>
             </div>
         )

@@ -1,64 +1,62 @@
 import React from 'react';
 
 export const  NonFieldErrors = errors => {
-    if (!errors) return null;
+    let error:string[] = errors.non_field_errors;
 
+    if (!error) return null;
+ 
     return(
         <div className="errors-box">
-            {errors.non_field_errors && 
-                <ul className="form-errors">
-                { errors.non_field_errors.map(( error, index) =>
+            <ul className="form-errors">
+                {error.map((error, index) =>
                     <li key={index}>{error}</li>
                 )}
-                </ul>
-            }   
+            </ul>
         </div>
-    )   
-}
+    );   
+};
 
 export const  EmailFieldErrors = errors => {
-    if (!errors) return null;
+    let error:string[] = errors.email;
 
+    if (!error) return null;
+  
     return(
         <div>
-            {errors.email && 
-                <ul className="form-errors">
-                    { errors.email.map(( error, index) =>
-                        <li key={index}>{error}</li>
-                    )}
-                </ul>
-            }   
+            <ul className="form-errors">
+                {error && error.map(( error, index) =>
+                    <li key={index}>{error}</li>
+                )}
+            </ul>
         </div>
     )   
 };
 
 
 export const  PhoneNumberFieldErrors = errors => {
-    if (!errors) return null;
+    let error:string[] = errors.phone_nmber;
+
+    if (!error) return null;
 
     return(
         <div>
-            {errors.phone_nmber && 
-                <ul className="form-errors">
-                    { errors.phone_nmber.map((error, index) =>
-                        <li key={index}>{error}</li>
-                    )}
-                </ul>
-            }   
+            <ul className="form-errors">
+                {error && error.map((error, index) =>
+                    <li key={index}>{error}</li>
+                )}
+            </ul>
         </div>
-    )   
+    );
 };
 
 
 export const  PasswordErrors = errors => {
-    if (!errors) return null;
-    
-    let passwordErrors = errors.new_password2 || errors.new_password1
+    let error:string[] = errors.new_password2 || errors.new_password1;
+    if (!error) return null;
 
     return(
         <ul className="form-errors">
-            { passwordErrors  && 
-                passwordErrors.map(( error, index) =>
+            {error && error.map(( error, index) =>
                 <li key={index}>{error}</li>   )
                 ||
                 <li>
@@ -71,19 +69,18 @@ export const  PasswordErrors = errors => {
 
 
 export const  CountryFieldErrors = errors => {
-    if (!errors) return null;
+    let error:string[] = errors.country;
+    if (!error) return null;
 
     return(
         <div>
-            {errors.country && 
-                <ul className="form-errors">
-                    { errors.country.map(( error, index) =>
-                        <li key={index}>{error}</li>
-                    )}
-                </ul>
-            }   
+            <ul className="form-errors">
+               {error && error.map(( error, index) =>
+                    <li key={index}>{error}</li>
+                )}
+            </ul>
         </div>
-    )   
+    );   
 };
 
 

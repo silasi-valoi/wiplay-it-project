@@ -6,7 +6,7 @@ import {getQuestionList} from 'dispatch/index';
 import {store} from 'store/index';
 import  MainAppHoc from "containers/main/index-hoc";
 import {OpenEditorBtn}  from "templates/buttons";
-import {PageErrorComponent} from 'templates/partials';
+import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 import { MatchMediaHOC } from 'react-match-media';
 import {CREATE_QUESTION} from 'actions/types';
 import {createQuestionProps} from 'templates/navBar';
@@ -122,14 +122,19 @@ class  QuestionListPage extends Component  {
       
         return (
             <div>
-                { questions.isLoading && 
-                    <div className="page-spin-loader-box partial-page-loader">
-                        <AjaxLoader/>
-                   </div>
-                }
+                <UnconfirmedUserWarning {...props}/>
 
-                <PageErrorComponent {...props}/>
-                <Questions {...props}/> 
+                <div className="page-contents" id="page-contents">
+                    { questions.isLoading && 
+                        <div className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
+
+                    <PageErrorComponent {...props}/>
+                    <Questions {...props}/> 
+                </div>
+
             </div>
             
         );

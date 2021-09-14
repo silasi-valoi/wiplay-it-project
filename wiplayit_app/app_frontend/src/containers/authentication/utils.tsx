@@ -1,5 +1,6 @@
 import {store} from 'store/index';
 import Apis from 'utils/api';
+import {toggleAuthForm} from 'actions/actionCreators';
 import {authenticate} from 'dispatch/index';
 import Helper from 'utils/helpers';
 
@@ -22,8 +23,7 @@ export default class FormValidator {
     cleanForm(){
         
         const helper = new Helper();
-        let formName = this.formName;
-        let form     = this.form[formName];
+        let form     = this.form;
         return helper.createFormData({...form});
     };
 
@@ -31,6 +31,7 @@ export default class FormValidator {
         let errors = this.formErrors()
         if (errors) {
             return false;
+
         }else{
             return true;
         }
@@ -52,7 +53,7 @@ export default class FormValidator {
 
     formErrors(){
         let formName = this.formName;
-        let form     = this.form && this.form[formName];
+        let form:object = this.form;
                
         let formErrors;
         let isValid = formIsValid(form);
@@ -60,18 +61,19 @@ export default class FormValidator {
         if (!isValid) {
             formErrors = {non_field_errors:['Please fill in all fields']};
         }
-                
-        if (form && form.email) {
-            let {email} = form;
-            this.isPhoneNumber = this._isPhoneNumber(email)
-            this.isEmail = this._isEmail(email)
+   
+        let email = form['email'];
+        if (email) {
+            
+            this.isPhoneNumber = this._isPhoneNumber(email);
+            this.isEmail = this._isEmail(email);
 
             if (!this.isEmail && !this.isPhoneNumber) {
                 formErrors = {email:['Please enter a valid email or phone number']}
             }
         }
 
-        if (formName === 'signUpForm' && !form.country) {
+        if (formName === 'signUpForm' && !form['country']) {
             formErrors = {country:['Please select your country']}
         }
                 
@@ -81,53 +83,45 @@ export default class FormValidator {
 };
 
 
-export const authSubmit =(self:object,formName?:string, useToken:boolean=false)=>{
-    const state:object = self['state']
-    formName  = formName || state['formName'];
-    let validatedForm  = getForm(self, formName);
-              
-    _isSubmitting(self, formName);
-        
+export const authSubmit =(self:object, formName?:string, useToken:boolean=false)=>{
+    const state:object = self['state'];
+    let authForm :object = state['authForm'];
+
+    if(!formName){
+        formName = authForm['formName'];
+    }
+   
+    authForm = authForm['form'];
+    let form:object =  authForm && authForm[formName];
+    
+    let validatedForm  =  new FormValidator({form, formName});
+
     if (!validatedForm.formIsClean()) {
         
         let error = validatedForm.formErrors(); 
-        return setFormErrors(self, error, formName);
+        if(form){
+            form['error'] = error;
+            form = {...authForm, formName:form};
+
+            return store.dispatch<any>(toggleAuthForm({form, formName, submitting : false}));
+
+        }
     }
 
-    let apiUrl = getAuthUrl(formName);           
-    let form   = validatedForm.cleanForm();
+    let apiUrl = getAuthUrl(formName);  
+    let email = form['email'];
+          
+    let isPhoneNumber:boolean = validatePhoneNumber(form['email']);
+    let isEmail:boolean = validateEmail(form['email']);
+    
+    store.dispatch<any>(toggleAuthForm({isEmail, isPhoneNumber, submitting : true}));
+
+    form   = validatedForm.cleanForm();       
+   
     return store.dispatch<any>(authenticate({apiUrl, form, formName, useToken}));
 
 };
 
-export const getForm =(self:object, formName:string):FormValidator => {
-    let form :object = self['state']['form'];
-    
-    return new FormValidator({form, formName});
-}; 
-
-export const setFormErrors =(self, error, formName)=> {
-    let form = self.state.form;
-    console.log(formName, error)
-
-    if (form) {
-        form[formName]['error'] = error
-        self.setState({form, submitting : false});
-    }
-}
-
-export const _isSubmitting=(self, formName)=>{
-    let {form} = self.state;
-    form = form && form[formName]
-
-    if (form && form.email) {
-        let isPhoneNumber = validatePhoneNumber(form.email);
-        let isEmail       = validateEmail(form.email); 
-        self.setState({isEmail, isPhoneNumber})  
-    }
-        
-    self.setState({submitting : true})
-};
 
 export const formIsValid =(form:object)=> {
     //Check form is complete
@@ -146,36 +140,26 @@ export const formIsValid =(form:object)=> {
 
 export const validatePhoneNumber=(phoneNumber:string):boolean =>{
     let numberRegExp = /^\+?[\d\s]+$/
-    let isPhoneNumber = numberRegExp.test(phoneNumber)
- 
-    return isPhoneNumber || false;
+    return numberRegExp.test(phoneNumber)
 };
 
 export const validateEmail=(email:string):boolean =>{
     let emailRegExp;
     emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    let isEmail = emailRegExp.test(email)
-     
-    return isEmail || false;
+    return emailRegExp.test(email)
+  
 }
 
-export const changeForm =(self, event)=> {
-    let  {form, formName} = self.state;
-    
-    if (form && formName) {
-        form[formName][event.target.name] = event.target.value;
-        self.setState({form});
-    }
-};
 
-export const setForm =(form, currentForm, formName)=> {
-    
+export const constructForm =(form:object, currentForm:object, formName:string)=> {
+       
     if (currentForm && formName) {
         if (!currentForm[formName]) {
             currentForm[formName] = {...form}
         }
 
         form = currentForm;
+    
     }else{
         
         let formValue = {
@@ -186,6 +170,7 @@ export const setForm =(form, currentForm, formName)=> {
         };
 
         form = Object.defineProperty({}, formName, formValue);
+    
     }
     return form;
 };

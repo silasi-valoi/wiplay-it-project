@@ -1,10 +1,6 @@
 import * as React from 'react';
-import {X} from 'react-feather'
-import {NavBar} from 'templates/authentication/utils';
+import Registration from 'templates/authentication/index';
 
-import RegistrationComponent from 'templates/authentication/index';
-
-import AuthenticationHoc from 'containers/authentication/auth-hoc'
 import {matchMediaSize, displayErrorMessage, displaySuccessMessage} from 'utils/helpers';
 
 
@@ -13,13 +9,12 @@ type Props = {
 };
 
 interface State {
-    navbarTitle:string,
-    defaultFormName:string,
-
+    isAuthenticating:boolean,
+    
 };
 
 class AuthenticationPage extends React.Component<State, Props> {
-    //public isFullyMounted:boolean = false;
+    public isFullyMounted:boolean = false;
     private subscribe;
     private unsubscribe;
 
@@ -28,29 +23,38 @@ class AuthenticationPage extends React.Component<State, Props> {
     };
 
     readonly state: State = {
-        navbarTitle : 'Joining Wiplayit', 
-        defaultFormName : 'loginForm',
-
+        isAuthenticating:false,
+       
     };
+
+    public get isMounted() {
+        return this.isFullyMounted;
+    }; 
+
+    public set isMounted(value:boolean) {
+        this.isFullyMounted = value;
+    }
 
     constructor(props) {
         super(props);
     };
 
-
     componentDidMount =()=> {
+        this.isMounted = true;
+
+        this.setState({isAuthenticating:true})
         const _formConstructor:Function = this.props['formConstructor'];
         
         const matchBigScreen = matchMediaSize("min-width : 980px");
-        let matchSmallScreen = matchMediaSize("max-width : 980px");
-
+        
         if (matchBigScreen) {
             _formConstructor('loginForm');
         }
+     
     };
 
-    componentWillMount(){
-                
+    componentWillUnmount(){
+        this.isMounted = false;                
     }
     
           
@@ -63,19 +67,16 @@ class AuthenticationPage extends React.Component<State, Props> {
     };
 
     render() {
+        if(!this.isMounted) return null;
+
         let props = this.getProps();
         return(
-            <div className="registration-page">
-                <NavBar {...props}/>
-                <div className="registration-container">
-                    <RegistrationComponent {...props}/>
-                </div>
-            </div>
+            <Registration {...props}/>
         )
     };
 };
 
-export default AuthenticationHoc(AuthenticationPage);
+export default AuthenticationPage;
 
 
 

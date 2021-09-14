@@ -72,22 +72,16 @@
 .author-post-details-box,
 .autor-answer-details-box {
     display : flex;
-    border  : px solid black;
 }
-
-.author-details-box,
-.author-details {
-}
-
 
 .author-post-details-box .author-details-box,
 .autor-answer-details-box .author-details-box {
-    padding : 5px 4px 0;
+    padding : 0 4px 0;
+
 }
 
 
 .author-name-box {
-    border  : px solid black;
     font-weight : bold;
     font-size : 11px;
     font-family : 'Otomanopee one';
@@ -95,8 +89,6 @@
 }
 
 .author-img-box {
-    border  : px solid blue;
-    
 }
 
 .author-name-box {
@@ -104,34 +96,34 @@
 }
 
 .time-created {
-    font-size : 10px;
+    font-size : 11px;
     color     : grey;
     font-family : 'Open Sons Condensed';
 }
 
 .author-img {
-    width  : 25px;
-    height : 25px;
+
 }
 
-.author-post-details-box .author-img,
-.autor-answer-details-box .author-img {
-    width  : 35px;
-    height : 35px;
-}
 
 .author-img a img {
-    border : px solid  #D5D7D5;
+    border : 1px solid  #D5D7D5;
     border-radius : 50%;
+    width  : 25px;
+    height : 25px;
+    
+}
+
+.author-post-details-box a img,
+.autor-answer-details-box a img {
+    width  : 35px;
+    height : 35px;
+    margin-top: 2%;
+
 }
 
 .author-img a {
-    border: px solid green;
-}
-
-.question-container,
-.post-container{
-
+        
 }
 
 .answer-contents,
@@ -158,9 +150,9 @@
 }
 
 .post-title, .question {
-    font-size   : 10px;
     font-family : 'Ropa Sans';
     font-weight : bold;
+    font-size   : 17px;
 }
 
 
@@ -243,6 +235,30 @@
     text-decoration: underline;
 }
 
+.comments-loader-errors {
+    border  : px solid blue;
+    display : flex;
+    padding : 5px;
+    font-family :'Mukta';
+}
+
+.comments-loader-errors li:first-child {
+    border : px solid red;
+    width:  60%;
+    font-size : 13px; 
+    line-height: 1;
+    padding: 6px 0 4px;
+}
+
+.comments-loader-errors li:nth-child(2) {
+    border : px solid green;
+
+}
+
+.comments-loader-errors button {
+    border : px solid red;
+    color : #5384e5;
+}
 
 .replies-loader {
     display: flex;
@@ -305,7 +321,7 @@
 }
 
 .contents-nav-container {
-    border  : px solid blue;
+    border : px solid blue;
 }
 
 .contents-nav-box {

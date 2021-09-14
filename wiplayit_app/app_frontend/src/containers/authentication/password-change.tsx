@@ -30,7 +30,7 @@ export class PasswordChangePage extends Component{
 
             if(uid && token){
                 const _formConstructor = this.props['formConstructor']
-                return _formConstructor('passwordChangeConfirmForm', {uid, token});
+                return _formConstructor('passwordChangeConfirmForm', {form : {uid, token}});
             }             
         }
             
@@ -38,10 +38,8 @@ export class PasswordChangePage extends Component{
 
 
     render(){
-      
         let props:object = {...this.props, ...this.state};
-        console.log(props)
-                
+                            
         return (
             <div className="registration-page">
                <NavBar {...props}/>

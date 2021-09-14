@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import {X} from 'react-feather'
 
 import {NavBar} from 'templates/authentication/utils';
 import AccountConfirmation from 'templates/authentication/confirmation';
@@ -10,17 +9,18 @@ import { ModalCloseBtn } from "templates/buttons";
 import { AlertComponent } from 'templates/partials';
 import AuthenticationHoc from 'containers/authentication/auth-hoc'
 
+import {NonFieldErrors, EmailFieldErrors} from 'templates/authentication/errors';
+
 import {authenticationSuccess} from 'actions/actionCreators';
 import HomePage from "containers/main/home-page";
 
-import { displaySuccessMessage, displayErrorMessage } from 'utils/helpers';
+import {displaySuccessMessage, displayErrorMessage} from 'utils/helpers';
 
 import {formIsValid,
         authSubmit,
         validatePhoneNumber,
         validateEmail,
-        getFormFields,
-        setForm,} from 'containers/authentication/utils';   
+        getFormFields,} from 'containers/authentication/utils';   
 
 import {store} from "store/index";
 import {authenticateWithGet}  from "dispatch/index"
@@ -64,8 +64,8 @@ class AccountConfirmationPage extends Component{
         let currentUser:object = this.props['currentUser'];
         let email:string = currentUser && currentUser['email'];
 
-        let isPhoneNumber:boolean = validatePhoneNumber(email)
-        let isEmail:boolean = validateEmail(email)
+        let isPhoneNumber:boolean = validatePhoneNumber(email);
+        let isEmail:boolean = validateEmail(email);
 
         if (isPhoneNumber) {
             this._SetForm('phoneNumberConfirmationForm');
@@ -74,19 +74,19 @@ class AccountConfirmationPage extends Component{
         this.setState({currentUser, isEmail, isPhoneNumber});
     };
 
-    _SetForm(formName:string , options?:object):void{
-        const formConstructor:Function = this.props['formConstructor']
-        formConstructor(formName, options)
+    _SetForm(formName:string , options?:object):void {
+        const formConstructor:Function = this.props['formConstructor'];
+        formConstructor(formName, options);
        
     }
  
     resendConfirmation =()=> {
-        let currentUser = this.state['currentUser'];
-        let currentForm = this.state['form'];
-        let email = currentUser &&  currentUser.email;
+        let currentUser:object = this.state['currentUser'];
+        let currentForm:object = this.state['form'];
+        let email:string = currentUser &&  currentUser['email'];
         
         if (email) {
-            this._SetForm('emailResendForm', {email})
+            this._SetForm('emailResendForm', {form:{email}});
             
             const submit:Function = this.props['onSubmit'];
             setTimeout(()=> {
@@ -114,11 +114,6 @@ class AccountConfirmationPage extends Component{
         return (
             <div className="">
                 <fieldset style={ fieldSetStyles} disabled={submitting} >
-                    <div className="authentication-dismiss">
-                        <ModalCloseBtn>
-                            <X id="feather-x" size={20} color="red"/>
-                        </ModalCloseBtn>
-                    </div>
                     <div className="account-confirm-modal-container">
                         { props['isPhoneNumber'] &&
                             <div className="account-confirm-modal-box">
@@ -166,8 +161,10 @@ const SmsCodeHelperText = (props)=>{
 
 
 const EmailConfirmation = (props)=>{
-    let {successMessage, currentUser} = props;
+    let {successMessage, form, currentUser} = props;
     let email = currentUser && currentUser.email;
+    form = form && form['emailResendForm'];
+    let error = form && form.error;
         
     return (
         <div className="email-confirm-container">
@@ -182,6 +179,8 @@ const EmailConfirmation = (props)=>{
                             <li className="">{successMessage}</li>
                         </ul>
                     }
+                    <NonFieldErrors {...error}/>
+                    <EmailFieldErrors {...error}/>
 
                     <ul className="email-confirm-helper-text">
                         <li>
@@ -247,11 +246,12 @@ export class AccountEmailConfirmationPage extends Component{
     componentDidMount() {
         this.isMounted = true
         this.onAuthStoreUpdate();
+        this.setState({submitting : true}); 
         
         let formName:string = 'AccountConfirmation'
         let {key} = this.props['match'].params; 
         let apiUrl = Apis.accountConfirmApi(key);
-        key && store.dispatch<any>(authenticateWithGet({key,apiUrl, formName}));  
+        key && store.dispatch<any>(authenticateWithGet({key, apiUrl, formName}));  
     };
 
     onAuthStoreUpdate =()=> {
@@ -301,6 +301,8 @@ export class AccountEmailConfirmationPage extends Component{
     }
      
     render() {
+        if(!this.isMounted) return null;
+
         let props = {...this.props,...this.state};
         let alertMessageStyles = props['displayMessage'] && { display : 'block'} ||
                                                           { display : 'none' };

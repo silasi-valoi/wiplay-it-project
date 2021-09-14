@@ -25,8 +25,9 @@ import { PartalNavigationBar,
          NavigationBarBigScreen } from "templates/navBar";
 
 
-import {AlertComponent, UnconfirmedUserWarning} from 'templates/partials';
+import {AlertComponent} from 'templates/partials';
 import * as checkType from 'helpers/check-types'; 
+import {Modal}   from  "containers/modal/modal-container";
 
 import {store} from 'store/index';
 import {history} from "App";
@@ -56,6 +57,7 @@ export function MainAppHoc(Component) {
                 currentUser        : {},
                 userIsConfirmed    : false, 
                 userAuth           : {},
+                isAuthenticating   : false,
                 cacheEntities      : this._cacheEntities(), 
                 isAuthenticated    : this.authenticated(),
                 isAdmin            : this.isSuperUser(),
@@ -145,14 +147,20 @@ export function MainAppHoc(Component) {
             window.onpopstate = (event) => {
                 // Everytime a browser back button is hit, 
                 // Close modals if any is open 
-                closeModals();
+                
+                return closeModals();
             }
 
             let currentUser = this._GetCurrentUser();
 
             if (currentUser) {
                 let userIsConfirmed:boolean = this._userIsConfirmed(currentUser);
+                
                 this.setState({currentUser, userIsConfirmed});
+
+                if(!userIsConfirmed){
+                    store.dispatch<any>(getCurrentUser(this.authenticated()));
+                }
 
             }else{
                 store.dispatch<any>(getCurrentUser(this.authenticated()));
@@ -162,6 +170,7 @@ export function MainAppHoc(Component) {
         onStoreUpdate = () => {
            
             const onStoreChange = () => {
+                if(!this.isMounted) return;
                 
                 
                 let storeUpdate = store.getState();
@@ -222,11 +231,13 @@ export function MainAppHoc(Component) {
 
         handleAuth = (userAuth:object) =>{
 
-            userAuth && this.setState({userAuth}); 
-
-            this.confirmLogout(userAuth);
-            this.confirmLogin(userAuth);
-            this.handlePasswordChangeSuccess(userAuth);
+            if(this.isMounted){
+               
+                this.confirmLogout(userAuth);
+                this.confirmLogin(userAuth);
+                this.handlePasswordChangeSuccess(userAuth);
+                this.handleLogin(userAuth);
+            }
         };
 
         _HandleErrors(errors:object){
@@ -374,26 +385,25 @@ export function MainAppHoc(Component) {
             }
         };
 
-        clearItemFromStore =(item)=> {
+        clearItemFromStore =()=> {
             //Remove item from cache and store
             let storeUpdate = store.getState();
-            let { entities } = storeUpdate;
+            let {entities} = storeUpdate;
 
             let cacheEntities = this._cacheEntities();
                             
             Object.keys(entities).forEach(key => {
-                let entitie = entities[key]
-                                            
-                Object.keys(entitie).forEach(k => {
 
-                    if (k === item && entities[key][k]) {
-                        console.log(k, item)
-                        console.log(cacheEntities[key][k], entities[key[k]])
+                let entitie = entities[key]
+                if(key === 'userAuth' || key === 'currentUser'){
+                    
+                    Object.keys(entitie).forEach(k => {
                         delete cacheEntities[key][k];
                         delete entities[key][k];
-                    }
-                })
+                    })
+                }
             })
+          
             
             localStorage.setItem('@@CacheEntities',JSON.stringify(cacheEntities));
 
@@ -418,18 +428,32 @@ export function MainAppHoc(Component) {
             if (error && isTokenRefresh) return true;
         };
 
+        handleLogin(userAuth:object){
+            if (!userAuth || !userAuth['loginAuth'])return;
+
+            let loginAuth = userAuth['loginAuth'];
+            let isLoggedIn:boolean = loginAuth['isLoggedIn']; 
+            let isAuthenticated:boolean = this.state['isAuthenticated'];  
+            
+            if(isLoggedIn && !isAuthenticated){
+                this.isMounted && this.setState({isAuthenticated:true})
+                closeModals(true);
+            }
+        };
+
+
         confirmLogin =(userAuth:object) => {
             let loginAuth:object = userAuth['loginAuth'];
+            let userIsConfirmed:boolean = this.state['userIsConfirmed'];
+            if(!loginAuth) return;
 
-            if (loginAuth && loginAuth['isLoggedIn']) {
-                this.setState({isAuthenticated:true})
-            }
 
-            if (loginAuth && loginAuth['isConfirmed']) {
-                delete loginAuth['isConfirmed']
+            if (loginAuth['isConfirmed']) {
+                delete loginAuth['isConfirmed'];
+                this.isMounted && this.setState({userIsConfirmed:true})
                 closeModals(true);
-
-                let successMessage:string = 'You successfully confirmed your account'
+                                     
+                let successMessage:string = 'You successfully confirmed your account';
                 displaySuccessMessage(this, successMessage);
             }
         };
@@ -439,29 +463,33 @@ export function MainAppHoc(Component) {
                 return;
             }
             
-            let isLoggedOut:boolean    = this.isLoggedOut(userAuth);
+            let isLoggedOut:boolean = this.isLoggedOut(userAuth);
             let isTokenRefresh:boolean = this.isTokenRefresh(userAuth);
+            let isAuthenticated:boolean = this.state['isAuthenticated'];
            
-            if (isLoggedOut) {
-                this.setState({isAuthenticated:false});
+            if (isLoggedOut && isAuthenticated) {
+                this.isMounted && this.setState({isAuthenticated:false});
+
                 let successMessage:string = userAuth['loginAuth'].successMessage;
                 displaySuccessMessage(this, successMessage);
+ 
+                closeModals(true);
                 
             }
 
             if (isLoggedOut || isTokenRefresh) {
-                this.clearItemFromStore("user");
-                this.clearItemFromStore('loginAuth')
+                this.clearItemFromStore();
             }
-
-
-            closeModals(true);
-                        
         };
    
 
         loginUser = () => {
-            history.push('/user/registration');
+            let modalProps =  {
+                authenticationType : 'Login',
+                modalName : 'authenticationForm',
+            };
+
+            return Modal(modalProps);
         };
 
         logout= () => {
@@ -472,6 +500,7 @@ export function MainAppHoc(Component) {
         };  
        
         pushToRouter(params:object, event?:React.MouseEvent<HTMLAnchorElement>){
+            closeModals(true);
             event && event.preventDefault();
 
             let path:string =  params['linkPath'];
@@ -479,45 +508,74 @@ export function MainAppHoc(Component) {
             let location:object = history.location;
 
             let currentPath = location['pathname'];
-
+        
             if (path && path !== currentPath) {
-                history.push(path, state);
+                setTimeout(()=> {
+                    history.push(path, state); 
+                }, 500);
             }
         };
 
         reloadPage(){
-            console.log(this.props,window.location, 'Im reloading this page')
             window.location.reload();
-        }
+        };
      
         editFollowersOrUpVoters = (params:object) =>{
+            params['formData'] = this._getFormData(params);
+            this.updateObjData(params);
+           
+        };
+       
+
+        updateObjData(params:object){
             let isAuthenticated:boolean = this.state.isAuthenticated;
 
             if(!isAuthenticated){
-               return history.push('/user/registration/');
+                return this.loginUser();    
             }
            
             this.setState({isUpdating:true})
-            params['formData'] = this._getFormData(params);
             this.props.submit(params); 
         };
 
-        removeAnswerBookmark =(params:object)=>{
-            let obj:object = params['obj']
-            let apiUrl = Apis.removeAnswerBookMarkApi(obj['id']);
-            store.dispatch<any>(Delete({...params, apiUrl}))
+        removeBookmark =(params:object)=>{
+            let bookmarkId:number = params && params['obj'].id
+            let apiUrl:string;
+            
+            let objName:string = params['objName'];
+
+            if(objName === 'Answer'){
+                apiUrl = Apis.removeAnswerBookMarkApi(bookmarkId);
+
+            }else{
+                apiUrl = Apis.removePostBookMarkApi(bookmarkId);
+            }
+
+            this.deleteObj({...params, apiUrl});
+
+           
         };
 
-        addBookmark =(params:object)=> {
-            console.log(params)
-            
-            let isBookMarked = IsBookMarked('answers', params['obj'])
-            console.log(isBookMarked)
-            if (isBookMarked){
-                return this.removeAnswerBookmark(params)
+        deleteObj(params:object){
+            let isAuthenticated:boolean = this.state.isAuthenticated;
+
+            if(!isAuthenticated){
+                return this.loginUser();    
             }
+           
+           return store.dispatch<any>(Delete({...params}));
+        }
+
+        addBookmark =(params:object)=> {
             
-            var data   = params['obj']
+            let bookmarkType:string = params['bookmarkType'];
+            let data   = params['obj'];
+            let isBookMarked = IsBookMarked(bookmarkType, data)
+       
+            if (isBookMarked){
+                return this.removeBookmark(params)
+            }
+                     
             params['formData'] = helper.createFormData({data});
             this.props.submit(params);
         };
@@ -553,6 +611,7 @@ export function MainAppHoc(Component) {
                 logout                  : this.logout.bind(this),
                 loginUser               : this.loginUser.bind(this),
                 editFollowersOrUpVoters : this.editFollowersOrUpVoters.bind(this),
+                deleteObj               : this.deleteObj.bind(this),
                 addBookmark             : this.addBookmark.bind(this),
                 reloadPage              : this.reloadPage.bind(this),
                 pushToRouter            : this.pushToRouter.bind(this),
@@ -566,21 +625,19 @@ export function MainAppHoc(Component) {
             }
 
             let props = this.getProps();
-            let alertMessageStyles = props['displayMessage']?{ display : 'block'}:
-                                                             { display : 'none' };
+            let alertMessageStyles = props['displayMessage']? { display : 'block'}: { display : 'none' };
 
-            let onModalStyles = props['modalIsOpen'] ? {opacity:'0.70',} :
-                                                    {opacity:'2',};
+            let onModalStyles = props['modalIsOpen']? {opacity:'0.70',}: {opacity:'2',};
                       
             return (
                 <div  className="app-container">
                     <div className="app-box-container">
-                        <UnconfirmedUserWarning {...props}/>
-                        <div style={alertMessageStyles}>
+                        
+                        <div className="" style={alertMessageStyles}>
                             <AlertComponent {...props}/>
                         </div>
                         
-                        <div className="page-contents" id="page-contents">
+                        <div>
                             <fieldset style={ onModalStyles } 
                                       disabled={props['modalIsOpen']}>
                                 <NavigationBarSmallScreen  {...props}/>      
@@ -616,8 +673,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         getReplyList         : (props)      => dispatch(getReplyList(props)),
         submit               : (props )     => dispatch(handleSubmit(props)), 
         authenticateUser     : (props)      => dispatch(authenticate(props)),
-        
-   }
+    };
 
 };
 

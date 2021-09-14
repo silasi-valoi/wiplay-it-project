@@ -14,8 +14,8 @@ class AccountConfirmationResendPage extends Component{
 
         this.state = {
             pageTitle :  'Confirmation Resend',
-            navbarTitle      :  'Confirm Account',
-            formDescription  :  ['Enter Your email address'],
+            navbarTitle :  'Confirm Account',
+            formDescription :  ['Enter Your email address'],
         };
     }
 
@@ -28,20 +28,13 @@ class AccountConfirmationResendPage extends Component{
         let props = {...this.props, ...this.state}
 
         return (
-            <div className="">
-                <div className="authentication-dismiss">
-                    <ModalCloseBtn>
-                        <X id="feather-x" size={20} color="red"/>
-                    </ModalCloseBtn>
-                </div>
-                <div className="account-confirmation-box">
-                    <EmailForm {...props}/>
-                </div>
+            <div className="account-confirmation-box">
+                <EmailForm {...props}/>
             </div>
         )
     };
 };
 
 
-export default AuthenticationHoc(AccountConfirmationResendPage);
+export default AccountConfirmationResendPage;
 

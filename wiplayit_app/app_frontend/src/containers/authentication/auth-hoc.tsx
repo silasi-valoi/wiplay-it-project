@@ -1,5 +1,7 @@
 import * as React from 'react';
 //import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { Diff } from 'utility-types';
 import { BrowserRouter } from "react-router-dom";
 
@@ -17,8 +19,7 @@ import {getFormFields,
         validatePhoneNumber,
         getAuthUrl,
         formIsValid,
-        changeForm,
-        setForm,} from 'containers/authentication/utils';
+        constructForm } from 'containers/authentication/utils';
 
 
 type Props = {
@@ -28,8 +29,7 @@ type Props = {
 
 // These props will be injected into the base component
 interface InjectedProps {
-  count: number;
-  onIncrement: () => void;
+  
 }
 
 
@@ -39,33 +39,23 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
     type Props = Diff<BaseProps, InjectedProps> & {
         // here you can extend hoc with new props
-        initialCount?: number;
+    
     };
     
     interface State {
+        isMounted:boolean,
         canDisplayMessage:boolean,
+        defaultFormName:string,
         message:object,
-        isSocialAuth:boolean,
         isConfirmed:boolean,
-        form:object,
-        formName:string, 
-        onLoginForm:boolean,
-        submitting:boolean,
-        onSignUpForm:boolean,
-        onPasswordResetForm:boolean,
-        onPasswordChangeForm : boolean,
-        onPasswordChangeTokenForm:boolean,
-        onPasswordChangeSmsCodeForm:boolean, 
+        authForm:object,
+        onScroolStyles:object,
         passswordChanged:boolean, 
         smsCode: number,
         formIsValid: boolean,
         successMessage : string,
         cacheEntities : object,
         passwordRestAuth:object,
-        onPasswordChangeConfirmForm:boolean,
-        onPhoneNumberConfirmationForm:boolean,
-        onEmailResendForm:boolean,
-        onPasswordResetSmsCodeForm:boolean,
         modalIsOpen:boolean,
     };
 
@@ -86,25 +76,15 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         readonly state: State = {
-            canDisplayMessage       : false,
+            isMounted:false,
+            onScroolStyles :null,
+            canDisplayMessage    : false,
             message              : null,
-            isSocialAuth         : false,
             isConfirmed          : false,
-            form                 : null,
-            formName             : null, 
-            onLoginForm          : false,
-            submitting           : false,
-            onSignUpForm         : false,
-            onPasswordResetForm  : false,
-            onPasswordChangeForm : false,
-            onPasswordChangeTokenForm:false,
-            onPasswordChangeSmsCodeForm:false, 
-            onPasswordChangeConfirmForm:false,
-            onPhoneNumberConfirmationForm:false,
-            onEmailResendForm:false,
-            onPasswordResetSmsCodeForm:false,
+            authForm             : {},
             passswordChanged     : false, 
             modalIsOpen:false,
+            defaultFormName:'loginForm',
             passwordRestAuth:undefined,
             smsCode              : undefined,
             formIsValid          : false,
@@ -117,11 +97,11 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             super(props);
         };
 
-        public get _isMounted() {
+        public get isMounted() {
             return this.isFullyMounted;
         }; 
 
-        public set _isMounted(value:boolean) {
+        public set isMounted(value:boolean) {
             this.isFullyMounted = value;
         }
 
@@ -151,7 +131,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         _SendSocialAuthentication = (accessToken, apiUrl):void => {
-            this.setState({isSocialAuth:true, submitting:true});
             this.formConstructor('loginForm');
 
             const socialLoginProps:object = {
@@ -160,58 +139,109 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 formName:'loginForm',
                 apiUrl,
             };
-                        
+
             return store.dispatch<any>(authenticate(socialLoginProps));
         };
 
         componentWillUnmount =()=> {
-            window.removeEventListener('popstate', this.closeAuthModal);
-            this._isMounted = false;
+            const matchSmallScreen = matchMediaSize("max-width : 980px");
+        
+            if (matchSmallScreen) {
+                this.clearAuthForm();
+            }
+                        
             this.unsubscribe();
+
+            this.isMounted = false;
+            
         };
 
 
-        componentDidUpdate =(nextProps , prevState)=>{
+        componentDidUpdate(nextProps , prevState){
         };
-   
+
+        clearAuthForm(){
+            let storeUpdate = store.getState(); 
+            let {entities} =  storeUpdate;
+            let authForm:object = entities['authForm'];
+            
+            Object.keys(authForm).forEach(key => {
+                if(key !== 'form') delete authForm[key];
+            });
+            
+        };  
 
         closeAuthModal = () => {
             return closeModals()
-        }
+        };
+
+        handleResize = () => {
+            let formBox = document.getElementById('form-container');
+        
+            if (formBox) {
+                
+                let formBoxTop = formBox.getBoundingClientRect().top;
+                let clientHeight = window.innerHeight - formBoxTop - 20;
+                console.log(formBox.getBoundingClientRect())
+                console.log(window.innerHeight)
+                if(!this.state['onScroolStyles']){
+
+                    setTimeout(()=> {
+                        
+                        let onScroolStyles = {
+                            height : `${clientHeight}px`,
+                            border: '1px solid blue',
+                        };
+                        //this.isMounted && this.setState({onScroolStyles});
+                    }, 100);
+                }
+            }
+
+        };
 
         componentDidMount =()=> {
-            this._isMounted = true;
-            this.onAuthStoreUpdate();
+                       
+            this.isMounted = true;
+            let storeUpdate = store.getState(); 
+            let {entities} =  storeUpdate;
+            let authForm:object = entities['authForm'];
            
-            window.addEventListener('popstate', this.closeAuthModal);
+            this.setState({authForm})
+            
+            this.onAuthStoreUpdate();
         };
 
         onAuthStoreUpdate =()=> {
-            if (!this._isMounted) return;
+
+            if (!this.isMounted) return;
 
             const onStoreChange = () => {
-                let  storeUpdate = store.getState(); 
+                let storeUpdate = store.getState(); 
                 let {entities} =  storeUpdate;
                 let userAuth = entities['userAuth'];
+                let authForm:object = entities['authForm'];
                 let errors = entities['errors']
-                                                              
-                this.setState({submitting :userAuth['isLoading']}); 
-             
+                     
                 if (errors && errors.error) {
                     this._HandleErrors(errors);
                 }
                 
-                let formName = userAuth['formName'];
-                let form = this.state['form'];
-
-                if (form && form[formName] && userAuth['error']) {
-                    
+                let formName:string = authForm['formName'];
+                let form = authForm['form'];
+               
+                if (userAuth['error'] && form && formName) {
                     form[formName]['error'] = userAuth['error'];
-                    this.setState({form})
-                    delete userAuth['error']
+                    authForm['form'] = form;
+
+                    delete userAuth['error'];
                 }
-            
-                this.handleLogin(userAuth);
+                authForm['submitting'] = userAuth['isLoading'];
+                
+
+                if(Object.keys(authForm).length){
+                    this.setState({authForm});
+                }
+                            
                 this.handlePasswordReset(userAuth);
                 this.handlePasswordChangeSuccess(userAuth);
                 this.handleConfirmationResend(userAuth);
@@ -220,6 +250,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             this.unsubscribe = store.subscribe(onStoreChange);
         };
 
+        
         handleConfirmationResend(userAuth:object){
             if (!userAuth['confirmationResendAuth']) {
                 return;
@@ -231,41 +262,69 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             
             let confirmationResendAuth:object = userAuth['confirmationResendAuth'];
             if (confirmationResendAuth['successMessage']) {
+                let authForm:object = this.state['authForm'];
+                               
+                let successMessage = confirmationResendAuth['successMessage'];
+                              
+                authForm['successMessage'] = successMessage;
+                
+                this.isMounted && this.setState({authForm});
+                delete confirmationResendAuth['successMessage'];
+                
                 if (isPhoneNumber) {
                     this.formConstructor('phoneNumberConfirmationForm');
                 }
 
-                let successMessage = confirmationResendAuth['successMessage'];
-                this.setState({successMessage});
             }
             
-            delete confirmationResendAuth['successMessage'];
+            
         };
         
         handlePasswordReset = (userAuth:object):void => {
             if (!userAuth['passwordRestAuth']) return;
 
             let passwordRestAuth:object = userAuth['passwordRestAuth'];
-
             let successMessage:string = passwordRestAuth['successMessage'];
             let emailSent:boolean = passwordRestAuth['emailSent']; 
             let smsSent:boolean = passwordRestAuth['smsSent']; 
-           
-            this.setState({passwordRestAuth, successMessage})
-            displaySuccessMessage(this, successMessage)
-                    
+                               
             if (smsSent) {
-                delete passwordRestAuth['smsSent']; 
                 closeModals(true) //Close authentication modal 
 
-                const pathname:string = history['location'].pathname
-                if (pathname != '/password/change/') {
+                delete passwordRestAuth['smsSent'];
+
+                this.updateSuccessMessage(successMessage, passwordRestAuth);                          
+                this.formConstructor('passwordResetSmsCodeForm');
+
+                const pathname:string = history['location'].pathname;
+                const redirectUrl:string = '/password/change/';
+                
+                if (pathname !== redirectUrl) {
                     const pushToRouter:Function = history['push'];
+
                     setTimeout(()=> {
-                        pushToRouter('/password/change/', {passwordRestAuth});
-                    }, 500);
+                        pushToRouter(redirectUrl, {passwordRestAuth});
+                    }, 1000);
                 }
-            }  
+
+                    
+            }else if(emailSent){
+                delete passwordRestAuth['emailSent'];
+                this.updateSuccessMessage(successMessage, passwordRestAuth);   
+                
+            }
+
+            delete passwordRestAuth['successMessage'];  
+
+        };
+
+        updateSuccessMessage(successMessage:string, passwordRestAuth:object){
+
+            let authForm:object = this.state['authForm']; 
+            
+            authForm['successMessage'] = successMessage;
+            this.isMounted && this.setState({authForm, passwordRestAuth});
+
         };
 
         handlePasswordChangeSuccess = (userAuth:object):void =>{
@@ -277,23 +336,24 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             }
        
             if (smsCodeAuth && smsCodeAuth['smsCodeValidated']) {
-                displaySuccessMessage(this, smsCodeAuth['successMessage'])
-
+                displaySuccessMessage(this, smsCodeAuth['successMessage']);
                 let smsCode = smsCodeAuth['smsCode']; 
-                let passwordAuthOpts = {sms_code:smsCode};
-                this.formConstructor('passwordChangeConfirmForm', passwordAuthOpts);
-
-                this.setState({
-                    smsCode,
-                    onPasswordChangeConfirmForm:true,
-                    onPasswordChangeSmsCodeForm:true,
-                    onPasswordResetSmsCodeForm:false }
-                )
-
                 delete userAuth['smsCodeAuth'];
 
+                let opts:object = {
+                        smsCode,
+                        form:{sms_code:smsCode},
+                        onPasswordChangeConfirmForm:true,
+                        onPasswordChangeSmsCodeForm:true,
+                        onPasswordResetSmsCodeForm:false 
+                };
+                
+                this.formConstructor('passwordChangeConfirmForm', opts);
+                
+
             }else if(passwordChangeAuth && passwordChangeAuth['successMessage']){
-                this.setState({passswordChanged:true});
+                this.isMounted && this.setState({passswordChanged:true});
+
                 displaySuccessMessage(this, passwordChangeAuth['successMessage']);
                 delete userAuth['passwordChangeAuth'];
                       
@@ -304,27 +364,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 store.dispatch<any>(action.authenticationSuccess({smsCodeAuth}));
             }
         };
-
-        handleLogin = (userAuth:object) => {
-            if (!userAuth || !userAuth['loginAuth'])return;
-
-            let loginAuth = userAuth['loginAuth']
-            let {isLoggedIn, isConfirmed} = loginAuth;
-            const pathname:string = history['location'].pathname
-                                                                       
-            if(isLoggedIn && pathname === '/user/registration/' || 
-                pathname === '/user/registration'){
-                
-                setTimeout(()=> {
-                    history.goBack(); 
-                }, 500);
-            }
-
-            if (isLoggedIn && isConfirmed) {
-                this.setState({isConfirmed});   
-            }
-        };
-      
+              
         _HandleErrors = (errors:object):void => {
             if (!errors || !errors['error']) return;
             displayErrorMessage(this, errors['error']);
@@ -332,60 +372,90 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
         handleFormChange:React.ReactEventHandler<HTMLInputElement> =(event)=>{
             event.preventDefault()
-            changeForm(this, event);
+         
+            let authForm:object = this.state['authForm'];
+            let form:object = authForm['form'];
+            let formName = authForm['formName'];
+
+            let _form:object = form && form[formName];
+            
+             
+            if (_form) {
+
+                let name:string = event.target['name'];
+                let data:string = event.target['value'];
+                               
+                form[formName][name] = data;
+           
+                store.dispatch<any>(action.toggleAuthForm({form, formName}))
+            }
         };
 
         selectCountry = (value):void => {
-            let form = this.state['form'];
-            let formName = this.state['formName']
-            form[formName]['country'] = value
-            this.setState({form });
+            let authForm:object = this.state['authForm'];
+            let form:object = authForm['form'];
+            let formName = authForm['formName'];
+
+            form[formName]['country'] = value;
+
+            store.dispatch<any>(action.toggleAuthForm({form, formName}));
         }
 
-        _SetForm = (form:object, formName:string):void => {
-            let currentForm = this.state['form'];
-            form = setForm(form, currentForm, formName);
-            this.setState({
-                form,
-                formName, 
-                successMessage:undefined
-            });
+        _SetForm = (form:object, formName:string, options?:object):void => {
+           
+            let authForm:object = this.state['authForm'];
+     
+            let currentForm:object = authForm['form'];
+               
+            
+            form = constructForm(form, currentForm, formName);
+            let formOpts:object =  this.getFormOpts(formName, true);
+                
+            if(options){
+                formOpts = {...formOpts, ...options};
+            }
+            
+            store.dispatch<any>(action.toggleAuthForm({form, formName, ...formOpts}));
 
-            this.setFormOpts(formName, true);
         };
 
-        setFormOpts = (formName:string, value:boolean) => {
+        getFormOpts = (formName:string, value:boolean):object => {
         
             switch(formName){
                 case 'loginForm':
-                    return this.setState({ onLoginForm : value})
+                    return {onLoginForm : value}
                   
                 case 'signUpForm':
-                    return this.setState({onSignUpForm : value})
+                    return {onSignUpForm : value}
 
                 case 'passwordResetForm':
-                    return this.setState({
-                        onPasswordResetForm : value,
-                        passwordRestAuth:undefined}
-                    );
- 
+                    let successMessage:string;
+                    let passwordRestAuth:object;
+                                                        
+                    return {
+                        onPasswordResetForm : value, 
+                        successMessage,
+                        passwordRestAuth,
+                        
+                    };
+                
                 case 'emailResendForm':
-                    return this.setState({ onEmailResendForm : value });
+                    return {onEmailResendForm : value};
                        
                 case 'passwordResetSmsCodeForm':
-                    return this.setState({onPasswordResetSmsCodeForm: value});
+                    return {onPasswordResetSmsCodeForm: value};
 
                 case 'phoneNumberConfirmationForm':
-                    return this.setState({onPhoneNumberConfirmationForm: value});
+                    return {onPhoneNumberConfirmationForm : value};
                        
                 case 'passwordChangeConfirmForm':
-                    return this.setState({onPasswordChangeConfirmForm : value});
+                    return {onPasswordChangeConfirmForm : value};
 
                 case 'passwordChangeForm':
-                    return this.setState({onPasswordChangeTokenForm : value});
+                    return {onPasswordChangeTokenForm : value};
                   
                 default:
-                    return null;
+                    return {};
             };
         };
         
@@ -406,41 +476,63 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             }
             
             if (form) {
-               form =  Object.assign(form, options || {});
-                return this._SetForm(form, formName);
+                let extraForm:object = options && options['form'];
+
+                if(extraForm){
+                    
+                    form = {...form, ...extraForm};
+                    delete options['form'];
+                }
+             
+               
+                this._SetForm(form, formName, options);
             }
         };
 
         toggleAuthForm = (params:object):void => {
-                                          
-            if (params['value'] === false ) {
-                this.hideToggledForm(params['formName']);
-                this.formConstructor(this.state['defaultFormName']); 
+            let defaultFormName:string = params['defaultFormName'];
+            let formName:string = params['formName'];
+
+            let value:boolean = params['value'];
+
+            if (value === false ) {
+                console.log(params, 'hidding form and toogling', formName, defaultFormName)
+                this.hideToggledForm(formName);
+
+                if(defaultFormName) this.formConstructor(defaultFormName); 
 
             }else{
+                console.log(params, 'toogling form', formName)
                 this.formConstructor(params['formName']);
             }
         };
 
-        hideToggledForm = (formName:string):void => {
-       
+        hideToggledForm = (formName:string) => {
+            console.log("passwordResetForm" === formName)
+                               
             switch (formName) {
+                case "loginForm":
+                    return store.dispatch<any>(action.toggleAuthForm({onLoginForm: false}));
+
                 case "signUpForm":
-                    this.setState({onSignUpForm : false});
-                    break;
-
+                    return store.dispatch<any>(action.toggleAuthForm({onSignUpForm : false}));
+                 
                 case "passwordResetForm":
-                    this.setState({onPasswordResetForm : false});
-                    break;
+                    console.log('hidding a form', formName)
 
+                    return store.dispatch<any>(
+                        action.toggleAuthForm({onPasswordResetForm:false, onPasswordResetSmsCodeForm:false})
+                        );
+                
                 case "emailResendForm":
-                    this.setState({onEmailResendForm : false});
-                    break;
-
+                    return store.dispatch<any>(action.toggleAuthForm({onEmailResendForm : false}));
+                
                 default:
-                    break;
+                    return null;
             }
         };
+
+
         
         onSubmit = (e) => {
             e && e.preventDefault();
@@ -464,6 +556,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         render() {
+            if(!this.isMounted) return null;
+
             let props = this.getProps();
             let fieldSetStyles = props['submitting'] && {opacity:'0.60'} || {};
           
@@ -476,6 +570,26 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
     };
 };
 
-export default AuthenticationHoc;
+
+//binds on `props` change
+const mapDispatchToProps = (dispatch, ownProps) => {
+   
+    return {
+        authenticateUser : (props) => dispatch(authenticate(props)),
+        
+    }
+
+};
+
+const mapStateToProps = (state, ownProps) => {
+   
+    return {
+        entities : state.entities,  
+        authForm : state.entities.authForm,    
+    }
+};
+
+const composedHoc = compose(connect(mapStateToProps, mapDispatchToProps),  AuthenticationHoc);
 
 
+export default  AuthenticationHoc;

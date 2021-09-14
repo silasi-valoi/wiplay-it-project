@@ -4,17 +4,19 @@ import React, {Component} from 'react';
 import GetTimeStamp from 'utils/timeStamp';
 import Api from 'utils/api';
 import {store} from 'store/index';
+
 import MainAppHoc from 'containers/main/index-hoc';
 import {Modal} from 'containers/modal/modal-container';
-import {getCurrentUserSuccess, authenticationSuccess} from 'actions/actionCreators';
+import {getCurrentUserSuccess, authenticationSuccess, toggleAuthForm} from 'actions/actionCreators';
 import {SettingsTemplate} from 'templates/settings';
 import { displaySuccessMessage, displayErrorMessage } from 'utils/helpers';
+
 import {formIsValid,
         validateEmail,
         authSubmit,
-        changeForm,
         getFormFields,
-        setForm,} from 'containers/authentication/utils';   
+        constructForm} from 'containers/authentication/utils'; 
+
 import {PartalNavigationBar,
         NavigationBarBottom,
         NavigationBarBigScreen} from 'templates/navBar';
@@ -36,7 +38,7 @@ class  SettingsContainer extends Component  {
             onAddPhoneNumberForm : false,
             phoneNumberOrEmailAdded : false,
             successMessage   : undefined,
-            form : undefined,
+            authForm : {},
         };       
     };
 
@@ -52,8 +54,9 @@ class  SettingsContainer extends Component  {
     componentDidMount() {
         this.isMounted = true
         this.onSettingsStoreUpdate()
-        console.log(this.props)
-     
+        let authForm:object = this.props['entities'].authForm;
+
+        this.setState({authForm})
     };
 
     componentWillUnmount =()=> {
@@ -68,16 +71,22 @@ class  SettingsContainer extends Component  {
             let  storeUpdate = store.getState(); 
             let {entities}   =  storeUpdate;
             let userAuth:object = entities['userAuth'];
-            let formName:string = this.state['formName'];
-            this.setState({submitting : entities['isLoading']}); 
+            let authForm:object = entities['authForm']
+                   
+            let formName:string = authForm['formName'];
+            let form = authForm['form'];
 
-            if (userAuth['error'] && formName) {
-                let form:object = this.state['form'];
+            if (userAuth['error']) {
                 
                 form[formName]['error'] = userAuth['error'];
-                this.setState({form});
+                authForm['form'] = form;
+                
                 delete userAuth['error'];
             }
+
+            authForm['submitting'] = userAuth['isLoading'];
+
+            this.setState({authForm});
 
             this.handlePhoneNumberAddSuccess(entities['phoneNumberOrEmailAuth']);
                  
@@ -160,12 +169,13 @@ class  SettingsContainer extends Component  {
     }
 
     _SetForm=(form={}, formName='', formOpts={})=>{
-        let currentForm = this.state['form'];
+        let authForm:object = this.state['authForm'];
+        let currentForm:object = authForm['form'];
                  
         form = {...form, ...formOpts};
-        form = setForm(form, currentForm, formName);
-
-        this.setState({form, formName});
+        authForm = constructForm(form, currentForm, formName);
+        
+        store.dispatch<any>(toggleAuthForm({form, formName, ...formOpts}))
     }
 
     passwordConfirmExpired=(passwordConfirmAuth={})=>{
@@ -212,9 +222,17 @@ class  SettingsContainer extends Component  {
 
     onChange(event, formName:string) {
         event.preventDefault();
-        formName && this.setState({formName})
+        formName && this.setState({formName});
+        let {form} = this.state['form'];
         
-        changeForm(this, event);
+        if (form && formName) {
+                let name:string = event.target['name'];
+                let data:string = event.target['value'];
+
+                form[formName][name] = data;
+
+                store.dispatch<any>(toggleAuthForm({form, formName}))
+            }
     };
 
     handleSubmit=(event, formName)=>{

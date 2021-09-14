@@ -55,6 +55,7 @@ export const InitialState = ():object => {
   
     return {
         userAuth    : {},
+        authForm    : {},
         currentUser : {},
         userProfile : {},
         users       : {},
@@ -115,8 +116,9 @@ export function entities(state:object=InitialState(), action:object):object {
         case "MODAL_SUBMIT_ERROR":
             return updateStateEntyties('modal', action, state);
 
-            
-    
+        case 'AUTH_FORM':
+            return updateStateEntyties('authForm', action, state)
+
         case types.USER_AUTHENTICATION['PENDING'] :
         case types.USER_AUTHENTICATION['SUCCESS']:
         case types.USER_AUTHENTICATION['ERROR']:

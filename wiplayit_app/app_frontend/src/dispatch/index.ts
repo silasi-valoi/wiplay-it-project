@@ -59,7 +59,7 @@ export function sendMessage(params:object):Function {
 
 
 export function getAboutInfo(options?:object) {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api    = _GetApi(useToken);
 
     if(!Api){
@@ -98,7 +98,7 @@ export function getIndex(authenticated:boolean=false, options?:object):Function 
     
     const Api  = _GetApi(authenticated, {requestFor:'index'});
     let apiUrl = Apis.getIndexApi(); 
-
+    
     return async dispatch => {
         const errorOpts:object = {
             dispatch,
@@ -113,6 +113,7 @@ export function getIndex(authenticated:boolean=false, options?:object):Function 
             dispatch(action.getIndexPending());
 
             Api.get(apiUrl).then(response => {
+                console.log(response)
                 dispatch(action.getIndexSuccess(response.data)); 
            
             }).catch(error => {
@@ -144,7 +145,7 @@ export function getUserList(props:UserListProps) {
             handleErrors({online}, errorOpts)
              
         }else{
-            let useToken:boolean = false;
+            let useToken:boolean = true;
             const Api  = _GetApi(useToken);
 
             dispatch(action.getUserListPending(usersById))
@@ -162,7 +163,7 @@ export function getUserList(props:UserListProps) {
 
 
 export function getQuestionList(questionListById:string) {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);  
     let apiUrl     = Apis.getQuestionListApi(); 
 
@@ -195,7 +196,7 @@ export function getQuestionList(questionListById:string) {
 
 export function getPostList(postListById:string) {
 
-    let useToken:boolean = false;
+    let useToken:boolean = true
     const Api = _GetApi(useToken);  
 
     let apiUrl:string = Apis.getPostListApi();
@@ -227,7 +228,7 @@ export function getPostList(postListById:string) {
 
 
 export function getQuestion(id:number) {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken); 
   
     let apiUrl:string = Apis.getQuestionApi(id);
@@ -259,7 +260,7 @@ export function getQuestion(id:number) {
 
 
 export function getPost(id:number) {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);  
 
     let apiUrl = id && Apis.getPostApi(id);
@@ -293,7 +294,7 @@ export function getPost(id:number) {
 
 
 export function getUserProfile(id:number, apiUrl?:string) {
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api  = _GetApi(useToken);
     apiUrl    = !apiUrl && Apis.getProfileApi(id) || apiUrl;
     let profileById:string = `userProfile${id}`;
@@ -322,13 +323,13 @@ export function getUserProfile(id:number, apiUrl?:string) {
     };
 };
 
-interface commetParams {
+interface commentParams {
     commentsById:string,
     apiUrl:string
 }
 
-export function getCommentList(params:commetParams) {
-    let useToken:boolean = false;
+export function getCommentList(params:commentParams) {
+    let useToken:boolean = true;
     const Api    = _GetApi(useToken); 
 
     let apiUrl:string = params['apiUrl']; 
@@ -364,7 +365,7 @@ export function getReplyList(params:object) {
     let byId:string = params['byId'];
     const apiUrl:string = params['apiUrl'];
 
-    let useToken:boolean = false;
+    let useToken:boolean = true;
     const Api    = _GetApi(useToken);  
 
     return async dispatch => {
@@ -447,22 +448,16 @@ export const Delete = (params:object)=>{
 
             Api.delete(apiUrl, {}).then(response => {
                 console.log(response, params) 
-                let bookmarks = removeBookmark(params['obj'], params['bookmarkType'])
-         
-                dispatch(action.getIndexSuccess(bookmarks));
-                let bookmarkType:string;
-                if(objName === 'AnswerBookmark'){
-                    bookmarkType = 'Answer';
+                if(params['bookmarkType']){
 
-                }else if(objName === 'PostBookmark'){
-                    bookmarkType = 'Post';       
+                    return handleBookmarkDeleteSuccess(params, dispatch);
+
+                }else{
+                    params['data'] = response.data;
+
+                    return handleObjDeleteSuccess(params, dispatch);
                 }
-                                
-                let alertMessage = {
-                    textMessage : `${bookmarkType} removed from your bookmarks.`,
-                    messageType : 'success'
-                }
-                dispatch(action.HandleAlertMessage(alertMessage))
+                
 
             }).catch(error =>{
                 handleErrors(error, errorOpts)
@@ -471,7 +466,38 @@ export const Delete = (params:object)=>{
     };
 }; 
 
-const removeBookmark =(data:object, bookmarkType:string)=>{
+
+const handleObjDeleteSuccess = (params ,dispatch) => {
+    let updateProps:object = {
+        ...params,
+        isDeleting:true,
+    };
+
+    let data:object = params['data'];
+
+    updateProps['data'] = prepPayLoad(params['objName'], data);
+    updateProps['successMessage'] = BuildAlertMessage(updateProps);
+
+    dispatch(action.updateActionSuccess(updateProps));
+};
+
+
+
+
+const handleBookmarkDeleteSuccess = (params:object, dispatch) => {
+        let objName:string = params['objName'];
+        let bookmarks = removeBookmark(params['obj'], params['bookmarkType'])
+         
+        dispatch(action.getIndexSuccess(bookmarks));
+                                               
+        let alertMessage = {
+            textMessage : `${objName} removed from your bookmarks.`,
+            messageType : 'success'
+        }
+        dispatch(action.HandleAlertMessage(alertMessage))
+};
+
+const removeBookmark = (data:object, bookmarkType:string) => {
     let cache:object = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
     let index:object = cache['index'];
     
@@ -488,6 +514,7 @@ const removeBookmark =(data:object, bookmarkType:string)=>{
     
     return index
 }; 
+
 
 export  function  handleSubmit(params:object) {
     console.log(params)
@@ -597,9 +624,7 @@ function sendUpdateResquest(params:object, dispatch:Function){
                 dispatch,
                 global,
             };
-
-        handleErrors(error, errorOpts);
-
+        
         if (isModal) {
             errorOpts = {
                 ...errorOpts, 
@@ -694,15 +719,13 @@ export function authenticate(params:object):Function {
 }; 
 
 export const handleErrors  = (error:object, options?:object) => {
-    console.log(error)
-           
+               
     let online:boolean = error['online'];
     const response:object = error && error['response'];
     const request:object = error && error['request'];
     
     if (response) {
-        console.log(response)
-       return handleErrorResponse(response, options);
+        return handleErrorResponse(response, options);
         
     }else if (request){
         return handleErrorRequest(request, options);
@@ -810,8 +833,8 @@ const handleLogin = (data:object, dispatch:Function):object => {
     let user:object = data['user']
     if (user) {
         let isSuperUser:boolean = user['is_superuser'];
-        isSuperUser 
-        && dispatch(action.getAdminSuccess({loginAuth}))
+        isSuperUser && dispatch(action.getAdminSuccess({loginAuth}));
+        
         dispatch(action.getCurrentUserSuccess(user));
     }
           
@@ -930,22 +953,35 @@ const prepPayLoad = (objName:string, data:object):object =>{
 
 
 const BuildAlertMessage = (params:object):string =>{
+    const isImageDrop:boolean = params['isImageDrop'];
     
-    const objName:string = params['objName'];
+    let objName:string = params['objName'];
     const isCreating:boolean = params['isCreating'];
-    const isUpdating:boolean = params['isUpdating'] ;
+    const isUpdating:boolean = params['isUpdating'];
+     const isDeleting:boolean = params['isDeleting'];
 
-    let action = isCreating && 'created' || isUpdating && 'updated';
-    let alertMessage = `Your ${objName} has successfully been ${action}`
-
-    if(objName === 'AnswerBookmark'){
-        alertMessage = 'Answer successfully added to your bookmarks'
+    if (objName === 'UserProfile') {
+        objName = 'profile';
     }
-    else if(objName === 'PostBookmark'){
-        alertMessage = 'Post successfully added to your bookmarks'
+    
+    let message:string;
+
+    if (isImageDrop === true) {
+        message = `Your profile picture has successfully been changed`;  
+
+    }else if(objName === 'AnswerBookmark'){
+        message = 'Answer successfully added to your bookmarks';
+
+    }else if(objName === 'PostBookmark'){
+        message = 'Post successfully added to your bookmarks';
+
+    }else{
+        let action = isCreating && 'created' || isUpdating && 'updated' || isDeleting && 'deleted';
+        message = `Your ${objName} has successfully been ${action}`;
+
     }
 
-   return alertMessage;
+   return message;
 };  
 
 

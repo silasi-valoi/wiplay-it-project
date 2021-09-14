@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {X} from 'react-feather'
 
 import {NavBar} from 'templates/authentication/utils';
-import AccountConfirmation from 'templates/authentication/confirmation';
-import EmailForm, {SmsCodeForm}   from 'templates/authentication/email-form';
+//import AccountConfirmation from 'templates/authentication/confirmation';
+//import EmailForm, {SmsCodeForm}   from 'templates/authentication/email-form';
 import {PasswordConfirmForm} from 'templates/authentication/password-change'
 import { closeModals}   from  'containers/modal/helpers';
 import { ModalCloseBtn } from "templates/buttons";
@@ -20,7 +20,7 @@ import {formIsValid,
         validatePhoneNumber,
         validateEmail,
         getFormFields,
-        setForm,} from 'containers/authentication/utils';   
+        constructForm,} from 'containers/authentication/utils';   
 
 import {store} from "store/index";
 //import Apis from 'utils/api';
@@ -54,6 +54,12 @@ export class PasswordConfirmationPage extends Component{
         this.unsubscribe();
     };
 
+    componentDidMount() {
+        this._isMounted = true;
+        this.onReLoginStoreUpdate();
+        this.togglePasswordConfirmForm();
+    };
+
     onReLoginStoreUpdate =()=> {
         if (!this._isMounted) return;
 
@@ -71,9 +77,18 @@ export class PasswordConfirmationPage extends Component{
         this.unsubscribe = store.subscribe(onStoreChange);
     };
 
-    handlePasswordRestSuccess(passwordRestAuth){
-        if (!passwordRestAuth) return;
-        this.togglePasswordConfirmForm();
+    handlePasswordRestSuccess(passwordResetAuth){
+        if (!passwordResetAuth) return;
+        
+        let emailSent:boolean = passwordResetAuth['emailSent'];
+        let smsSent:boolean = passwordResetAuth['smsSent'];
+
+        if(emailSent || smsSent){
+            delete passwordResetAuth['emailSent'];
+            delete passwordResetAuth['smsSent'];
+
+            this.togglePasswordConfirmForm();
+        }
     };
 
     handlePasswordConfirmSuccess(loginAuth:object){
@@ -85,56 +100,49 @@ export class PasswordConfirmationPage extends Component{
         if(isLoggedIn && !oldPasswordConfirmed){
             this.setState({oldPasswordConfirmed:true});
             this.togglePasswordChangeForm();
-            delete loginAuth['isLoggedIn']
+            delete loginAuth['isLoggedIn'];
         }
     };
 
     togglePasswordConfirmForm() : void {
-        if (!this._isMounted) {
-            return;
-        }
+        let currentUser = this.props['currentUser'];
 
-        let currentUser = this.props['currentUser']
-        this._SetForm('loginForm', {email:currentUser['email']})
-       
-        this.setState({currentUser,oldPasswordConfirmed:false});
+        this.setState({currentUser, oldPasswordConfirmed:false});
+
+        this._SetForm('loginForm', {from :{email:currentUser['email']}});
+               
     };
 
     togglePasswordChangeForm(){
-        let form:object = this.props['form'];
-        form = form && form['loginForm']
+        let authForm:object = this.props['authForm'];
+        let form:object = authForm && authForm['form'];
+
+        form = form && form['loginForm'];
         let old_password = form && form['password'];
 
         if (old_password) {
             closeModals(true);
             const toggleForm:Function = this.props['togglePasswordChangeForm'];
-            toggleForm({ old_password });            
+            toggleForm({old_password});            
         }
     };
 
     _SetForm(formName:string, params?:object){
-        const _formConstructor = this.props['formConstructor']
+        const _formConstructor:Function = this.props['formConstructor']
         _formConstructor(formName, params);
     };
         
-    
-    componentDidMount() {
-        this._isMounted = true;
-        this.onReLoginStoreUpdate();
-        this.togglePasswordConfirmForm();
-    };
-    
+       
     validateForm(form){
         return formIsValid(form)
     };
 
     passwordRest =()=> {
         let currentUser:object = this.props['currentUser'];
-        let currentForm = this.state['form'];
         let email:string = currentUser &&  currentUser['email'];
         
         if (email) {
-            this._SetForm('passwordResetForm', {email})
+            this._SetForm('passwordResetForm', {form:{email}});
             this.sendPasswordRest();                        
         }
 
@@ -145,6 +153,7 @@ export class PasswordConfirmationPage extends Component{
 
         setTimeout(()=> {
             _sendPasswordRest();
+
         }, 500);
        
     };

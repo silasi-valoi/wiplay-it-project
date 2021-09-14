@@ -24,7 +24,7 @@ TWILIO_AUTH_TOKEN   = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 INSTALLED_APPS.append('coverage')
-ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', 'localhost']
+ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', '192.168.43.15', 'localhost']
 
 
 DATABASES = {

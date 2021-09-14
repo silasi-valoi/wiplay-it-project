@@ -63,12 +63,12 @@ export const AnswersComponent = props => {
                      && `${answer.upvotes} Upvoters` 
                      || `${answer.upvotes} Upvoter`;
    
-    let state = {
+    let state:object = {
           answer,
           usersIsFor : 'answerUpVoters', 
         }
   
-    let answerUpvotersProps = {
+    let answerUpvotersProps:object = {
             apiUrl,
             byId      : usersById,
             obj       : answer,
@@ -77,12 +77,11 @@ export const AnswersComponent = props => {
             isAuthenticated,
         };
 
-    let editObjProps = {
+    let editObjProps:object = {
         index,
         currentUser,
         isAuthenticated,
         objName     : 'Answer',
-        linkName    : 'Edit Answer',
         isPut       : true,
         obj         : answer, 
         byId        : answerListById,
@@ -93,12 +92,11 @@ export const AnswersComponent = props => {
 
     let newCommentsById:string = `newAnswerComments${answer.id}`;
 
-    let createObjProps = {
-        currentUser,
-        isAuthenticated,
+    let createObjProps:object = {
+        ...editObjProps,
         objName           : 'Comment',
-        obj               : answer,
         isPost            : true,
+        isPut             : false,
         byId              : newCommentsById,
         className         : 'btn-sm edit-comment-btn',
         actionType : types.CREATE_COMMENT,
@@ -106,17 +104,21 @@ export const AnswersComponent = props => {
         apiUrl:Apis.createAnswerCommentApi(answer.id)
     };
   
-    let createBookmarkProps = {
-        currentUser,  
-        isAuthenticated,
-        objName           : `AnswerBookmark`,
+    let createBookmarkProps:object = {
+        ...editObjProps,
         bookmarkType      : 'answers',
-        obj               : answer,
         byId              : `bookmarkedAnswers`,
         isPost            : true,
+        isPut             : false,
         actionType : types.CREATE_BOOKMARK,
         apiUrl : Apis.addAnswerBookMarkApi(answer.id)
     };
+
+    let deleteObjProps = {
+        ...editObjProps,
+        apiUrl : Apis.deleteAnswerApi(answer.id)
+    };
+
 
     let EditorModalBtn = <OpenEditorBtn {...createObjProps}/>; 
     
@@ -126,7 +128,7 @@ export const AnswersComponent = props => {
     let btnsProps = {
         ...props,
         editObjProps,
-        createObjProps, 
+        deleteObjProps, 
         createBookmarkProps,
     }; 
 

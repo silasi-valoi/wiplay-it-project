@@ -140,7 +140,45 @@ const OldComments = (props:object, comments:object) => {
     if (!commentList.length) {
         return null;
     }
+            
+    let isLoading:boolean = comments['isLoading'];
+   
+    return(
+        <div className="">
+            {comments['showLink'] &&
+                <div className="">
+                    { Comments(props, commentList) }
 
+                    {isLoading &&
+                        <div className="spin-loader-box">
+                            <AjaxLoader/>
+                        </div>
+
+                        ||
+
+                        <div>
+                            { CommentsLoader(props, comments) }
+                        </div>
+                        
+                    }
+                </div>
+
+                ||
+
+                <div className="">
+                    {!isLoading &&
+                        <div className="">
+                            {Comments(props, commentList)}
+                        </div>
+                       
+                    }
+                </div>
+            }
+        </div>
+    )
+};
+
+const CommentsLoader = (props:object, comments:object) => {
     let commentsById:string = props['commentsById'];
     let parent:object = props['parent'];
 
@@ -160,44 +198,42 @@ const OldComments = (props:object, comments:object) => {
     } 
 
     const getCommentList:Function = props['getCommentList'];
-   
-    
+      
+    let commentsCount:number = comments['commentsCount'];
+    let error:string = comments['error'];
+
     return(
-        <div className="">
-            {comments['showLink'] &&
-                <div className="">
-                    { Comments(props, commentList) }
-
-                    {!comments['isLoading'] &&
-                        <ul className="comments-loader"
-                            onClick={()=> getCommentList(commentsLoaderProps)}>
-                            <li>
-                                Click to view {comments['commentsCount'] - 1} more comments
-                            </li>
-                        </ul>
-
-                        ||
-
-                        <div className="spin-loader-box">
-                            <AjaxLoader/>
-                        </div>
-                    }
-                </div>
+        <div>
+            {error &&
+                <ul className="comments-loader-errors alert-danger">
+                    <li className="">
+                        {error}
+                    </li>
+                    
+                    <li className="">
+                        <button 
+                            onClick={()=> getCommentList(commentsLoaderProps)}
+                            className="btn-sm">
+                            Try again
+                        </button>
+                    </li>
+                </ul>
 
                 ||
 
-                <div className="">
-                    {!comments['isLoading'] &&
-                        <div className="">
-                            {Comments(props, commentList)}
-                        </div>
-                       
-                    }
-                </div>
+                <ul className="comments-loader"
+                    onClick={()=> getCommentList(commentsLoaderProps)}>
+                    <li>
+                        Click to view {commentsCount - 1} more
+                        {commentsCount > 2 && ' comments' || ' comment'}
+                    </li>
+                </ul>
             }
         </div>
     )
 };
+
+
 
 const Comments = (props, commentList) => {
     let parent:object = props['parent'];

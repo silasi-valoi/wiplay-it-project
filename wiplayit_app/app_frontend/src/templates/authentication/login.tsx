@@ -11,7 +11,6 @@ import { RegistrationSubmitBtn,
          SpinLoader } from  'templates/authentication/utils'
 
 
-
 export const  LoginForm = props => {
     //console.log(props)
     let { 
@@ -21,7 +20,7 @@ export const  LoginForm = props => {
         formIsClean,
         formName, 
         form, 
-        isSocialAuth} = props;
+        isSocialAuth} = props.authForm;
 
 
     form = form && form.loginForm;
@@ -34,10 +33,19 @@ export const  LoginForm = props => {
                                                      {opacity:'0.60'}:{};
     
     let fieldSetStyles = submitting || onSignUpForm ? {opacity:'0.60'}:{}; 
+
+const toggleLoginFormProps:object = {
+        ...props,
+        toggleBtnName   :'Cancel',
+        toggleFormProps : {
+            formName :'loginForm',
+            value    : false,
+        }
+    }
     
 
     return(
-        <div className="form-container">
+        <div className="form-container" id="form-container">
             <ul className="form-title-box">
                 <li className="">Login</li>
             </ul> 
@@ -71,7 +79,7 @@ export const  LoginForm = props => {
                         <div className="login-fields auth-input-field">
                             <input
                                 className="login-password-field"
-                                placeholder="Password"
+                                placeholder=""
                                 type="password"
                                 name="password"
                                 value={form.password}
@@ -89,6 +97,9 @@ export const  LoginForm = props => {
                                 <PasswordResetBtn {...props}/>
                             </div>    
                         </div>
+                         <div className="cancel-login-btn-box">
+                            <ToogleAuthFormBtn {...toggleLoginFormProps}/>
+                        </div>   
 
                         <SignUpToogle {...props}/> 
                     </div>

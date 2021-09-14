@@ -235,6 +235,7 @@ class PhoneNumberConfirmationSerializer(SmsCodeSerializer):
 		
 		if not confirmation:
 			return None
+
 		return confirmation[0]
 
 
@@ -470,20 +471,26 @@ class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
 		self._errors = {}
 		# Decode the uidb64 to uid to get User object
 
+		msg = _('Unable to change password. This link may be broken or expired.')
+
 		try:
 			uid = force_text(uid_decoder(attrs['uid']))
 			self.user = UserModel._default_manager.get(pk=uid)
+
 		except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
-			raise ValidationError({'uid': ['Invalid value']})
+			raise ValidationError(msg)
 
 		self.custom_validation(attrs)
+
 		# Construct SetPasswordForm instance
 		self.set_password_form = self.set_password_form_class(user=self.user, data=attrs)
 
 		if not self.set_password_form.is_valid():
 			raise serializers.ValidationError(self.set_password_form.errors)
+
 		if not default_token_generator.check_token(self.user, attrs['token']):
-			raise ValidationError({'token': ['Invalid value']})
+			raise ValidationError(msg)
+
 		return attrs
 
 	def validate_sms_code_based(self, attrs):
@@ -508,17 +515,23 @@ class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
 			raise serializers.ValidationError(self.set_password_form.errors)
 
 		password_change.confirm()
+
 		return attrs
 
 	def custom_validation(self, attrs):
 		pass
 
 	def validate(self, attrs):
+		print(attrs)
+
 		if attrs.get('uid') and attrs.get('token'):
 			self.validate_token_based(attrs)
+
 		elif attrs.get('sms_code'):
 			self.validate_sms_code_based(attrs)
+
 		else:
+			print('Failed')
 			msg = _('Could not change Password.')
 			raise ValidationError(msg)
 

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 
 import {store } from "store/index";
 import {FollowUserBtn, LinkButton} from "templates/buttons"; 
-import { PageErrorComponent } from "templates/partials";
+import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
+
 import  {getIndex} from 'dispatch/index';
 import {UPDATE_USER_LIST} from 'actions/types';
 import Apis from 'utils/api';
@@ -196,11 +197,15 @@ class HomePage extends Component<any, any> {
 
         let props = this.getProps();
         let { index } = props['entities'];
+
+        //className="page-contents" id="page-contents"
                                                 
         return (
-            <div>
+            <div className="home-page">
+                <UnconfirmedUserWarning {...props}/>
+
                 {index &&
-                    <div className="app-index-box">
+                    <div className="page-contents" id="page-contents">
                         <PageErrorComponent {...props}/>
 
                         {index && index.isLoading &&
@@ -216,8 +221,6 @@ class HomePage extends Component<any, any> {
                                 }
                             </div>
                         }
-                     
-                      
                     </div>
                 }           
             </div>
@@ -245,91 +248,79 @@ export const IndexComponent = props => {
 
 export const Questions = props => {
     let {questionListById, entities} = props;
-    let {questions} = entities
-    questions = questions && questions[questionListById];
-    let questionList:object[] = questions && questions.questionList;
+    let questions:object = entities.questions;
+    questions = questions[questionListById];
 
-    if (questions?.isLoading) {
-        return null
-    }
+    if (!questions || questions['isLoading']) return null;
+    
+
+    let questionList:object[] = questions['questionList'];
+    if(!questionList || !questionList.length) return null;
    
     return (
-        <div >
-            { questionList && 
-                <div className="index-questions">
-                    <div className="index-questions-box">
-                        <div className="question-container">
-                            <div className="index-items-label">
-                                <b>Questions</b>
-                            </div>
-
-                            { questionList.map((question, index) => {
-                                let contentsProps = {
-                                    index,
-                                    question,
-                                    questionById :questionListById
-                                };
-
-                                Object.assign(contentsProps, props)  
-
-                                return (
-
-                                    <div key={index} className="index-question-contents">
-                                        <QuestionComponent {...contentsProps}/>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
+        <div className="index-questions">
+            <div className="index-questions-box">
+                <div className="index-items-label">
+                    <b>Questions</b>
                 </div>
-            }
-       
-      </div>
-   );
+
+                {questionList.map((question, index) => {
+                    let contentsProps = {
+                        index,
+                        question,
+                        questionById :questionListById
+                    };
+
+                    Object.assign(contentsProps, props)  
+
+                    return (
+                        <div key={index} className="index-question-contents">
+                            <QuestionComponent {...contentsProps}/>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    );
 };
 
 
 export const Posts = props => {
     let { postListById, entities } = props;
-    let posts = entities.posts;
-    posts = posts && [postListById];
-    if (posts?.isLoading) {
+    let posts:object = entities.posts;
+    posts = posts[postListById];
+
+    if (!posts || posts['isLoading']) {
         return null
     }
 
-    let postList:object[] = posts && posts.postList;
+    let postList:object[] = posts['postList'];
+    if(!postList || !postList.length) return null;
   
     return (
-
-        <div>
-            {postList && 
-                <div className="index-posts">
-                    <div className="index-posts-box">
-                       <div className="post-container">
-                            <div className="index-items-label">
-                                <b>Posts</b>
-                            </div>
-
-                            {postList.map((post, index) => {
-                                let postProps = {
-                                    index,
-                                    post,
-                                    postById: postListById,
-                                };
-
-                                Object.assign(postProps, props)  
-
-                                return (
-                                    <div key={index} className="index-post-contents">
-                                        <PostComponent {...postProps}  />
-                                        <CommentsBox {...postProps}/>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
+        <div className="index-posts">
+            <div className="index-posts-box">
+                <div className="index-items-label">
+                    <b>Posts</b>
                 </div>
-            }
+
+                { postList.map((post, index) => {
+                    let postProps = {
+                            index,
+                            post,
+                            postById: postListById,
+                        };
+
+                    Object.assign(postProps, props)  
+
+                    return (
+                        <div key={index} className="index-post-contents">
+                            <PostComponent {...postProps}  />
+                            <CommentsBox {...postProps}/>
+                        </div>
+                    )
+                })}
+            </div>
         </div>
     );
 };
@@ -338,46 +329,40 @@ export const Posts = props => {
 
 export const Answers = props => {
     let { answerListById, entities } = props;
-    let answers   = entities.answers;
+    let answers:object   = entities.answers;
     answers = answers && answers[answerListById]; 
-    if (answers?.isLoading) {
-        return null
+
+    if (!answers || answers['isLoading']) {
+        return null;
     }
 
-    let answerList:object[] = answers && answers.answerList;
+    let answerList:object[] = answers['answerList'];
+    if(!answerList || !answerList.length) return null;
 
-    return(
-        <div>
-            {answerList && 
-                <div className="index-answers">
-                    <div className="index-answers-box">
-
-                        <div className="answer-container">
-                            <ul className="index-items-label">
-                                <li>Answers</li>
-                             </ul>
-                  
-                            {answerList.map((answer, index) => {
-                                let answerProps = {
-                                    ...props,
-                                    answer,
-                                    index,
-                                    isAnswerBox:true,
-                                };
+    return (
+        <div className="index-answers">
+            <div className="index-answers-box">
+                <ul className="index-items-label">
+                    <li>Answers</li>
+                </ul>
+          
+               {answerList.map((answer, index) => {
+                    let answerProps = {
+                        ...props,
+                        answer,
+                        index,
+                        isAnswerBox:true,
+                    };
                                  
-                                return ( 
-                                    <div key={index} className="index-answer-contents"> 
-                                        <AnswersComponent {...answerProps}/>
-                                        <CommentsBox {...answerProps}/>
-                                    </div>
-                                );
-                            } )}
+                    return ( 
+                        <div key={index} className="index-answer-contents"> 
+                            <AnswersComponent {...answerProps}/>
+                             <CommentsBox {...answerProps}/>
                         </div>
-                    </div>
-                </div>
-            }
-
-        </div> 
+                    );
+                } )}
+            </div>
+        </div>
     );
 };
 
@@ -395,7 +380,7 @@ export const Users = props => {
 
         
     return(
-        <div className="index-user-list">
+        <div className="index-users-box">
             <ul className="index-user-list-title-box">
                 <li>Discover New People</li>
             </ul>
@@ -408,7 +393,7 @@ export const Users = props => {
 
 const _UserList = (props:object, userList:object[]) =>{
     const currentUser:object = props['currentUser'];
-    let userListById:string = props['userListById'];
+    const userListById:string = props['userListById'];
     const apis = Apis; 
 
     
@@ -422,7 +407,7 @@ const _UserList = (props:object, userList:object[]) =>{
                 const linkProps:object = {
                     linkPath:`/profile/${user['id']}/${user['slug']}/`,
                     state:{user},
-                }
+                };
 
                 let editObjProps = {
                         objName    : 'UsersList',
@@ -433,7 +418,7 @@ const _UserList = (props:object, userList:object[]) =>{
                         index,
                         actionType : UPDATE_USER_LIST,
                         apiUrl : apis.updateProfileApi(user['id']),
-                }
+                };
                
                 let btnsProps   = {...props, editObjProps};
                 let UnfollowOrFollowUserBtn =  <FollowUserBtn {...btnsProps}/>;
@@ -486,7 +471,7 @@ const _UserList = (props:object, userList:object[]) =>{
          
         </div>
 
-    )
-} 
+    );
+}; 
 
 

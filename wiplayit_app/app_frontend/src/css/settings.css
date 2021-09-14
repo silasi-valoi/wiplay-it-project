@@ -1,3 +1,12 @@
+.about-info-title {
+	font-size   : 16px;
+	font-weight : bold;
+}
+
+.confirm-password-submit-btn {
+    width : 50%;
+}
+
 
 
 @media (max-width: 980px) {
@@ -171,10 +180,7 @@
 		width: 100%;
 	}
 
-	.password-form-description-box {
-		margin : 0 10px; 
-	}
-
+	
 	.password-confirm-form-dismiss {
 		border  : px solid blue;
 		margin  : 0 15px;
@@ -182,29 +188,32 @@
 	}
 
 	.password-confirm-form-cancel {
-		padding : 5px;
-		margin  : 0 20px; 
-	}
+		display : flex;
+		width : 100%;
+		justify-content : flex-end;
+	 }
 
 	.password-confirm-form-cancel button {
-		color     : #5384e5;
+		color : #5384e5;
+		height: 20px;
 		font-size : 14px;
 	}
 
 	.confirm-password-input {
 		border : px solid blue;
-		margin : 0 8px; 
 	}
 
 	.confirm-password-submit {
 		display : flex;
+		margin : 6% 0 0;
+
 	}
 
 	.confirm-password-rest-btn {
-		border    : px solid black;
-		color     : gray;
+		color : gray;
 		font-size : 14px; 
-		margin    : 6px 10px 15px;
+		padding : 0;
+		margin : 10px 0 0;
 	}
 
 	.confirm-password-rest-btn:hover,
@@ -353,13 +362,23 @@
 	}
 
 	.password-confirm-form-cancel {
-		padding : 5px;
-		margin  : 0 20px; 
+		padding : 5px 0 0;
+		margin : 0 10px; 
+		border : px solid blue;
 	}
 
 	.password-confirm-form-cancel button {
 		color     : #5384e5;
 		font-size : 14px;
+	}
+
+	.confirm-password-submit-btn {
+		border : px solid red;
+		width: 30%;
+	}
+
+	.confirm-password-submit-btn  button {
+		width: 80%;
 	}
 
 	.confirm-password-input {
@@ -369,7 +388,7 @@
 
 	.confirm-password-submit {
 		display :  flex;
-		margin   : 5% 8px 0; 
+		margin   : 5% 0; 
 		
 	}
 
@@ -386,9 +405,4 @@
 
 }
 
-
-.about-info-title {
-	font-size   : 16px;
-	font-weight : bold;
-}
 

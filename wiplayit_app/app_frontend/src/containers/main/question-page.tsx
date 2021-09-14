@@ -9,7 +9,7 @@ import {store} from "store/index";
 import { AnswersBox } from 'containers/main/answer-page';
 import GetTimeStamp from 'utils/timeStamp';
 import {cacheExpired} from 'utils/helpers';
-import {PageErrorComponent} from 'templates/partials';
+import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 import  MainAppHoc from "containers/main/index-hoc";
 
 
@@ -146,17 +146,22 @@ class QuestionPage extends Component {
         }
 
         return (
-            <div>
-                {questionData.isLoading &&
-                    <div className="page-spin-loader-box partial-page-loader">
-                        <AjaxLoader/>
-                    </div>
-                }
-                <PageErrorComponent {...props}/>
+            <div className="">
+                <UnconfirmedUserWarning {...props}/>
 
-                {!questionData.isLoading &&
-                    <Questions {...props}/>
-                }
+                <div className="page-contents" id="page-contents">
+                    {questionData.isLoading &&
+                        <div className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
+
+                    <PageErrorComponent {...props}/>
+
+                    {!questionData.isLoading &&
+                        <Questions {...props}/>
+                    }
+                </div>
             </div>
         );
     };

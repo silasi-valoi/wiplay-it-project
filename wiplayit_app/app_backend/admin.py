@@ -11,14 +11,12 @@ class DraftEditorMediaContentAdmin(admin.ModelAdmin):
     fields = ['draft_editor_file']
 
 admin.site.register( DraftEditorMediaContent, DraftEditorMediaContentAdmin)
-
            
 
 class PostAdmin(admin.ModelAdmin):
-    fields =  ['ost','title', 'author','upvotes', 'deleted']
+    fields =  ['post','title', 'author','upvotes', 'deleted']
 
 admin.site.register(Post,PostAdmin)
-
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -35,14 +33,14 @@ admin.site.register(Reply, CommentReplyAdmin)
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    fields = ['question', 'author', 'followers']
+    fields = ['question', 'author', 'followers', 'updated', 'deleted' ]
 
 admin.site.register(Question,QuestionAdmin)
 
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    fields = ['answer','upvotes', 'author', 'question']
+    fields = ['answer','upvotes', 'author', 'question', 'updated', 'deleted']
 
 admin.site.register(Answer, AnswerAdmin)
 
@@ -79,6 +77,56 @@ class AnswerBookmarkAdmin(admin.ModelAdmin):
 
 
 admin.site.register(AnswerBookmark, AnswerBookmarkAdmin)
+
+
+class DefaultProfilePictureAdmin(admin.ModelAdmin):
+    fields = ['profile_picture']
+
+admin.site.register(DefaultProfilePicture, DefaultProfilePictureAdmin)
+
+
+class UserAdmin(admin.ModelAdmin):
+    fields = ['first_name', 'last_name', 'email', 
+             'is_confirmed', 'is_active' , 'is_staff', 'is_superuser' ]
+
+admin.site.register(User,UserAdmin)
+
+
+class ProfileAdmin(admin.ModelAdmin):
+    fields = ['live', 'credential', 'favorite_quote', 
+            'profile_picture', 'followers', 'followings', 'user'
+        ]
+
+admin.site.register(Profile,ProfileAdmin)
+
+
+class PhoneNumberAdmin(admin.ModelAdmin):
+    list_display = ('primary_number', 'user', 'primary', 'verified')
+    fields = ['user', 'inter_format','primary_number',
+              'national_format', 'verified', 'primary']
+
+admin.site.register(PhoneNumber, PhoneNumberAdmin)
+
+
+class CountryAdmin(admin.ModelAdmin):
+    fields = ['user', 'short_name', 'long_name']
+
+admin.site.register(Country, CountryAdmin)
+
+
+
+class PhoneNumberPasswordChangeAdmin(admin.ModelAdmin):
+    fields = ['phone_number', 'sent', 'created', 'sms_code', 'password_changed']
+
+admin.site.register(PhoneNumberPasswordChange, PhoneNumberPasswordChangeAdmin)
+
+
+
+class PhoneNumberConfirmationAdmin(admin.ModelAdmin):
+    fields = ['phone_number', 'sent', 'created', 'sms_code']
+
+admin.site.register(PhoneNumberConfirmation, PhoneNumberConfirmationAdmin)
+
 
 
 '''

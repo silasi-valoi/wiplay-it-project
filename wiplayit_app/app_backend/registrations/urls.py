@@ -4,17 +4,20 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
 from .views import ( 
-                   FacebookLogin, TwitterLogin, 
-                   GoogleLogin ,  CustomRegisterView,
-                   CustomLoginView, VerifyEmailView, 
-                   PasswordChangeConfirmationView, SendAccountConfirmationView,
-                   VerifyPhoneNumberView,
-                   UpdatePhoneNumberView, CustomPasswordResetView)
+                FacebookLogin, TwitterLogin, 
+                GoogleLogin ,  CustomRegisterView,
+                CustomLoginView, VerifyEmailView, 
+                PasswordChangeConfirmationView, SendAccountConfirmationView,
+                VerifyPhoneNumberView,
+                UpdatePhoneNumberView, CustomPasswordResetView
+            )
 
-from .views import ( RetrieveUserListView, RetrieveUserProfileView,
-                     AddEmailView, AddPhoneNumberView,
-                     retrieve_current_user, RetrieveUserFollowers,
-                     RetrieveUserFollowings, UpdateUserProfileView ) 
+from .views import ( 
+                RetrieveUserListView, RetrieveUserProfileView,
+                AddEmailView, AddPhoneNumberView,
+                retrieve_current_user, RetrieveUserFollowers,
+                RetrieveUserFollowings, UpdateUserProfileView 
+            ) 
 
 app_name = 'rest_auth_apis'
 

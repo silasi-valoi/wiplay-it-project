@@ -30,12 +30,7 @@ class PasswordResetPage extends Component{
                
         return (
             <div className="password-reset-page">
-                <div className="authentication-dismiss">
-                    <ModalCloseBtn>
-                        <X id="feather-x" size={20} color="red"/>
-                    </ModalCloseBtn>
-                </div>
-
+                
                 <div className="password-reset-box">
                     <EmailForm {...props}/>
                 </div>

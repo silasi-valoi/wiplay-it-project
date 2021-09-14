@@ -149,8 +149,7 @@ const OldReplies = (props:object, replies:object) => {
     if (!replies) {
         return null;
     }
-    console.log(replies)
-    
+       
     let replyList = replies['replyList'];
     let reply =   replies['linkData'].reply;
     

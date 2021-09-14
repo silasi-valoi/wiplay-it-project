@@ -13,7 +13,7 @@ import {PartalNavigationBar,
 import  * as action  from 'actions/actionCreators';
 import {ProfileComponent, UserAnswers, userProfileItemsParams} from 'templates/profile';
 import MainAppHoc from "containers/main/index-hoc";
-import { UnconfirmedUserWarning, PageErrorComponent } from "templates/partials";
+import {UnconfirmedUserWarning, PageErrorComponent} from "templates/partials";
 import * as checkType from 'helpers/check-types'; 
 import {store} from "store/index";
 import GetTimeStamp from 'utils/timeStamp';
@@ -55,6 +55,7 @@ class UserProfileContainer extends Component {
  
     onProfileUpdate = () =>{
         if (!this.isMounted) return;    
+        
         const onStoreChange = () => {
             
             let {slug, id} = this.props['match'].params;
@@ -304,18 +305,24 @@ class UserProfileContainer extends Component {
         }
                              
         return (
-            <div className="profile-page" id="profile-page">
-                {userProfile.isLoading &&
-                    <div className="page-spin-loader-box partial-page-loader">
-                        <AjaxLoader/>
-                    </div>
+            <div>
+                <UnconfirmedUserWarning {...props}/>
+
+                <div className="page-contents" id="page-contents">
+                    <div className="profile-page" id="profile-page">
+                        {userProfile.isLoading &&
+                            <div className="page-spin-loader-box partial-page-loader">
+                                <AjaxLoader/>
+                            </div>
                 
-                    ||
+                            ||
                 
-                    <div>
-                        <ProfileComponent {...props}/> 
+                            <div>
+                                <ProfileComponent {...props}/> 
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             </div>
         );
     };

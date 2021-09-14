@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import EmailForm, {SmsCodeForm}   from 'templates/authentication/email-form'; 
-import {NavBar} from 'templates/authentication/utils';
+import {NavBar, ToogleAuthFormBtn} from 'templates/authentication/utils';
 import { AlertComponent } from 'templates/partials';
 import {OpenAuthModalBtn} from "templates/buttons";
 import {PasswordChangeForm,
         SuccessPasswordChange} from 'templates/authentication/password-change';
 import AuthenticationHoc from 'containers/authentication/auth-hoc'
+import {cacheExpired} from 'utils/helpers';
 
 import {authenticationSuccess} from 'actions/actionCreators';
 import {store} from 'store/index';
+
+
 
 class PasswordChangeSmsCodePage extends Component{
     public isFullyMounted:boolean = false;
@@ -34,12 +37,7 @@ class PasswordChangeSmsCodePage extends Component{
     }
  
     componentDidUpdate(prevProps, nexProps){
-        //console.log(prevProps, nexProps)
-       // let {onPasswordResetForm} = prevProps
-        //if (!onPasswordResetForm) {
-            //this.props.formConstructor('passwordResetSmsCodeForm');
-       // }
-        
+               
     };
 
     componentWillUnmount =()=> {
@@ -48,23 +46,37 @@ class PasswordChangeSmsCodePage extends Component{
 
     componentDidMount() {
         this.isMounted = true;
-
-        let state = this.props['location'].state;
-        state && this.setState({...state})
         
-        let cachedCode =   this.getCachedSmsCode();
-        if (cachedCode) {
-            return this.tooglePasswordChangeForm(cachedCode)
-        }else{
+        let state = this.props['location'].state;
+        state && this.setState({...state});
 
-            return this._formConstructor('passwordResetSmsCodeForm');
+        if(this.passwordChanged()){
+            return this.setState({passswordChanged:true});
         }
+        
+        this.tooglePasswordResetForm();
     }; 
+
+    passwordChanged(){
+        let cacheEntities:object = this.props['cacheEntities'];
+        let userAuth:object = cacheEntities && cacheEntities['userAuth'];
+       
+        let passwordChangeAuth:object = userAuth && userAuth['passwordChangeAuth'];
+        if(passwordChangeAuth && passwordChangeAuth['successMessage']){
+
+            let _cacheExpired:boolean = cacheExpired(userAuth);
+            
+            return !_cacheExpired;
+        }
+
+        return false;
+    };
+
 
     getCachedSmsCode =():number => {
         let cacheEntities:object = this.props['cacheEntities'];
         let userAuth:object = cacheEntities && cacheEntities['userAuth'];
-        
+       
         if (userAuth && userAuth['smsCodeAuth']) {
             let smsCodeAuth:object = userAuth['smsCodeAuth'];
            
@@ -72,21 +84,42 @@ class PasswordChangeSmsCodePage extends Component{
                 return smsCodeAuth['smsCode'];
             }
         }
+
         return undefined;
     }; 
 
-    tooglePasswordChangeForm=(smsCode:number) : void =>{
-        if (!smsCode) return;
-                
-        let passwordAuthOpts = {sms_code:smsCode};
-        this._formConstructor('passwordChangeConfirmForm', passwordAuthOpts);
+    tooglePasswordResetForm(){
+        let form:object = this.props['authForm'];
 
-        this.setState({
+        let cachedCode =   this.getCachedSmsCode();
+        if (cachedCode) {
+
+            if(form && !form['passwordChangeConfirmForm']){
+                this.tooglePasswordChangeForm(cachedCode);
+            }
+
+        }else{
+
+            if(form && !form['passwordResetSmsCodeForm']){
+                this._formConstructor('passwordResetSmsCodeForm');
+            }
+        }
+
+    }
+
+    tooglePasswordChangeForm=(smsCode:number): void =>{
+        if (!smsCode) return;
+           
+        const options:object = {
             smsCode,
+            form : {sms_code:smsCode},
             onPasswordChangeConfirmForm:true,
             onPasswordChangeSmsCodeForm:true,
-            onPasswordResetSmsCodeForm:false }
-        )
+            onPasswordResetSmsCodeForm:false 
+        };
+
+        this._formConstructor('passwordChangeConfirmForm', options);
+        
     };
 
     _formConstructor(formName:string, options?:object){
@@ -103,12 +136,13 @@ class PasswordChangeSmsCodePage extends Component{
 
     }
 
-
     render(){
+        if(!this.isMounted) return null;
+
         let props = this.getProps();
-        
-        let alertMessageStyles = props['displayMessage'] && { display : 'block'} ||
-                                                         { display : 'none' };
+               
+        let alertMessageStyles = props['displayMessage'] && {display : 'block'} ||
+                                                         {display : 'none' };
                      
         return (
             <div className="registration-page">
@@ -134,34 +168,68 @@ class PasswordChangeSmsCodePage extends Component{
 export default AuthenticationHoc(PasswordChangeSmsCodePage);
 
 const PasswordChange =(props)=>{
+    const authForm:object = props['authForm'];
+    
+    let smsCode:number = authForm['smsCode'];
+    let onPasswordResetForm:boolean = authForm['onPasswordResetForm'];
+  
+    let successMessage:string = authForm['successMessage'];
            
     let passwordChangeProps:object = {
+            ...props,
             formTitle          : 'Password Change',
             formDescription    : 'Enter a new passsword on both fields.',
-            ...props
+    };
+
+    let passwordResetProps:object = {
+            ...props,
+            formTitle : 'Password Reset',
+            formDescription :  `Enter your e-mail address or phone number to change password.`,
     };
 
    
-    let authenticationProps = {
-            linkName  : 'Resend',
-            authenticationType : 'passwordReset',
-            modalName : 'passwordReset',
+    let cancelProps = {
+        ...props,
+        toggleBtnName:'Cancel',
+        toggleFormProps:{
+            value : false,
+            formName : 'passwordResetForm',
+            defaultFormName : 'passwordResetSmsCodeForm'
+        }
+           
+    };
 
+
+    let toggleEmailFormProps:object = {
+        ...props,
+        toggleBtnName:'Resend',
+        toggleFormProps:{
+            value : true,
+            formName:'passwordResetForm'
+        }
     };
     
     
     return(
         <div className="password-change-contents">
-            { props.smsCode &&
+            {smsCode &&
                 <PasswordChangeForm {...passwordChangeProps}/>
               
                 ||
                 
                 <div className="form-container">
-                    <SmsCodeForm {...props}>
-                        <SmsCodeHelperText {...props}/>
-                        <OpenAuthModalBtn {...authenticationProps}/>
-                    </SmsCodeForm>
+                    {onPasswordResetForm && !successMessage &&
+                        <EmailForm {...passwordResetProps}>
+                            <ToogleAuthFormBtn {...cancelProps}/>
+                        </EmailForm>
+
+                        ||
+
+                        <SmsCodeForm {...props}>
+                            <SmsCodeHelperText {...props}/>
+                            <ToogleAuthFormBtn {...toggleEmailFormProps}/>
+                        </SmsCodeForm>
+                    }
                 </div>
             }
         </div>
@@ -170,9 +238,9 @@ const PasswordChange =(props)=>{
 
 const SmsCodeHelperText = (props)=>{
     let {cacheEntities, passwordRestAuth,} = props;
-    let {userAuth}     = cacheEntities || {};
-    
+        
     if (!passwordRestAuth) {
+        let {userAuth} = cacheEntities || {};
         passwordRestAuth =  userAuth && userAuth.passwordRestAuth;
     }
 

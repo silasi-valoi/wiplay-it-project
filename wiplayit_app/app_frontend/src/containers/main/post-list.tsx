@@ -5,7 +5,7 @@ import { PostComponent} from "templates/post";
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
 import  MainAppHoc from "containers/main/index-hoc";
-import {PageErrorComponent, } from "templates/partials";
+import {PageErrorComponent, UnconfirmedUserWarning} from "templates/partials";
 import {OpenEditorBtn}  from "templates/buttons";
 import {CREATE_POST} from 'actions/types';
 
@@ -118,41 +118,45 @@ class  PostListPage extends Component  {
         
         return (
             <div>
-                {posts && posts.isLoading && 
-                    <div  className="page-spin-loader-box partial-page-loader">
-                        <AjaxLoader/>
-                    </div>
-                }
+                <UnconfirmedUserWarning {...props}/>
 
-                <PageErrorComponent {...props}/>
+                <div className="page-contents" id="page-contents">
+
+                    {posts && posts.isLoading && 
+                        <div  className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
+
+                    <PageErrorComponent {...props}/>
                              
-                {postList && postList.map(( post, index )  => {
-                    return (
-                        <div key={post.id} 
-                             className="post-list-page" id="post-list-page">
-                            <div className="post-container">
-                                <div className="post-contents">
-                                    <PostComponent {...{...props, post}}/>
+                    {postList && postList.map(( post, index )  => {
+                        return (
+                            <div key={post.id} className="post-list-page" id="post-list-page">
+                                <div className="post-container">
+                                    <div className="post-contents">
+                                        <PostComponent {...{...props, post}}/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )})
+                        )})
                     
             
-                    ||
+                        ||
                 
-                    <div className="">
-                        <ul className="empty-post-list-box">
-                           <li className="">
-                                No Posts Yet
-                            </li>
-                        </ul>
+                        <div className="">
+                            <ul className="empty-post-list-box">
+                                <li className="">
+                                    No Posts Yet
+                                </li>
+                            </ul>
 
-                        <div className="post-list-create-box">
-                            <OpenEditorBtn {...createPostProps}/>
+                            <div className="post-list-create-box">
+                                <OpenEditorBtn {...createPostProps}/>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
             
         );

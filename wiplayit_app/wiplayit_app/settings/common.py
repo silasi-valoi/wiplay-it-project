@@ -16,7 +16,7 @@ import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#SECRET_KEY = os.getenv("SECRET_KEY")
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 AUTH_USER_MODEL = 'app_backend.User'
@@ -272,7 +272,7 @@ STATICFILES_FINDERS = "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'dist'),
+    os.path.join(BASE_DIR, 'assets'),
     
 ]
 
@@ -286,7 +286,6 @@ WEBPACK_LOADER = {
     'DEFAULT': {
             'BUNDLE_DIR_NAME': 'app_frontend/',
             'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-            
-            
-        }
+    
+    }
 }

@@ -13,6 +13,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://wiplayit.com',
     'https://www.wiplayit.com','http://www.wiplayit.com'
     ]
+    
 ALLOWED_HOSTS = ['baloyi.pythonanywhere.com','wiplayit.com','www.wiplayit.com']
 
 EMAIL_USE_TLS = True

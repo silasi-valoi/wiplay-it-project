@@ -8,8 +8,7 @@ import {InitialState} from 'reducers/appReducers';
 
 const persistStore = () => (next) => (reducer, initialState, enhancer) => {
     let store;
-    //initialState = InitialState();
-
+   
     if (typeof initialState !== 'function') {
 
         let _cacheEntities:string = localStorage.getItem('@@CacheEntities');

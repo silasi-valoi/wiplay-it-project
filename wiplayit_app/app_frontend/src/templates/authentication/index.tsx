@@ -8,15 +8,16 @@ import  LoginForm from "templates/authentication/login";
 import  SignUpForm  from "templates/authentication/signup";
 import  EmailForm  from "templates/authentication/email-form";
 import {ModalCloseBtn, LinkButton} from 'templates/buttons';
-import { NonFieldErrors } from 'templates/authentication/errors';
+import {NonFieldErrors} from 'templates/authentication/errors';
 
-import { SpinLoader, ToogleAuthFormBtn } from  'templates/authentication/utils'
+import {SpinLoader, ToogleAuthFormBtn} from  'templates/authentication/utils'
 
 let toggleEmailFormProps = {
         toggleBtnName:'Cancel',
         toggleFormProps:{
             value : false,
-            formName:'passwordResetForm'
+            formName:'passwordResetForm',
+            defaultFormName : 'loginForm'
         }
     };
 
@@ -36,7 +37,7 @@ let toggleSignUpFormProps = {
         }
     }
 
-const RegistrationComponent = props => {
+const Registration = props => {
   
     return(
         <React.Fragment>
@@ -47,11 +48,15 @@ const RegistrationComponent = props => {
 }
 
 
-export default RegistrationComponent;
+export default Registration;
 
 
 const RegistrationSmall = props => {
-    let {onLoginForm, onSignUpForm, onPasswordResetForm} = props;
+    let {authForm} = props;
+    if(!authForm) return null;
+
+    let {onLoginForm, onSignUpForm, onPasswordResetForm} = authForm;
+    console.log(authForm)
     
     const AuthForm = ()=>{
 
@@ -71,12 +76,13 @@ const RegistrationSmall = props => {
             return <LoginForm {...props}/>
         }
 
-        return <DefaultSmallScreen {...props}/>;
+        return null;
     };
     
     return(
         <div className="" >
             { AuthForm()}
+            <DefaultSmallScreen {...props}/>
         </div>
     );
 };
@@ -115,10 +121,12 @@ const DefaultSmallScreen = props => {
 
 
 const RegistrationBig = props => {
-    let {onPasswordResetForm, onSignUpForm} = props
-    //console.log(props)
+    let {authForm} = props;
+    if(!authForm) return null;
 
-    toggleSignUpFormProps = {...props, ...toggleSignUpFormProps }   
+    let {onPasswordResetForm, onSignUpForm} = authForm;
+    
+    toggleSignUpFormProps = {...props, ...toggleSignUpFormProps};   
 
     toggleEmailFormProps = {...props, ...toggleEmailFormProps};
 
@@ -132,13 +140,15 @@ const RegistrationBig = props => {
             </ul>
 
             <div className="registration-flex-box ">
-                { onPasswordResetForm?
+                {onPasswordResetForm &&
                     <div className="password-reset-container">
                         <EmailForm {...props}>
                            <ToogleAuthFormBtn {...toggleEmailFormProps}/>
                         </EmailForm> 
                     </div>
-                    :
+
+                    ||
+
                     <div className="login-container" >
                         <LoginForm {...props}/>
                     </div>
@@ -146,7 +156,7 @@ const RegistrationBig = props => {
 
                 <p className="separator"></p>
                 <div className="signup-container">
-                    { onSignUpForm?
+                    {onSignUpForm?
                         <SignUpForm {...props}/>
                         :
                         <div className="signup-container-contents">
@@ -202,7 +212,7 @@ const WelcomeTextComponent = props => {
 
 
 const SocialLogin = props =>  {
-    let {isSocialAuth, form} = props
+    let {isSocialAuth, form} = props.authForm
     form = form && form.loginForm;
     let error = form && form.error; 
 

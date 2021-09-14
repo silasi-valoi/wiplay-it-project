@@ -71,14 +71,16 @@ class AnswerContainer extends Component {
         answers = answers   && answers[answerListById];
            
         return(
-            <div className="answer-page" id="answer-page">
-                <div className="new-answer-container">
-                    { OldAnswers(props, answers) }
+            <div className="page-contents" id="page-contents">
+                <div className="answer-page" id="answer-page">
+                    <div className="new-answer-container">
+                        { OldAnswers(props, answers) }
+                    </div>
                 </div>
             </div>
-        )
+        );
     };
-} 
+}; 
 
 
 

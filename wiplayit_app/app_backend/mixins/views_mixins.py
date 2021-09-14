@@ -12,30 +12,32 @@ class BaseMixin(object):
     def get(self, request, pk=None):
     	return Response({}, status=status.HTTP_200_OK)  
             
-    def update_text_field(self, instance=None):
+    def update_text_field(self, instance=None, updating=False):
     	data = dict()
     	text_field:str = None
 
     	if hasattr(self, 'fields_to_update'):
-    		text_field     = self.fields_to_update.get('text_field', None)
+    		text_field = self.fields_to_update.get('text_field', None)
      	 
     	if  hasattr(self, 'is_user'):
     		data = self.update_user_fields(instance)
     		
     	elif text_field:
+    		
     		field = self.request.data.get(text_field, None)
     		data[text_field ]  = field
     	
-    		if text_field == 'add_question':
+    		if text_field == 'question' and instance is not None:
+    			data['slug'] = self.update_slug_field(instance, field)
 
-    			if instance is not None:
-    				data['slug'] = self.update_slug_field(instance, field)
-
-    		if text_field == 'add_post':
+    		if text_field == 'post':
     			title = self.request.data.get("title")
     			data['title'] =  title
     			data['slug'] = update_slug_field(instance, title)
 
+    		data['updated'] = updating
+
+    	print(data, updating)    	
     	return data 
 
 
@@ -163,8 +165,8 @@ class UpdateObjectMixin(BaseMixin):
 		return '{0} {1}'.format(first_name, last_name)		
 		
 	def update_user_fields(self, instance=None):
-		profile     = dict()
-		data        = dict()
+		profile = dict()
+		data = dict()
 		text_fields  = self.fields_to_update.get('text_fields', False)
 		
 		user_fields = text_fields.get('user')
@@ -193,22 +195,23 @@ class UpdateObjectMixin(BaseMixin):
 		
 	def put(self, request, *args, **kwargs):
 	 	instance = self.get_object()
+	 	updating = True
 	 		 		 		 	
 	 	if  request.data.get("followers", False):
 	 		kwargs['data'] = self.update_followers_fields(instance)
 	 		
 	 	elif  request.data.get("upvotes", False):
+	 		
 	 		kwargs['data'] = self.update_upvotes_fields(instance)
 
 	 	else:
-	 		kwargs['data'] = self.update_text_field(instance)
+	 		kwargs['data'] = self.update_text_field(instance, updating)
 
 	 	return self.update(request, *args, **kwargs)
 	 	
 	 	
 	def update(self, request, *args, **kwargs):
 		data = kwargs.pop("data", None)
-		print(data)
 		instance = self.get_object()
 		
 		serializer = self.get_serializer(
@@ -243,9 +246,7 @@ class CreateMixin(BaseMixin):
 
 			if related_field and instance:
 				data[related_field] = instance.id
-
-		print(data)
-
+		
 		serializer = self.create(data)
 		return serializer
 	
@@ -290,7 +291,10 @@ class DestroyMixin(BaseMixin):
 	def destroy(self, request, *args, **kwargs):
 		instance = self.get_object()
 		self.perform_destroy(instance)
-		return Response(status=status.HTTP_204_NO_CONTENT)
+
+		serializer = self.get_serializer(instance)
+		return Response(serializer.data)
+
 
 	def perform_destroy(self, instance):
 		instance.deleted = True

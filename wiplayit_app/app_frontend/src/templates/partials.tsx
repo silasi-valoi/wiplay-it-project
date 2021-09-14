@@ -76,12 +76,26 @@ export const AuthorAvatar = (props:object) => {
 
 export const AuthorDetails = (props:object)=>{
     let author:object = props['author'];
-    let data:object = props['data']
-    let timeStamp:string = data['date_created']
-    const linkProps = AuthorLinkProps(author);
+    let data:object = props['data'];
+    let updated:boolean = data['updated'];
+
+    let timeStamp:string;
+    if(!updated){
+        timeStamp = data['created_at'];
+
+    }else{
+        timeStamp = data['updated_at'];
+    }
+
+    
 
     const getTimeState = new GetTimeStamp({timeStamp});
     let dateCreated = getTimeState.timeSince();
+    if(updated){
+        dateCreated = `Updated ${dateCreated}`;
+    }
+
+    const linkProps = AuthorLinkProps(author);
 
     return(
         <ul className="author-details-box">
@@ -130,15 +144,18 @@ export const PageErrorComponent = props => {
 };
 
 
-export const AlertComponent =(props)=> {
+export const AlertComponent = (props) => {
     let {message, alertBoxStyles} = props;
     let textMessage  = message?.textMessage  
     let messageType = message?.messageType;
+
+    if (!textMessage || typeof textMessage !== 'string') return null;
      
     let classNames   = messageType === 'error'   && `alert-danger`   ||
                        messageType === 'success' &&  `alert-success` ;
         
     let styles = alertBoxStyles || {}; 
+
     return(
         <div  className="alert-container">
             <div style={styles} className={`alert ${classNames}`}>
@@ -146,7 +163,7 @@ export const AlertComponent =(props)=> {
 
                     <ul className="alert-message">
                         <li>
-                            { textMessage }
+                            {textMessage}
                         </li>
                     </ul>
                 </div>
@@ -170,7 +187,7 @@ export const UnconfirmedUserWarning =(props)=> {
     let authenticationProps = {
             linkName  : "confirm account",
             authenticationType : 'accountConfirmation',
-            modalName:'accountConfirmation',
+            modalName : 'authenticationForm',
             currentUser,
     };
 

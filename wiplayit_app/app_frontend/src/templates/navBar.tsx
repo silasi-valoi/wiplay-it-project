@@ -2,11 +2,15 @@
 import React from 'react';
 import {  Link, BrowserRouter } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
+import * as Icon from 'react-feather';
+
 import { SubmitBtn,
+         OpenAuthModalBtn,
          SmsCodeModalBtn,
          AuthenticationBtn,
          OpenUsersModalBtn,
          ModalCloseBtn,
+         LinkButton,
          OpenEditorBtn  } from "templates/buttons";
 import { Modal}   from  "containers/modal/modal-container";
 import { store } from "store/index";
@@ -16,7 +20,7 @@ import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
 
 import { showModal } from 'actions/actionCreators';
 import { history } from "App"
-import * as Icon from 'react-feather';
+
 
 
 let editorLinkMobileStyles = {
@@ -67,6 +71,7 @@ export const createQuestionProps = {
 let authenticationProps = {
         authenticationType : 'Login',
         linkName  : "Login/Register",
+        modalName : 'authenticationForm',
 };
 
 export const NavBarMenuItems = props => {
@@ -76,8 +81,9 @@ export const NavBarMenuItems = props => {
     let state = {userProfile : currentUser, isAuthenticated};
     
     let pathToProfile = currentUser && `/profile/${currentUser.id}/${currentUser.slug}/`;
-    let toProfileProps = {pathname:pathToProfile, state}
- 
+    let toProfileProps = {pathname:pathToProfile, state};
+
+  
     return(
         <BrowserRouter>
             <div id="" className="menu-img-container">
@@ -102,12 +108,13 @@ export const NavBarMenuItems = props => {
             <div className="menu-btn-container">
                 <button type="button"
                         onClick={() => RedirectMenuLinks({pathname:'/help/'})}
-                        className="btn dropdown-item">
+                        className="dropdown-item">
                     Help
                 </button>
+
                 <button type="button"
                         onClick={() => RedirectMenuLinks({pathname:'/feedback/'})}
-                        className="btn dropdown-item">
+                        className="dropdown-item">
                     Feedback
                 </button>
 
@@ -120,25 +127,25 @@ export const NavBarMenuItems = props => {
 
                 <button type="button"
                         onClick={() => RedirectMenuLinks({pathname:'/settings/'})}
-                        className="btn dropdown-item">
+                        className="dropdown-item">
                     Settings
                 </button> 
 
                 <button type="button"
                         onClick={() => RedirectMenuLinks({pathname:'/about/'})}
-                        className="btn dropdown-item">
+                        className="dropdown-item">
                     About
                 </button>   
 
                 <button type="button"
                         onClick={() => RedirectMenuLinks({pathname:'/privacy/'})}
-                        className="btn dropdown-item">
+                        className="dropdown-item">
                     Privacy
                 </button>  
                 <div className="dropdown-divider"></div>
                 {isAuthenticated &&
             
-                    <button  onClick={props.logout} className="btn logout-btn">
+                    <button  onClick={props.logout} className="logout-btn">
                         Logout
                     </button>
                 }
@@ -149,17 +156,9 @@ export const NavBarMenuItems = props => {
 
 
 export const RedirectMenuLinks = props => {
+    closeModals(true)
+    
     let {pathname, state} = props;
-
-    let storeUpdate  = store.getState();
-    let {entities} = storeUpdate;
-    let modal     = entities['modal'];
-    let navigationMenuModal = modal && modal['navigationMenu'];
-        
-    if (navigationMenuModal && navigationMenuModal.modalIsOpen ) {
-        closeModals(true)
-    }
-
     let location:object = history.location;
     let currentPath = location['pathname'];
     
@@ -249,13 +248,13 @@ const NavBarModalMenu = props => {
 
     return(
         
-        <div className="navigation-img-box "
-             onClick={()=> Modal(modalProps)}>
+        <div className="navigation-img-box">
 
             <div className="nav-bar-modal-menu" id="nav-bar-modal-menu">
                 <div className="nav-bar-img-box"> 
                     {profile && 
                         <img alt="" 
+                             onClick={()=> Modal(modalProps)}
                              src={profile.profile_picture}
                              className="nav-bar-img"/>
                     }
@@ -263,8 +262,7 @@ const NavBarModalMenu = props => {
             </div>
         </div>
     )
-}
-
+};
 
 
 export const NavBarSmallScreen = props => {
@@ -308,7 +306,7 @@ export const NavBarSmallScreen = props => {
                 <ul className="navbar-login-link">
                     <li className="">
                         { !isAuthenticated &&
-                            <AuthenticationBtn {...authenticationProps}/>
+                            <OpenAuthModalBtn {...authenticationProps}/>
                         }
                     </li>                    
                 </ul>
@@ -427,7 +425,7 @@ export const NavBarBigScreen = props => {
             <ul className="navbar-login-link">
                 <li className="">
                     { !isAuthenticated &&
-                        <AuthenticationBtn {...authenticationProps}/>
+                        <OpenAuthModalBtn {...authenticationProps}/>
                     }
                 </li> 
 
@@ -546,11 +544,12 @@ export const PartialNavBar = props =>{
 
                 { isAuthenticated &&
                     <NavBarModalMenu {...props}/>
+                    
                     ||
 
                     <ul className="partial-navbar-login-link">
                        <li className="">
-                            <AuthenticationBtn {...authenticationProps}/>
+                            <OpenAuthModalBtn {...authenticationProps}/>
                         </li>                    
                     </ul>
                 }

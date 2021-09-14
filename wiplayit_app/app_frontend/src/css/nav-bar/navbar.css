@@ -60,7 +60,7 @@
 }
 
 .navbar-contents-top {
-    background:#A33F0B
+    background:#A33F0B;
 }
 
 .menu-img-container {
@@ -83,12 +83,26 @@
     font-weight: bold;
 }
 
+.partial-navbar-login-link button {
+    border:1px solid #A33F0B;
+    justify-content: flex-end;
+}
+
+
+.partial-navbar-login-link {
+    justify-content: flex-end;
+}
+
 .logo-contents {
     font-weight : bold;
     font-family : 'Ubuntu';
     font-size   : 17px;
     color       : #fefefe;
     padding     : 12px 0 7px; 
+}
+
+.nav-bar-img-box {
+    border : px solid red;
 }
 
 .menu-img-box {
@@ -121,9 +135,6 @@
 
 }
 
-.menu-btn-container {
-    border : px solid blue;
-}
 
 .nav-dropdown-menu {
      border       : px solid red;
@@ -137,14 +148,18 @@
 }
 
 .logout-btn, .dropdown-item {
-    border       : px solid red;
     width        : 100% !important;
-    height       : 40px;  
     text-align   : left !important;
+    padding      : 7px;
     padding-left : 20px;
     font-size    : 13px; 
-    margin       : 5px 0 0;
+    margin       : 10px 0;
     font-family  : 'Cambay';
+    border       : px solid red;
+}
+
+.logout-btn {
+    color: red;
 }
  
 .menu-username-box:hover, .logout-btn:hover {
@@ -164,7 +179,9 @@
     margin-top  : 10px;
 }
 
-.mobile-navbar-center, .partial-page-navbar, .partial-form-navbar {
+.mobile-navbar-center, 
+.partial-page-navbar,
+.partial-form-navbar {
     display    : flex;
     width      : 100%;
         
@@ -256,6 +273,7 @@
     .partial-navbar-login-link,
     .navbar-login-link {
         width   : 100%;
+        display: flex;
         padding : 0 7px 7px; 
     }
 
@@ -281,7 +299,6 @@
     .mobile-navbar-bottom {
         display: flex;
         background: white;
-        border:px solid red;
         width: 100%;
     }
 
@@ -306,6 +323,7 @@
     .navigation-img-item { 
         padding : 7px  15px;  
         width   : 100%;
+
     }
     
     .navigation-img-box, #nav-bar-modal-men {
@@ -445,10 +463,6 @@
 
 
 }
-
-
-
-
 
 
 

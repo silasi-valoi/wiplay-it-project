@@ -10,6 +10,7 @@ import { RegistrationSubmitBtn,
 
 
 const EmailForm = props => {
+    const {handleFormChange, validateForm, children} = props;
 
     let {submitting,
         onSignUpForm,
@@ -21,9 +22,7 @@ const EmailForm = props => {
         formIsValid,
         formName, 
         defaultFormName,
-        formDescription,
-        validateForm,
-        isSocialAuth } = props;
+        isSocialAuth } = props.authForm;
 
     form = form && form[formName]? 
                            form[formName]:null;
@@ -44,18 +43,18 @@ const EmailForm = props => {
                       onPasswordResetForm && 'Password Reset';
 
 
-    formDescription = `Enter your e-mail address or ` +
-                                           `phone number.`;
+    let formDescription = `Enter your e-mail address or phone number.`;
 
     let emailSent:boolean = passwordRestAuth && passwordRestAuth['emailSent'];
 
     return(
-        <div className="email-form-box">
+        <div className="email-form-box" id="form-container">
             <ul className="form-title-box">
                 <li className="">{formTitle}</li>
             </ul>
-            {emailSent && onPasswordResetForm &&
+            {onPasswordResetForm && successMessage &&
                 <EmailPasswordResetSuccess {...props}/>
+
                 ||
 
                 <form className="email-form" onSubmit={props.onSubmit}>
@@ -66,11 +65,10 @@ const EmailForm = props => {
                     </ul>
 
                     {!isSocialAuth && !onSignUpForm && error &&
-                        <NonFieldErrors {...error}/>
-                    }
-
-                    {!isSocialAuth && !onSignUpForm && error &&
-                        <EmailFieldErrors {...error}/>
+                        <div>
+                            <NonFieldErrors {...error}/>
+                            <EmailFieldErrors {...error}/>
+                        </div>
                     }
                         
                     <fieldset style={ fieldSetStyles} 
@@ -115,13 +113,10 @@ export default EmailForm;
 
 
 export const EmailPasswordResetSuccess =(props)=>{
-    let {formName, cacheEntities, passwordRestAuth} = props;
+    let {passwordRestAuth} = props;
     let {identifier} = passwordRestAuth || {};
     let toggleProps = {value : true, formName : 'passwordResetForm'};
-    
-    const toggleEmailFormProps:object = {
-
-    } 
+   
 
     let toggleFormProps = {
             ...props,
@@ -163,19 +158,17 @@ export const SmsCodeForm = props => {
         form, 
         formName, 
         defaultFormName,
-        handleFormChange,
-        formTitle,
-        validateForm,
-        isSocialAuth } = props;
-   
+        isSocialAuth } = props.authForm;
 
+    const {handleFormChange, formTitle, validateForm} = props
+   
     const phoneNumberConfirmationForm = form?.phoneNumberConfirmationForm;
     
     const passwordResetSmsCodeForm =  form?.passwordResetSmsCodeForm;
 
     form = phoneNumberConfirmationForm || passwordResetSmsCodeForm;
     if (!form) return null;
-    
+
     let error = form.error; 
 
     let formIsValid =  onPasswordResetForm || onEmailResendForm?
@@ -187,9 +180,9 @@ export const SmsCodeForm = props => {
                                                      {opacity:'0.60'}:{};
     
     let fieldSetStyles = submitting && {opacity:'0.60'} || {};
-                            
+
     return(
-        <div className="sms-code-form-box">
+        <div className="sms-code-form-box" id="form-container">
             <ul className="form-title-box">
                 <li className="">{formTitle}</li>
             </ul>
@@ -199,18 +192,20 @@ export const SmsCodeForm = props => {
                     <li className="">{successMessage}</li>
                 </ul>
             }
+           
 
             <div className="sms-code-form">
                                                                 
                 <form  onSubmit={props.onSubmit}>
                     {props?.children[0]}
-                          
-                    <fieldset style={fieldSetStyles} 
-                          disabled={submitting} >
+
+                                         
+                    <fieldset style={fieldSetStyles} disabled={submitting}>
                         <div  className="email-fields">
                             {error &&
                                 <NonFieldErrors {...error}/>
                             }
+                            
                             <div className="email-box auth-input-field">
                                 <input
                                     placeholder=""

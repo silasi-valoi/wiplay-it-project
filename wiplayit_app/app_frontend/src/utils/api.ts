@@ -219,6 +219,35 @@ const Apis = {
         return `/api/post/reply/${id}/edit/`;
     },
 
+    deleteQuestionApi(id:number):string {
+        return `/api/question/${id}/delete/`;
+    },
+
+    deleteAnswerApi(id:number):string {
+        return `/api/answer/${id}/delete/`;
+    },
+
+    deleteAnswerCommentApi(id:number):string {
+        return `/api/answer/comment/${id}/delete/`;
+    },
+
+    deleteAnswerReplyApi(id:number):string {
+        return `/api/answer/reply/${id}/delete/`;
+    },
+
+    deletePostApi(id:number):string {
+        return `/api/post/${id}/delete/`;
+    },
+
+    deletePostCommentApi(id:number):string {
+        return `/api/post/comment/${id}/delete/`;
+    },
+       
+    deletePostReplyApi(id:number):string {
+        return `/api/post/reply/${id}/delete/`;
+    },
+
+
     createUser():string {
         return `/rest-auth/registration/`;
     },

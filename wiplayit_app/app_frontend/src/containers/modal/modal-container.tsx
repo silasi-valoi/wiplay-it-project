@@ -42,7 +42,7 @@ const defaultStyles = {
   content: {
     position                : 'relative',
     margin                  : '15% auto',
-    width                   : '60%',
+    width                   : '100%',
     background              : '#F6F6F6',
     overflow                : 'auto',
     borderRadius            : '4px',
@@ -187,6 +187,7 @@ const renderModal = () => {
 export const ModalManager = {
 
     open(component:any, modalName:string):Function {
+        window.history.pushState(null, null, window.location.href);
 
         modals.push(component);
 
@@ -194,8 +195,7 @@ export const ModalManager = {
             // render the modal only if there is no other showing modals
             renderModal();
         }
-
-        window.history.pushState(null, null, window.location.href);
+    
         DisablePageScrool()
 
         return store.dispatch<any>(showModal(modalName, true));
@@ -203,9 +203,10 @@ export const ModalManager = {
     close(modalName:string, background?:boolean){
           
         onClose && onClose(() => {
+            background && window.history.back();
             EnablePageScrool()
             store.dispatch<any>(showModal(modalName, false));
-            background && window.history.back();
+            
 
             ReactDOM.unmountComponentAtNode(node);
            //renderModal();// render the other modals which are waiting.

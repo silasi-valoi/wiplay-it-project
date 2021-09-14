@@ -3,7 +3,7 @@ import { Link, Router } from "react-router-dom";
 import * as Icon from 'react-feather';
 import {history} from "App" 
 import { MatchMediaHOC } from 'react-match-media';
-import {ModalManager, Modal}   from  "containers/modal/modal-container";
+import { Modal}   from  "containers/modal/modal-container";
 import {closeModals}   from  'containers/modal/helpers';
 import { store } from "store/index";
 import {showModal, handleError} from 'actions/actionCreators';
@@ -29,6 +29,7 @@ export const LinkButton = (props)=>{
     return(
         <a style={styles}
            href={linkPath}
+           type="button"
            onClick={(event) => pushToRouter(props, event) }>
             {props['children']}
         </a>
@@ -249,11 +250,14 @@ export const Author = props =>{
     if(obj?.author?.id != currentUser?.id) return null
 
     return(
-        <div className="options-menu">
+        <div className="">
             <OpenEditorBtn {...props.editObjProps}>
                 <Icon.Edit className="options-menu-icon" size={20}/> 
             </OpenEditorBtn>
-            <button type="button" className="btn-sm  option-delete-btn" >
+            <button 
+                onClick={()=> {closeModals(true); props.deleteObj(props.deleteObjProps)}}
+                type="button"
+                className="btn-sm  option-delete-btn" >
                 <Icon.Trash2 
                     className="options-menu-icon"
                     id="options-menu-icon" size={20}
@@ -324,7 +328,7 @@ export const ModalCloseBtn = (props:object) => {
     return(
         <button type="button" 
               style={styles}
-              onClick={()=> history.goBack()}
+              onClick={()=> closeModals(true)}
               className="nav-bar-back-bt btn-sm" >
            {props['children']}
         </button>  
@@ -358,6 +362,7 @@ export const OpenEditorBtn = props => {
         let Edit = isPut && "Edit " || "";
         return `${Edit}${objName}`;
     };
+    
     linkName   = linkName || getButtonName();
         
     return(
@@ -371,7 +376,16 @@ export const OpenEditorBtn = props => {
 const OpenModalEditor=(props)=>{
     let {isAuthenticated, currentUser} = props;
 
-    if(!isAuthenticated) return history.push('/user/registration/');
+    if(!isAuthenticated) {
+        let modalProps =  {
+                authenticationType : 'Login',
+                linkName  : "Login/Register",
+                modalName : 'authenticationForm',
+            };
+
+        return Modal(modalProps);
+        
+    }
     
     let storeUpdate = store.getState();
     let {entities}  = storeUpdate;
@@ -380,7 +394,14 @@ const OpenModalEditor=(props)=>{
 
     if (currentUser && !currentUser.is_confirmed) {
         let error = 'Sorry, you must confirm your account first before you start posting ';
-        return store.dispatch<any>(handleError(error));
+        let modalProps =  {
+                authenticationType : 'accountConfirmation',
+                modalName : 'authenticationForm',
+                currentUser,
+            };
+
+        return Modal(modalProps);
+        
     }
 
     let modalProps = {

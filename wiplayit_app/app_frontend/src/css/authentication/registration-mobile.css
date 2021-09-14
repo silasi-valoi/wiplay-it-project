@@ -30,24 +30,44 @@
         background:#edf0f3;
     }
 
+    .login-box {
+        border: px solid red;
+        width: 100%;
+    }
+
+    .auth-modal-container {
+        border: px solid black;
+     }
+
     .password-change-container,
     .registration-container,
     .account-confirmation-container {
         height     : 120vh;
-        padding    : 10% 0 0;
+        padding    : 15% 0 0;
+
     } 
 
+    .password-change-container {
+      
+    }
+
     .form-container {
-        margin : 0px 5%;
-        padding-bottom: 5%;
-        height     : 100%;
-        border-radius: 15px;
-        z-index: 50;
-        position: relative;
-        background: #ffff;
-        -webkit-box-shadow: 0px 2px 17px -2px rgba(199,193,199,1);
-        -moz-box-shadow: 0px 2px 17px -2px rgba(199,193,199,1);
-        box-shadow: 0px 2px 17px -2px rgba(199,193,199,1);
+        padding-bottom : 5%;
+        width : 85%;
+        left : 7.5%;
+        border-radius : 15px;
+        overflow: 'auto;';
+        z-index : 50;
+        position : fixed;
+        background : #ffff;
+        -webkit-box-shadow : 0px 2px 17px -2px rgba(199,193,199,1);
+        -moz-box-shadow : 0px 2px 17px -2px rgba(199,193,199,1);
+        box-shadow : 0px 2px 17px -2px rgba(199,193,199,1);
+
+    }
+
+    .login-form {
+        border: px solid blue;
 
     }
 
@@ -72,11 +92,12 @@
     .email-confirm-box,
     .password-change-success,
     .sms-code-form,
+    .login-form,
     .email-form,
     .success-message-box,
     .confirmation-message-box,
     .password-change-form,
-    .sign-up-form,.login-form {
+    .sign-up-form {
         border  : 1px solid #BDBDBD;
         padding : 10px 4%;
         margin  : 10px 4% 7%;
@@ -93,19 +114,6 @@
     background: #A33F0B;
 } 
 
-.name-field-box2 {
-  margin-left: 1%;
-}
-.name-field-box1 {
-    margin-right: 1%
-}
-
-.username-fields {
-  border: px solid red;
-  width: 100%;
-  display:  flex;
-    
-}
 
 .country-select-btn {
    padding-top: 5px;
@@ -130,22 +138,12 @@
 
 }
 
-.email-fields, .password-fields {
-  margin : 10px 0px;
-  border : px solid blue;
-}
-
-
-.form-helper-text,.email-confirm-helper-text,
-.email-form-description,.password-form-description {
+.form-helper-text,
+.email-confirm-helper-text,
+.email-form-description,
+.password-form-description {
     font-size: 15px;
 }
-
-.email-confirm-containe {
-   margin-bottom: 10% !important;
-    border : 1px solid #fff;
-}
-
 
 .social-login {
    margin: 0 4%;
@@ -175,7 +173,6 @@
 }
 
 .google-login-icon, .facebook-login-icon {
-  border: px solid blue !important;
    background: #ffff;
    height: 30px;
    padding: 4px;
@@ -191,6 +188,11 @@
    border: px solid red;
    min-height: 140px;
    padding: 8px 0px;
+
+}
+
+.cancel-login-btn-box {
+    margin-top: 10px;
 
 }
 

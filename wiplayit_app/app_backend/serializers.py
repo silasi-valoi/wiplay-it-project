@@ -256,7 +256,7 @@ class QuestionSerializer(BaseQuestionSerializer):
 		return False
 		
 	def get_user_has_answer(self, obj):
-
+		
 		if self.current_user().is_authenticated:
 			return obj.answers.filter(author=self.current_user()).exists()
 		return 	False
@@ -382,13 +382,15 @@ class IndexSerializer(BaseSerializer):
 			'posts':post_bookmarks_serialiser
 		}
 	
-	def get_questions(self, obj):
+	def get_questions(self, obj): 
 		if self.current_user().is_authenticated:
 			questions = Question.objects.exclude(author=self.current_user())[:3]
+			
 		else:
 			questions = Question.objects.all()[:5]
 
-		self.update_serializer_obj_perms('question_perms')		       
+		self.update_serializer_obj_perms('question_perms')	
+
 		return QuestionSerializer(questions, context=self.context, many=True).data
 		
 		
@@ -419,10 +421,8 @@ class IndexSerializer(BaseSerializer):
 						is_superuser=False
 					)
 
-		user_list = UserSerializer(users, context=self.context, many=True).data
-		return user_list
-		
-		
+		return UserSerializer(users, context=self.context, many=True).data
+			
 	
 	
 class AboutSerializer(BaseModelSerializer):

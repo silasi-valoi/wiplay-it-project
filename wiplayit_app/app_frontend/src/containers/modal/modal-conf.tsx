@@ -138,10 +138,17 @@ export const EditModal = (props):JSX.Element => {
 };
 
 export const AuthenticationModal = props => {
+    let effect;
+    if(window.matchMedia("(min-width: 980px)").matches){
+        effect = Effects.ScaleUp;
+
+    }else{
+        effect = Effects.SlideFromRight;
+    }
     
     let modalProps = {
-        modalStyles    : Styles.getAuthenticationStyles(),
-        effect         : Effects.ScaleUp,
+        modalStyles : Styles.getAuthenticationStyles(),
+        effect,
         ...props
     };
     
@@ -252,13 +259,6 @@ export function  ModalContainer(props)  {
     );
 };
 
-/*
-style={modalStyles}
-            modalName={modalName}
-            onRequestClose={onRequestClose}
-            effect={effect}
-
-*/
 
 
 

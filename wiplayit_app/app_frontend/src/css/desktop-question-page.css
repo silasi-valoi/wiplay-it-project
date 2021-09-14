@@ -11,6 +11,8 @@
         margin : 25px 29%;
         
     }
+
+    
     
     #page-error-box, #answer-page,     
     .question-page, .post-page,
@@ -22,11 +24,21 @@
         position : relative;
         background : #ffff;
     }
+
+    #home-page-contents{
+        border: px solid black;
+
+    }
+
+    .home-page {
+        border: px solid blue;
+        padding-bottom: 45px;
+    }
     
     .index-questions, 
     .index-answers, 
     .index-posts, 
-    .index-user-list,
+    .index-users-box,
     .post-list-page {
         border   : 1px solid #D5D7D5; 
         border-radius : 10px;
@@ -34,6 +46,7 @@
         position : relative;
         background : #ffff;
         padding : 5px 0;
+        margin: 10px 0;
     }
 
     .question-list-page .question-contents,
@@ -87,10 +100,6 @@
         font-size  : 13px; 
     }
    
-    .post-title, .question {
-        font-size   : 12px;
-    }
-
     .index-items-label {
         padding        :  14px 15px 0px; 
         color          :  #A33F0B;
@@ -123,6 +132,9 @@
         color: #807f7f; 
     }
 
+    .time-created {
+        font-size : 13px;
+    }
 }
 
 

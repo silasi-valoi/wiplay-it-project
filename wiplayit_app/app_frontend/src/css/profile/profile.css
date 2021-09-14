@@ -177,6 +177,15 @@
     }
 
 
+    .items-count {
+        margin: 5px 10px;
+        font-family: 'Ubuntu';
+        font-weight: blod;
+        font-size: 15px;
+    }
+
+
+
     .credentials-menu {
         border-bottom : 1px solid #D5D7D5;;
         display       : flex;

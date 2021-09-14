@@ -111,6 +111,8 @@ export const ModalSubmitPending = (modalName:string):object => ({
 });
 
 export const ModalSubmitSuccess = (params:object):object => {
+    const isCreating:boolean = params['isCreating'];
+    const isUpdating:boolean = params['isUpdating'];
               
     return{
         type : "MODAL_SUBMIT_SUCESS",
@@ -118,8 +120,8 @@ export const ModalSubmitSuccess = (params:object):object => {
         payLoad : {
             ...params,
             submitting : false,
-            updated    : params['isUpdating'] || false,
-            created    : params['isCreating'] || false,
+            updated : isUpdating || false,
+            created : isCreating || false,
         }
         
     };
@@ -609,6 +611,19 @@ export const handleError  = (error?:any, opts?:object):object => {
     };
 };
 
+
+export const toggleAuthForm  = (options:object):object => {
+    
+    return {
+        type: 'AUTH_FORM',
+        payLoad: {
+            ...options,
+        }
+    };
+};
+
+
+
 export const authenticationPending = (params?:object):object => ({
 
     type   : types.USER_AUTHENTICATION['PENDING'],
@@ -638,14 +653,11 @@ export const authenticationError = (params:object):object => {
     let isSocialAuth:boolean = params['isSocialAuth'];
     let isTokenRefresh:boolean = params['isTokenRefresh'];
     let formName:string = params['formName'];
-
-    console.log(error, isTokenRefresh, isSocialAuth)
+   
     if(isSocialAuth && error['non_field_errors']){
         error = error.non_field_errors[0]
     }
-
     
-    console.log(error)
     return {
         type   : types.USER_AUTHENTICATION['ERROR'],
         payLoad : {

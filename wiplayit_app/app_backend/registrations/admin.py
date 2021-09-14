@@ -12,19 +12,19 @@ class DefaultProfilePictureAdmin(admin.ModelAdmin):
 admin.site.register(DefaultProfilePicture, DefaultProfilePictureAdmin)
 
 
-class Userdmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     fields = ['first_name', 'last_name', 'email', 
      		 'is_confirmed', 'is_active' , 'is_staff', 'is_superuser' ]
 
-admin.site.register(User,Userdmin)
+admin.site.register(User,UserAdmin)
 
 
-class Priofiledmin(admin.ModelAdmin):
+class ProfileAdmin(admin.ModelAdmin):
     fields =['live', 'credential', 'favorite_quote', 
             'profile_picture', 'followers', 'followings', 'user'
         ]
 
-admin.site.register(Profile,Priofiledmin)
+admin.site.register(Profile,ProfileAdmin)
 
 
 class PhoneNumberAdmin(admin.ModelAdmin):

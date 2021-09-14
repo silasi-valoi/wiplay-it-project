@@ -153,19 +153,19 @@ export default class Helper {
 
 };
 
-export const IsBookMarked =(contentType, obj)=>{
+export const IsBookMarked =(contentType:string, data:object)=>{
     
     let cache = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
     let index  = cache?.index;
     let bookmarks = index?.bookmarks;
     let isBookmarked = false;
 
-    if (bookmarks && obj) {
+    if (bookmarks && data) {
         let contents = bookmarks[contentType] || []
        
         contents.map((value, key)=> {
                         
-            if(value.id === obj.id) {
+            if(value.id === data['id']) {
                 isBookmarked = true
             }
         })
@@ -212,11 +212,18 @@ export const displayErrorMessage =(self, message:string) => {
 };
 
 export const displayAlertMessage = (self, message:object) => {
-    self.setState({ displayMessage : true, message });
+    
+    if(self.isMounted){
+        self.setState({ displayMessage : true, message });
         
-    setTimeout(()=> {
-        self.setState({displayMessage : false, message:undefined}); 
-    }, 10000);
+        setTimeout(()=> {
+            self.setState({displayMessage : false, message:undefined}); 
+        },7000);
+
+
+    }
+
+        
 };
 
 
@@ -248,7 +255,14 @@ export const cacheExpired = (cache:object, duration?:number):boolean => {
     let timeStamp = cache['timeStamp'];
     const getTimeState = new GetTimeStamp({timeStamp});
     let menutes = parseInt(`${getTimeState.menutes()}`);
-    let _cacheExpired:boolean = duration && menutes >= duration || menutes >= 1;
+    let _cacheExpired:boolean;
+
+    if(duration){
+        _cacheExpired = menutes >= duration
+        
+    }else{
+        _cacheExpired = menutes >= 1;
+    }
 
     return _cacheExpired;
     
@@ -256,14 +270,14 @@ export const cacheExpired = (cache:object, duration?:number):boolean => {
 
 
 export const cacheStoreData = (cacheKey:string, byId:string, data:object)=> {
-    let cacheEntities = localStorage.getItem('@@CacheEntities');
-    cacheEntities = cacheEntities && JSON.parse(cacheEntities) || {};
-    let cacheData =  cacheEntities[cacheKey];
+    let cacheEntities:string = localStorage.getItem('@@CacheEntities');
+    let entities:object = cacheEntities && JSON.parse(cacheEntities) || {};
+    let cacheData:object =  entities[cacheKey];
     let newCache:object = {};
     
     if (byId) {
 
-        let _cache = cacheData && cacheData[byId] || {};
+        let _cache:object = cacheData && cacheData[byId] || {};
         let _data:object = {..._cache, ...data[byId]};
 
          _data = {
@@ -280,9 +294,9 @@ export const cacheStoreData = (cacheKey:string, byId:string, data:object)=> {
         newCache = {...cacheData, ...data}
     }
 
-    cacheEntities[cacheKey] = newCache;
+    entities[cacheKey] = newCache;
 
 
-    localStorage.setItem('@@CacheEntities', JSON.stringify(cacheEntities));  
+    localStorage.setItem('@@CacheEntities', JSON.stringify(entities));  
 
 }

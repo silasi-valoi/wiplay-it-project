@@ -8,14 +8,12 @@ from mptt.models import MPTTModel, TreeForeignKey
 from app_backend.slug_generator import generate_unique_slug
 
 class BaseModel(models.Model):
-    deleted      = models.BooleanField('deleted', default=False)
-    date_updated = models.DateTimeField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    author   = models.ForeignKey(
-                       settings.AUTH_USER_MODEL,
-                       on_delete=models.CASCADE, 
-                       blank=True
-                       )
+    updated = models.BooleanField('updated', default=False)
+    deleted = models.BooleanField('deleted', default=False)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True)
 
     class Meta:
         abstract = True
@@ -25,8 +23,8 @@ class BaseModel(models.Model):
 #Quetion model
 class Question(BaseModel):
     question = models.TextField('what is you question',  blank=True)
-    slug         = models.SlugField(max_length=250, blank=True, unique=True)
-    followers    = models.IntegerField(default=0)
+    slug = models.SlugField(max_length=250, blank=True, unique=True)
+    followers = models.IntegerField(default=0)
     
     class Meta:
         permissions = (

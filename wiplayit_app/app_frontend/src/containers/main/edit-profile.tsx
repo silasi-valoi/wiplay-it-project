@@ -13,7 +13,7 @@ import {store} from "store/index";
 import {handleSubmit, getUserProfile}  from "dispatch/index"
 import { AlertComponent } from 'templates/partials';
 import  AjaxLoader from 'templates/ajax-loader';
-import  Helper from 'utils/helpers';
+import  Helper, {displaySuccessMessage} from 'utils/helpers';
 import Apis from 'utils/api';
 import * as checkType from 'helpers/check-types'; 
 
@@ -78,7 +78,8 @@ export class EditProfile extends Component{
  
 
     onProfileUpdate = () =>{
- 
+        if(!this.isMounted) return;
+
         const onStoreChange = () => {
             let currentUser = this.state['currentUser']; 
             let byId = this.state['byId']
@@ -96,7 +97,7 @@ export class EditProfile extends Component{
             if (userProfile) {
                 this.setState({submitting : userProfile['submitting']});
 
-                let isEditorModal:boolean    = this.checkModalIsOpen('editor');
+                let isEditorModal:boolean = this.checkModalIsOpen('editor');
                 let isDropImageModal:boolean = this.checkModalIsOpen('dropImage');
 
                 if (!isDropImageModal || !isEditorModal) {
@@ -115,7 +116,7 @@ export class EditProfile extends Component{
         }
        
         const user = userProfile['user'];
-        this.setState({userProfile : user});
+        this.isMounted && this.setState({userProfile : user});
         this.populateEditForm(user);
     };
 
@@ -124,10 +125,10 @@ export class EditProfile extends Component{
 
         if (userProfile.updated === true) {
             delete userProfile.updated;
-     
-            let textMessage = "Your profile successfuly updated"
-            let message:object     = {textMessage, messageType:'success'}
-            this.displayMessage(message)
+
+            let message = "You have successfuly updated your profile."
+            
+            displaySuccessMessage(this, message);
         }
     };
 
@@ -140,7 +141,7 @@ export class EditProfile extends Component{
                   
         this.setState({ displayMessage : true, message });
         setTimeout(()=> {
-            this.setState({displayMessage : false}); 
+           this.isMounted && this.setState({displayMessage : false}); 
         }, 5000);
     };
 
@@ -153,8 +154,6 @@ export class EditProfile extends Component{
         this.isMounted = true
         this.onProfileUpdate();
 
-        console.log(this.props)
-                  
         let location = this.props['location']; 
                         
         if (location) {
@@ -189,14 +188,15 @@ export class EditProfile extends Component{
             ...userProfile['profile'],
         };
 
-        this.setState({ form, userProfile });
+        this.isMounted && this.setState({ form, userProfile });
     }
 
     handleChange(e){
       e.preventDefault()
+
       let form:object = this.state['form'];
       form[e.target.name] = e.target.value;
-      this.setState({form})
+      this.isMounted && this.setState({form});
     }
 
     getProps(){
@@ -210,8 +210,8 @@ export class EditProfile extends Component{
             editUserProfileProps : this.getUserEditProps(),
             handleScroll : this.handleScroll.bind(this),
             ...this.state,
-        }
-    }
+        };
+    };
  
     textAreaProps() {
         return {
@@ -241,7 +241,7 @@ export class EditProfile extends Component{
         if (!modal) return false;
 
         return modal.modalIsOpen;
-    }
+    };
 
 
     getUserEditProps():object{
@@ -261,8 +261,8 @@ export class EditProfile extends Component{
             byId : this.state['byId'],
             modalName,
             isModal,
-        } 
-    }
+        }; 
+    };
 
     handleScroll=()=>{
         let onScroolStyles    = this.state['onScroolStyles'];
@@ -509,11 +509,10 @@ export class DropImage extends React.Component {
             if(!this.isMounted)  return;
 
             let storeUpdate = store.getState();
-            
             let {entities}  = storeUpdate;
             
-            let modal       = entities['modal'];
-            let byId        = this.props['byId'];
+            let modal = entities['modal'];
+            let byId  = this.props['byId'];
 
             let dropImageModal = modal['dropImage'];
             
@@ -538,11 +537,16 @@ export class DropImage extends React.Component {
 
     _HandleErrorUpdate(data:object){
         let error = data['error']
-        this.setState({ failed : true, error });
+        if (!error) {
+            return;
+        }
+
+        this.setState({failed : true, error });
        
         setTimeout(()=> {
             this.setState({failed : false}); 
         }, 5000);
+
         delete data['error']
     };
 
@@ -573,8 +577,9 @@ export class DropImage extends React.Component {
         let formData:object = helper.createFormData({'profile_picture': file});
         let submitProps = {
                formData,
-               isModal    : true,
+               isModal : true,
                modalName : 'dropImage',
+               isImageDrop : true,
             };
 
         submitProps = {...this.props, ...submitProps};
@@ -584,8 +589,7 @@ export class DropImage extends React.Component {
     };
 
     cancelImagePreview =()=>{
-        this.setState({imagePreviewUrl:undefined, file:''})
-
+        this.setState({imagePreviewUrl:undefined, file:''});
     };
 
 
@@ -605,7 +609,7 @@ export class DropImage extends React.Component {
         let imagePreviewUrl = props['imagePreviewUrl'];
         let submitting = props['submitting'];
         let error = props['error'];
-        let failed  = props['failed'];
+        let failed = props['failed'];
 
         let submitButtonStyles = submitting?{opacity:'0.60'}:{};
     

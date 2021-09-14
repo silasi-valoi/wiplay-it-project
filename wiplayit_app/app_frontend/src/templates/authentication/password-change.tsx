@@ -2,13 +2,13 @@ import React from 'react';
 import  AjaxLoader from 'templates/ajax-loader';
 import {history} from 'App';
 import {X} from 'react-feather';
-import {ModalCloseBtn, AuthenticationBtn} from 'templates/buttons';
+import {ModalCloseBtn, AuthenticationBtn, OpenAuthModalBtn} from 'templates/buttons';
 import { NonFieldErrors,
          PasswordErrors,
          SmsCodeErrors } from 'templates/authentication/errors'
 
 import { RegistrationSubmitBtn,
-         ToogleAuthFormBtn, SpinLoader } from  'templates/authentication/utils'
+      ToogleAuthFormBtn, SpinLoader } from  'templates/authentication/utils'
 
 
 
@@ -32,33 +32,31 @@ export default PasswordChangeForm;
 
 
 export const PasswordForm =(props)=>{
+    const {handleFormChange, validateForm, formDescription, children} = props;
+
     let {submitting,
-         onSubmit,
-         handleFormChange,
          form,
          formName,
          onSignUpForm,
          onPasswordChangeForm,
-         validateForm,
-         formDescription,
-         children,
-         successMessage} = props;
+         successMessage} = props.authForm;
         
 
     if (formName !== 'passwordChangeForm' && 
         formName !== 'passwordChangeConfirmForm'){
         return null;
     }
-
    
 
-    let passwordChangeForm   = form?.passwordChangeForm;
+    let passwordChangeForm:object   = form?.passwordChangeForm;
     
-    let passwordChangeConfirmForm =  form?.passwordChangeConfirmForm;
+    let passwordChangeConfirmForm:object =  form?.passwordChangeConfirmForm;
 
     form = passwordChangeForm || passwordChangeConfirmForm;
 
-    let error = form && form.error; 
+    if(!form) return null;
+
+    let error =  form.error; 
     let disabledStyle = submitting? {opacity:'0.60'} : {};
     let formIsValid = validateForm(form);
 
@@ -66,10 +64,9 @@ export const PasswordForm =(props)=>{
     
     let fieldSetStyles = submitting? {opacity:'0.60'}:{};
 
-
     return(
         <form className="password-change-form" 
-              onSubmit={(event)=> onSubmit(event, 'passwordChangeForm')} >
+              onSubmit={(event)=> props.onSubmit(event, 'passwordChangeForm')} >
                          
             <fieldset style={fieldSetStyles}
                       disabled={submitting || onSignUpForm}>
@@ -81,16 +78,20 @@ export const PasswordForm =(props)=>{
 
                 <div  className="password-form" >
                 {error &&
-                    <PasswordErrors {...error}/>
+                    <div>
+                        <PasswordErrors {...error}/>
+                        <NonFieldErrors {...error}/>
+                    </div>
                 }
+
                 <div>
                     <div className="change-password-box auth-input-field">
                         <input
                             className="password"
-                            placeholder="New Password"
+                            placeholder=""
                             type="password"
                             name="new_password1"
-                            value={form?.new_password1}
+                            value={form.new_password1}
                             onChange={(event)=> 
                                       handleFormChange(event, 'passwordChangeForm')}
                             required
@@ -102,10 +103,10 @@ export const PasswordForm =(props)=>{
                     <div className="change-password-box auth-input-field">
                         <input
                             className="password"
-                            placeholder="Repeat New Password"
+                            placeholder=""
                             type="password"
                             name="new_password2"
-                            value={form?.new_password2}
+                            value={form.new_password2}
                             onChange={(event)=>
                                         handleFormChange(event, 'passwordChangeForm')}
                             required
@@ -148,19 +149,15 @@ export const PasswordConfirmForm =(props)=>{
 };
 
 export const _PasswordConfirmForm =(props)=>{
+    const {handleFormChange, validateForm, formDescription, children} = props;
 
     let {submitting,
-         onSubmit,
-         handleFormChange,
-         passwordRest,
          form,
          formName,
-         validateForm,
-         formDescription,
-         children,
-         successMessage} = props;
+         successMessage} = props.authForm;
     
-    form = form && form.loginForm || undefined;
+    form = form && form.loginForm;
+       
     if (!form) return null;
 
     let error = form && form.error; 
@@ -171,7 +168,7 @@ export const _PasswordConfirmForm =(props)=>{
     
     return (
         <form className="password-confirm-form" 
-              onSubmit={(event)=> onSubmit(event)} >
+              onSubmit={(event)=> props.onSubmit(event)} >
             <fieldset style={fieldSetStyles} disabled={submitting}>
                 { successMessage &&
                     <ul className="success-resend-message">
@@ -186,7 +183,7 @@ export const _PasswordConfirmForm =(props)=>{
                             password in order to continue. If you signed 
                             up for Wiplayit using Facebook or Google,
                             please <span
-                                onClick={()=> passwordRest()}
+                                onClick={()=> props.passwordRest()}
                                 style={fieldSetStyles}
                                 className="password-rest-btn text-highlight">
                                 create an account password.
@@ -202,7 +199,7 @@ export const _PasswordConfirmForm =(props)=>{
                        
                 <div  className="" >
                     <div className="confirm-password-box auth-input-field">
-                        <div className="confirm-password-input">
+                        <div className="confirm-password-input auth-input-field">
                             <input
                                 className="password"
                                 placeholder=""
@@ -216,7 +213,7 @@ export const _PasswordConfirmForm =(props)=>{
                         </div>
 
                         <button
-                            onClick={()=> passwordRest()}
+                            onClick={()=> props.passwordRest()}
                             type="button"
                             className="confirm-password-rest-btn">
                             Forgot Password ?
@@ -242,6 +239,12 @@ export const _PasswordConfirmForm =(props)=>{
 
 export const SuccessPasswordChange =(props:object)=>{
 
+    let authenticationProps = {
+        linkName  : 'Login',
+        authenticationType : 'Login',
+        modalName : 'authenticationForm',
+    };
+
     return(
         <div className="password-change-success">
             <div className="password-change-success-box">
@@ -250,10 +253,7 @@ export const SuccessPasswordChange =(props:object)=>{
                 </p>
             </div>
             <div className="authentication-btn-box">
-                <button className="btn-sm" 
-                        onClick={()=> history.push('/user/registration/') }>
-                        Login
-                </button> 
+                <OpenAuthModalBtn {...authenticationProps}/>  
             </div>
         </div>
     )

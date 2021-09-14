@@ -9,18 +9,19 @@
         border: 1px solid transparent; 
     }
 
-    .password-confirm-form {
-        border : 1px solid red;   
-    }
-
     .password-change-container,
     .registration-container,
     .account-confirmation-container {
         width: 50%;
-        margin: 10% 25% 0;
+        margin: 5% 25% 0;
         min-height: 130px;
         background : #edf0f3;
-        border     : 1px solid  #edf0f3;
+        border : 1px solid  #edf0f3;
+    }
+
+    .auth-modal-container {
+        border: px solid black;
+        padding-bottom: 25px;
     }
 
     .registration-container {
@@ -119,8 +120,6 @@
         border-bottom: 3px solid #D2D2D2;
     }
 
-
-
     .username-fields {
         display: flex;
         border: px solid red;
@@ -162,7 +161,8 @@
         list-style-type: none;
     } 
 
-    .confirmation-message-box, .password-change-success-box {
+    .confirmation-message-box,
+    .password-change-success-box {
         border-top : 1px solid #BDBDBD;
         text-align :  center;
     }
@@ -182,17 +182,22 @@
         border:px solid blue; 
     }
 
-    .form-helper-text, .email-confirm-helper-text,
-    .email-form-description,.password-form-description {
+    .form-helper-text, 
+    .email-confirm-helper-text,
+    .email-form-description,
+    .password-form-description {
         font-size : 14px;
         margin    : 14px 0;
     }
 
    
-
-    .sms-code-form,.email-confirm-box,
-    .success-message-box, .password-change-form,
-    .sign-up-form, .email-form, .login-form {
+    .sms-code-form,
+    .email-confirm-box,
+    .success-message-box,
+    .password-change-form,
+    .sign-up-form,
+    .email-form, 
+    .login-form {
         border  : 1px solid #BDBDBD;
         padding : 2%;
         margin  : 0 3%;
@@ -245,7 +250,8 @@
     }
     
     .confirmation-login-link,
-    .resend-confirmation-btn, .registration-submit-btn {
+    .resend-confirmation-btn, 
+    .registration-submit-btn {
         font-size: 11px;
         color: #ffff;
         font-family: 'Oswald';
@@ -273,6 +279,12 @@
 
     .terms-and-policy-box {
         margin: 10px;
+    }
+
+
+    .cancel-login-btn-box {
+        border: 1px solid blue !important;
+        display: none;
     }
     
 }

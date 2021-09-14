@@ -13,24 +13,41 @@
     
     .app-question-box, .app-post-box. .app-profile-box {
         margin-top : 50px;
-        border: 1px solid blue;
-    }
-    
-    .app-index-box {
-        padding-top : 40px; 
+        
     }
 
+    .page-contents {
+        border: px solid blue;
+    }
+
+    .home-page {
+        margin-top: 60px;
+        
+    }
+
+    .app-box-container {
+        border: px solid red;
+    }
+  
+   
     #question-page,
     #post-page, 
     #post-list-page,
-    #question-list-page,
-    #answer-page {
+    #question-list-page {
         background : #fff;
         margin-top : 70px; 
     }
 
+    #answer-page { 
+        margin-top: 40px;
+    }
+
     #home-page-contents{
         border: px solid black;
+    }
+
+    .home-page {
+        padding-bottom: 45px;
     }
    
 
@@ -42,12 +59,19 @@
         font-weight   : bold;
     }
     
-    .answer-list-container 
+    
+    .index-users-box,
     .answer-contents, 
-    .index-post-contents,
-    .index-answer-contents {
+    .index-posts-box,
+    .index-questions-box,
+    .index-answers-box {
         border-bottom : 5px solid #D5D7D5;
-        padding: 10px 10px 12px;
+        padding : 10px 10px 12px;
+        border-top : 1px solid  #D5D7D5;
+    }
+
+    .index-questions-box {
+
     }
 
     .answer-list-container {
@@ -91,10 +115,8 @@
 
     .post-box {
     } 
+
     .post-title, .question {
-        font-size   : 15px;
-        font-weight : bold;
-        color       : black;
         margin      : 4px 0;
     }
 

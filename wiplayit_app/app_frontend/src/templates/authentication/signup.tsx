@@ -13,16 +13,16 @@ import { ToogleAuthFormBtn,
 
 
 export const  SignUpForm = props => {
+    const {validateForm} = props;
     let { 
           submitting,
           form,
           onSignUpForm,
           formName,
-          formIsValid, 
-          validateForm, 
-          isSocialAuth} = props;
+          formIsValid,
+          isSocialAuth} =  props.authForm;
 
-    form = form && form.signUpForm? form.signUpForm: null;
+    form = form && form.signUpForm;
     if (!form) return null;
 
     let error = form['error']; 
@@ -42,7 +42,7 @@ export const  SignUpForm = props => {
     
     
     return(
-        <div className="form-container">
+        <div className="form-container" id="form-container">
             <ul className="form-title-box">
                 <li className="">Create Account</li>
             </ul> 
@@ -98,12 +98,12 @@ export const  SignUpForm = props => {
 
                         <div  className="email-fields signup-fields">
                             {!isSocialAuth && onSignUpForm && error &&
-                                <EmailFieldErrors {...error}/>
+                                <div>
+                                    <EmailFieldErrors {...error}/>
+                                    <NonFieldErrors {...error}/>
+                                </div>
                             }
-                    
-                            {!isSocialAuth && error &&
-                                <NonFieldErrors {...error}/>
-                            }    
+                                               
 
                             <div className="email-box auth-input-field">
                                 <input
@@ -165,8 +165,9 @@ const _LoginToogle = (props)=>{
             ...props,
             toggleBtnName:'Login Here',
             toggleFormProps:{
-                value : true,
-                formName:'loginForm'
+                defaultFormName : 'loginForm',
+                value : false,
+                formName:'signUpForm',
             }
         };
 
@@ -177,8 +178,7 @@ const _LoginToogle = (props)=>{
                 <ToogleAuthFormBtn {...toggleLoginFormProps}/>
             </li>
         </ul>
-         
-    )
+    );
 
 };
 

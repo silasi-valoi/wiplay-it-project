@@ -226,16 +226,16 @@ export default  class AppEditor extends Component{
             }
 
             if ( objName === 'Post') {
-                this.updateDraftEditor(data['add_post']);
-                this.updateTextAreaForm(data['add_title']);
+                this.updateDraftEditor(data['post']);
+                this.updateTextAreaForm(data['title']);
             }
 
             if (objName === 'Question') {
-                this.updateTextAreaForm(data['add_question']);
+                this.updateTextAreaForm(data['question']);
             }
 
             else if (objName === 'Answer') {
-                this.updateDraftEditor(data['add_answer']);
+                this.updateDraftEditor(data['answer']);
             }
 
             else if (objName === 'Comment') {
@@ -395,19 +395,19 @@ export default  class AppEditor extends Component{
         if (objName === "Question") {
             
             validatedForm =  helper.validateForm({form});
-            validForm     =  {add_question: validatedForm['data']}; 
+            validForm     =  {question: validatedForm['data']}; 
         }
         else if (objName === "Post") {
-            let add_title =  helper.validateForm({form});
+            let title =  helper.validateForm({form});
         
             validForm = {
-                add_post  : validatedForm['data'],
-                add_title : add_title['data'], 
+                post  : validatedForm['data'],
+                title : title['data'], 
             };
         }
 
         else if(objName === "Answer"){
-            validForm = {add_answer : validatedForm['data']}; 
+            validForm = {answer : validatedForm['data']}; 
 
         }else if(objName === "Comment"){
             validForm = {comment : validatedForm['data']};  
@@ -547,7 +547,9 @@ export default  class AppEditor extends Component{
 
 
     getProps():object {
-        let currentContent  = this.state['editorState'].getCurrentContent();
+        const editorState = this.state['editorState'];
+        let currentContent  = editorState && editorState.getCurrentContent();
+        
         let editorContents  = currentContent && convertToRaw(currentContent) || {};
         editorContents      =  JSON.stringify(editorContents);
     

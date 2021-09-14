@@ -5,7 +5,7 @@ import CommentsBox from 'containers/main/comment-page';
 import {PostComponent} from 'templates/post';
 import  MainAppHoc from "containers/main/index-hoc";
 
-import {PageErrorComponent} from 'templates/partials';
+import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 
 import  * as action  from 'actions/actionCreators';
 import { getPost } from 'dispatch/index';
@@ -136,21 +136,25 @@ class  PostPage extends Component  {
         }
                              
         return (
-            <div>
-                
-                {post.isLoading &&
-                    <div className="page-spin-loader-box partial-page-loader">
-                        <AjaxLoader/>
-                    </div>
-                }
+            <div className="">
+                <UnconfirmedUserWarning {...props}/>
 
-                { post.error &&
-                    <PageErrorComponent {...props}/>
-                }
+                <div className="page-contents" id="page-contents">
+                
+                    {post.isLoading &&
+                        <div className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
+
+                    { post.error &&
+                        <PageErrorComponent {...props}/>
+                    }
                       
-                {!post.isLoading &&
-                    <Post {...props}/>
-                }
+                    {!post.isLoading &&
+                        <Post {...props}/>
+                    }
+                </div>
             </div>
         );                   
       

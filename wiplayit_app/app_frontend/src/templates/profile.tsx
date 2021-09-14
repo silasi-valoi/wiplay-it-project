@@ -470,7 +470,7 @@ export const UserAnswers = props =>{
                 </div>
 
                 :
-                <p>No Answer yet</p>
+                <p className="items-count">No Answer yet</p>
             }
         </div>
     )
@@ -493,11 +493,13 @@ export const UserQuestions = props => {
             {questionList && questionList?.length &&
                 <div className="question-container">
                     <div className="number-question-box">
-                        { questionList?.length? 
+                        { questionList.length > 1 && 
                             <p className="items-count">
                                 {questionList.length } Questions
                             </p>
-                            :
+
+                            ||
+
                             <p className="items-count">
                                 {questionList.length } Question
                             </p>
@@ -520,7 +522,7 @@ export const UserQuestions = props => {
 
                 </div>
                 || 
-                <p>No Question </p>
+                <p className="items-count">No Question </p>
             }
         </div>
     )
@@ -567,7 +569,8 @@ export const UserPosts = props => {
                 </div>
 
                 ||
-                <p>No Post yet</p>
+
+                <p className="items-count">No Post yet</p>
             }
 
         </div>
@@ -635,7 +638,7 @@ export const UsersComponent = props => {
                         </li>
 
                         <li className="user-list-credentials">
-                            { user.profile.credential }
+                            {user.profile.credential}
                         </li>
                     </ul>
 
@@ -660,38 +663,34 @@ export const UserFollowings = props => {
     let userProfile = props.userProfile;
     userProfile    = userProfile.user;
 
-    let usersById   = `userFollowings${userProfile.id}`;
-    let users       = props.entities.users[usersById];
+    let usersById  = `userFollowings${userProfile.id}`;
+    let users:object = props.entities.users[usersById];
+    
+    let userList:object[] = users && users['userList'];
+    let numberOfFollowings:number = userList && userList.length; 
+
     let userListProps = {...props, usersById};
 
     return (
-      <div>
-         { users?
-            <div>
-               { users.userList.length === 0?
-                 <p>No Followings Yet</p>
-                 : 
-                 <div>
-                     <div className="number-answers-box">
-                        { users.userList.length > 1? 
-                            <p className="items-count">
-                               {users.userList.length}  Followings</p>
+        <div className="">
+            {numberOfFollowings &&
+                <div>
+                    <div className="number-answers-box">
+                        {numberOfFollowings > 1? 
+                            <p className="items-count">{numberOfFollowings}  Followings</p>
                             :
-                            <p className="items-count">
-                               {users.userList.length} Following
-                            </p>
+                            <p className="items-count">{numberOfFollowings} Following</p>
                         }
-                     </div> 
-                     <UserList {...userListProps }/>
-                  </div>
-               }
-            </div>
-            :
-            ""   
-         }  
-      </div>
-   
-   );
+                    </div> 
+                    <UserList {...userListProps }/>
+                </div>
+
+                ||
+
+                <p className="items-count">No Followings Yet</p>
+            }  
+        </div>
+    );
 };
 
 
@@ -701,33 +700,30 @@ export const UserFollowers = props => {
     userProfile    = userProfile.user;
 
     let usersById   = `userFollowers${userProfile.id}`
-    let users       = props.entities.users[usersById];
-    let userListProps     = {...props, usersById}
-  
+    let users:object       = props.entities.users[usersById];
+    let userList:object[] = users && users['userList'];
+
+    let numberOfFollowers:number = userList && userList.length; 
+
+    let userListProps:object     = {...props, usersById}
+      
     return (
         <div>
-            { users?
-               <div>
-                    { users.userList.length === 0?
-                        <p>No Followers Yet</p>
-                        :
-                        <div>
-                            <div className="number-answers-box">
-                                { users.userList.length > 1? 
-                                    <p className="items-count">
-                                       {users.userList.length}  Followings</p>
-                                    :
-                                    <p className="items-count">
-                                        {users.userList.length} Following
-                                    </p>
-                                }
-                            </div> 
-                            <UserList {...userListProps}/>
-                        </div>
-                    }
+            {numberOfFollowers &&
+                <div>
+                    <div className="number-answers-box">
+                        {numberOfFollowers > 1? 
+                            <p className="items-count">{numberOfFollowers} Followers</p>
+                            :
+                            <p className="items-count">{numberOfFollowers} Follower</p>
+                        }
+                    </div> 
+                    <UserList {...userListProps}/>
                 </div>
-                :
-                null
+
+                ||
+
+                <p className="items-count">No Followers Yet</p>
             }
         </div>
     );
@@ -765,7 +761,7 @@ export  const userProfileItemsParams = {
         followers(user:object){
             return {
                 component : UserFollowers,
-                byId      : `usersFollowers${user['id']}`,
+                byId      : `userFollowers${user['id']}`,
                 data      :  user['followers'],
                 itemsType : 'Followers'
             }

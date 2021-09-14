@@ -1,3 +1,9 @@
+.registration-page {
+    overflow-x : hidden;
+    overflow-y : scroll;
+    min-height : 100vh;
+
+}
 
 .password-change-container,
 .account-confirmation-container {
@@ -11,6 +17,17 @@
     border-radius: 7px;
    
 }
+
+
+.password-confirm-form {
+  
+}
+
+.password-form-description-box {
+    font-family: 'Oswald';
+ }
+
+
 
 .email-confirm-title-box,
 .form-title-box {
@@ -168,16 +185,8 @@
 
 .confirm-password-submit {
     border: px solid blue;
-    margin-left: 10px;
-    margin-right: 10px;  
+
 }
-
-
-.confirm-password-submit-btn {
-    border : px solid red;
-    width : 55%;
-}
-
 
 .submit-btn-box {
     width  : 100%; 
@@ -264,10 +273,28 @@ textarea:not(:empty)  ~ .floating-label,
 input:not([value=''])  ~ .floating-label,
 textarea:focus ~ .floating-label, 
 input:focus ~ .floating-label {
-    top: -5%;
+    top: -10%;
     left: 0;
-    font-size: 12px;
+    font-size: 14px;
 }
+
+
+.name-field-box2 {
+  margin-left: 1%;
+}
+.name-field-box1 {
+    margin-right: 1%
+}
+
+.username-fields {
+    display:  flex;
+}
+
+.email-fields, .password-fields {
+    
+}
+
+
 
 .country-select-box {
     margin : 14px 0;

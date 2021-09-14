@@ -31,11 +31,11 @@ const AccountConfirmation = props => {
 
 export default AccountConfirmation;
 
-const ConfirmationContents =(props)=> {
+const ConfirmationContents = (props) => {
     
     return(
         <div>
-            {props.userIsConfirmed &&
+            {!props.userIsConfirmed &&
                 <ConfirmationSuccess {...props}/>
                 ||
                 <ConfirmationError {...props}/>
@@ -48,6 +48,12 @@ const ConfirmationContents =(props)=> {
 const ConfirmationSuccess =(props)=> {
     let message = 'Your account has been successefully confirmed.'
     let {successMessage} = props;
+
+    let authenticationProps = {
+        linkName  : 'Login',
+        authenticationType : 'Login',
+        modalName : 'authenticationForm',
+    };
  
     return(
         <div>
@@ -58,10 +64,7 @@ const ConfirmationSuccess =(props)=> {
             </div>
 
             <div className="authentication-btn-box">
-                <button className="btn-sm" 
-                        onClick={()=> history.push('/user/registration/') }>
-                        Login
-                </button>  
+                <OpenAuthModalBtn {...authenticationProps}/>  
             </div>
         </div>
     );
@@ -76,7 +79,7 @@ const ConfirmationError =(props)=> {
     let authenticationProps = {
             linkName  : 'Resend Confirmation',
             authenticationType : 'confirmationResend',
-            modalName : 'confirmationResend',
+            modalName : 'authenticationForm',
     };
 
     return(
