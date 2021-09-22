@@ -1,0 +1,35 @@
+version: "3.9"
+   
+services:
+  db:
+    image: mysql
+    ports:
+      - 3307:3306
+
+    volumes:
+      - db:/var/lib/mysql
+      - db_config:/etc/mysql
+
+    environment:
+      -  MYSQL_ROOT_PASSWORD='${sila9020@?}'
+          
+  web:
+    build: .
+    links:
+      - "db:database"
+
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/wiplayit_app
+    ports:
+      - "8000:8000"
+    restart: always
+
+    depends_on:
+      - db
+     
+
+volumes:  
+  db:
+  db_config:
+

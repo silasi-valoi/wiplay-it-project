@@ -35,7 +35,7 @@ const ConfirmationContents = (props) => {
     
     return(
         <div>
-            {!props.userIsConfirmed &&
+            {props.userIsConfirmed &&
                 <ConfirmationSuccess {...props}/>
                 ||
                 <ConfirmationError {...props}/>

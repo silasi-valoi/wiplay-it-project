@@ -91,7 +91,7 @@ class Profile (models.Model):
     profile_picture = models.ImageField(
                         upload_to='profiles/%y/%m/%d/',
                         blank=True,
-                        default="default-profiles/user-image-placeholder.png"
+                        default="profiles/user-image-placeholder.png"
                       )
     followers       = models.IntegerField(default=0)
     followings      = models.IntegerField(default=0)
@@ -157,7 +157,7 @@ class PhoneNumber (models.Model):
         db_table = 'users_phone_numbers'
 
     def get_country_code(self):
-        print(self.user.user_country)
+    
         country = self.user.user_country
         if country:
             return country.short_name
@@ -166,7 +166,7 @@ class PhoneNumber (models.Model):
 
     def set_national_format(self, phone_number, country=None):
         country = self.get_country_code()
-        print(country, phone_number)
+        
         if not country:
             return
 

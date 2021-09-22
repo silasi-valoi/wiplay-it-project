@@ -12,12 +12,18 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import datetime
+from dotenv import load_dotenv, find_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+load_dotenv(find_dotenv())
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+print(find_dotenv())
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+print(SECRET_KEY)
 
 AUTH_USER_MODEL = 'app_backend.User'
 
@@ -156,6 +162,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_backend',
     'rest_framework',
+    'storages', 
     'rest_auth',
     'rest_auth.registration',
     'rest_framework.authtoken',
@@ -267,20 +274,48 @@ USE_L10N = True
 
 USE_TZ = True
 
+USE_S3 = os.environ.get('USE_S3') == 'True'
+
+if USE_S3:
+    # aws settings
+    AWS_ACCESS_KEY_ID = os.getenv('S3_BUCKET_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('S3_BUCKET_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_VERIFY = True
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+    
+    STATICFILES_STORAGE = 'wiplayit_app.storage_backends.StaticStorage'
+
+    # s3 public media settings
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+
+    DEFAULT_FILE_STORAGE = 'wiplayit_app.storage_backends.PublicMediaStorage'
+
+    # s3 private media settings
+    PRIVATE_MEDIA_LOCATION = 'private'
+    PRIVATE_FILE_STORAGE = 'wiplayit_app.storage_backends.PrivateMediaStorage'
+   
+
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
 
 STATICFILES_FINDERS = "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'assets'),
-    
-]
-
-
-STATIC_URL = '/static/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
 
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -289,3 +324,4 @@ WEBPACK_LOADER = {
     
     }
 }
+

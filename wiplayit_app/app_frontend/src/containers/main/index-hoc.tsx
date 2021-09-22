@@ -233,10 +233,10 @@ export function MainAppHoc(Component) {
 
             if(this.isMounted){
                
-                this.confirmLogout(userAuth);
-                this.confirmLogin(userAuth);
+                this.handleUserLogin(userAuth);
+                this.handleUserLogout(userAuth);
                 this.handlePasswordChangeSuccess(userAuth);
-                this.handleLogin(userAuth);
+                this.handleAccountConfirmation(userAuth);
             }
         };
 
@@ -427,38 +427,9 @@ export function MainAppHoc(Component) {
 
             if (error && isTokenRefresh) return true;
         };
+    
 
-        handleLogin(userAuth:object){
-            if (!userAuth || !userAuth['loginAuth'])return;
-
-            let loginAuth = userAuth['loginAuth'];
-            let isLoggedIn:boolean = loginAuth['isLoggedIn']; 
-            let isAuthenticated:boolean = this.state['isAuthenticated'];  
-            
-            if(isLoggedIn && !isAuthenticated){
-                this.isMounted && this.setState({isAuthenticated:true})
-                closeModals(true);
-            }
-        };
-
-
-        confirmLogin =(userAuth:object) => {
-            let loginAuth:object = userAuth['loginAuth'];
-            let userIsConfirmed:boolean = this.state['userIsConfirmed'];
-            if(!loginAuth) return;
-
-
-            if (loginAuth['isConfirmed']) {
-                delete loginAuth['isConfirmed'];
-                this.isMounted && this.setState({userIsConfirmed:true})
-                closeModals(true);
-                                     
-                let successMessage:string = 'You successfully confirmed your account';
-                displaySuccessMessage(this, successMessage);
-            }
-        };
-
-        confirmLogout =(userAuth:object)=> {
+        handleUserLogout =(userAuth:object)=> {
             if (!userAuth || !userAuth['loginAuth']) {
                 return;
             }
@@ -481,6 +452,37 @@ export function MainAppHoc(Component) {
                 this.clearItemFromStore();
             }
         };
+
+        handleUserLogin(userAuth:object){
+            if (!userAuth || !userAuth['loginAuth'])return;
+
+            let loginAuth = userAuth['loginAuth'];
+            let isLoggedIn:boolean = loginAuth['isLoggedIn']; 
+            let isAuthenticated:boolean = this.state['isAuthenticated'];  
+            
+            if(isLoggedIn && !isAuthenticated){
+                this.isMounted && this.setState({isAuthenticated:true})
+                closeModals(true);
+
+                this.pushToRouter({linkPath:'/'});
+            }
+        };
+
+        handleAccountConfirmation =(userAuth:object) => {
+            let loginAuth:object = userAuth['loginAuth'];
+            let userIsConfirmed:boolean = this.state['userIsConfirmed'];
+            if(!loginAuth) return;
+
+
+            if (loginAuth['isConfirmed']) {
+                delete loginAuth['isConfirmed'];
+                this.isMounted && this.setState({userIsConfirmed:true})
+                closeModals(true);
+                                     
+                let successMessage:string = 'You successfully confirmed your account';
+                displaySuccessMessage(this, successMessage);
+            }
+        };
    
 
         loginUser = () => {
@@ -491,6 +493,7 @@ export function MainAppHoc(Component) {
 
             return Modal(modalProps);
         };
+
 
         logout= () => {
             let apiUrl:string   =  Apis.logoutUser();
@@ -552,8 +555,6 @@ export function MainAppHoc(Component) {
             }
 
             this.deleteObj({...params, apiUrl});
-
-           
         };
 
         deleteObj(params:object){
@@ -564,7 +565,7 @@ export function MainAppHoc(Component) {
             }
            
            return store.dispatch<any>(Delete({...params}));
-        }
+        };
 
         addBookmark =(params:object)=> {
             

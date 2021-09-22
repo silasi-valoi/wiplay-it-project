@@ -30,11 +30,11 @@ ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', '192.168.43.15', 'localhost']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wiplayitdb',
-        'USER': 'silasi',
+        'NAME': 'db',
+        'USER': 'root',
         'PASSWORD': 'sila9020@?',
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': 'wiplayit_app_db_1',
+        'PORT': '3307',
     }
 }
 

@@ -113,7 +113,7 @@ export function getIndex(authenticated:boolean=false, options?:object):Function 
             dispatch(action.getIndexPending());
 
             Api.get(apiUrl).then(response => {
-                console.log(response)
+               
                 dispatch(action.getIndexSuccess(response.data)); 
            
             }).catch(error => {
@@ -509,20 +509,20 @@ const removeBookmark = (data:object, bookmarkType:string) => {
                                 });
     }
     
-    index['bookmarks'] = bookmarks
-    index['bookmarkRemoved'] = true
+    index['bookmarks'] = bookmarks;
+    index['bookmarkRemoved'] = true;
     
     return index
 }; 
 
 
 export  function  handleSubmit(params:object) {
-    console.log(params)
+    
     const isPut:boolean = params['isPut'];
     const isPost:boolean = params['isPost'];
     
     return async dispatch => {
-        let online = await checkOnlineStatus() 
+        let online = await checkOnlineStatus(); 
        
         if (online){
             isPut && await sendUpdateResquest(params, dispatch);

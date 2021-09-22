@@ -188,8 +188,7 @@ class UserProfileContainer extends Component {
      
         const userProfile = this.getUserProfileCache(profileById);
         let _cacheExpired:boolean = cacheExpired(userProfile);
-        console.log(_cacheExpired, userProfile)
-
+       
         if (!_cacheExpired) { 
             this.setState({userProfile});
                         
