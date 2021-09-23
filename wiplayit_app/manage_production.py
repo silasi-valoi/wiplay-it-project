@@ -5,12 +5,14 @@ import sys
 
 
 def main():
-    from dotenv import load_dotenv
+    from dotenv import load_dotenv, find_dotenv
     # add your project directory to the sys.path
     project_home = '/home/Baloyi/wiplay-it-project/wiplayit_app/'
+    print(load_dotenv(find_dotenv()))
 
     if project_home not in sys.path:
         project_folder = os.path.expanduser(project_home)
+        print(project_folder)
         load_dotenv(os.path.join(project_folder, '.env'))
         sys.path.insert(0, project_folder)
         
