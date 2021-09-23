@@ -7,7 +7,7 @@ twilio.env
 __pycache__/
  
 migrations/
-
+media/
 **/media/profiles/
 **/media/draft-editor-files/
 .db.sqlite3
