@@ -36,10 +36,6 @@ EMAIL_FROM         = EMAIL_HOST_USER
 
 SECURE_SSL_REDIRECT = True
 
-print(os.getenv('DATABASE_NAME'))
-print(os.getenv("DATABASE_PASSWORD"))
-print(os.getenv("DATABASE_HOST"))
-
 
 DATABASES = {
     'default': {

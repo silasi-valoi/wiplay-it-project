@@ -10,6 +10,10 @@ def main():
     project_home = '/home/Baloyi/wiplay-it-project/wiplayit_app/'
     print(load_dotenv(find_dotenv()))
 
+    print(os.getenv('DATABASE_NAME'))
+    print(os.getenv("DATABASE_PASSWORD"))
+    print(os.getenv("DATABASE_HOST"))
+
     if project_home not in sys.path:
         project_folder = os.path.expanduser(project_home)
         print(project_folder)
