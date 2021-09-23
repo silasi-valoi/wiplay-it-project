@@ -11,7 +11,7 @@ services:
       - db_config:/etc/mysql
 
     environment:
-      -  MYSQL_ROOT_PASSWORD='${sila9020@?}'
+      -  MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
           
   web:
     build: .

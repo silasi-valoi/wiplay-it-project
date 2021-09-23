@@ -6,10 +6,6 @@ USER $USER
 
 #RUN python3 -m venv wiplayit_env
 
-#RUN python manage.py makemigrations
-
-#RUN python manage.py migrate
-
 WORKDIR /wiplayit_app
 
 COPY requirements.txt /wiplayit_app/
@@ -25,5 +21,9 @@ MAINTAINER Silasi Valoi <valoi.pythonanywhere.com>
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
+
+RUN python manage.py makemigrations
+
+RUN python manage.py migrate
 
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]

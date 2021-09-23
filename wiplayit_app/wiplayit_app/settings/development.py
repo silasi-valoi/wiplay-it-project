@@ -30,6 +30,18 @@ ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', '192.168.43.15', 'localhost']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'wiplayitdb',
+        'USER': 'silasi',
+        'PASSWORD': 'sila9020@?',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'db',
         'USER': 'root',
         'PASSWORD': 'sila9020@?',
@@ -37,6 +49,7 @@ DATABASES = {
         'PORT': '3307',
     }
 }
+'''
 
 
 CORS_ORIGIN_WHITELIST = [
