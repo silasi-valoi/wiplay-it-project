@@ -12,5 +12,5 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wiplayit_app.settings')
-
+os.environ.setdefault('.env','.env')
 application = get_wsgi_application()

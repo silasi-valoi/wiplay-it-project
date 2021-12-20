@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv(find_dotenv())
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'gdm0vaw-qb(9wx8k$-vhn=r5^l4e#70le71fks*_k88zwuyw-#' #os.getenv('SECRET_KEY')
 
 
 AUTH_USER_MODEL = 'app_backend.User'

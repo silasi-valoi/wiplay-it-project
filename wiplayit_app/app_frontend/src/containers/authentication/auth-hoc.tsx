@@ -370,6 +370,11 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             displayErrorMessage(this, errors['error']);
         }
 
+        onSubmit = (e) => {
+            e && e.preventDefault();
+            authSubmit(this);
+        };
+
         handleFormChange:React.ReactEventHandler<HTMLInputElement> =(event)=>{
             event.preventDefault()
          
@@ -532,12 +537,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             }
         };
 
-
-        
-        onSubmit = (e) => {
-            e && e.preventDefault();
-            authSubmit(this);
-        };
+    
               
         getProps = ():object => {
             return {

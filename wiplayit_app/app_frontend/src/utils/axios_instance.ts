@@ -3,7 +3,6 @@ import axios from 'axios';
 
 import GetTimeStamp from 'utils/timeStamp';
 import { getCookie } from 'utils/csrf_token';
-import * as checkType from 'helpers/check-types'; 
 import {authenticate} from "dispatch/index"
 import Apis from 'utils/api';
 import {store} from 'store/index';
@@ -16,14 +15,13 @@ export default class Axios {
     private DOMAIN_URL:string;
     private useToken:boolean;
     private timeout:number;
-    private requestFor:string;
 
     constructor(props:object){
         this.cacheEntities = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
         this.DOMAIN_URL    =  window.location.origin; 
         this.useToken      =  props['useToken'];
         this.timeout       =  props['timeout'] || 20000; 
-        this.requestFor    =  props['requestFor'];
+        
     };
 
     authTimeStampe(timeStamp){

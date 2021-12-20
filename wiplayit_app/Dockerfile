@@ -16,14 +16,11 @@ COPY . /wiplayit_app/
 
 COPY .env /.env
 
-MAINTAINER Silasi Valoi <valoi.pythonanywhere.com>
+LABEL Silasi Valoi <valoi.pythonanywhere.com>
 
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-RUN python manage.py makemigrations
-
-RUN python manage.py migrate
 
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]

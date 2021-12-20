@@ -10,7 +10,6 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_PORT =  587
 
-
 EMAIL_HOST          = os.getenv("DEV_EMAIL_HOST")
 EMAIL_HOST_USER     = os.getenv("DEV_EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("DEV_EMAIL_HOST_PASSWORD")
@@ -30,26 +29,13 @@ ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', '192.168.43.15', 'localhost']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wiplayitdb',
+        'NAME': 'wiplayitdb',#os.getenv('DATABASE_NAME'),
         'USER': 'silasi',
-        'PASSWORD': 'sila9020@?',
-        'HOST': 'localhost',
-        'PORT': '',
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': 'localhost', #os.getenv('DATABASE_HOST'),
+        'PORT': '', #os.getenv('DATABASE_PORT'),
     }
 }
-
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db',
-        'USER': 'root',
-        'PASSWORD': 'sila9020@?',
-        'HOST': 'wiplayit_app_db_1',
-        'PORT': '3307',
-    }
-}
-'''
 
 
 CORS_ORIGIN_WHITELIST = [

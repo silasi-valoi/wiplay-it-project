@@ -3,18 +3,15 @@
 import Apis from 'utils/api';
 import Axios from 'utils/axios_instance';
 import * as action  from 'actions/actionCreators';
-import * as checkType from 'helpers/check-types'; 
-import {GetLoggedInUser } from 'utils/helpers';
-import {history} from 'App';
 
 
 export const _GetApi = (useToken:boolean, opts?:object) =>{
-    const axios     = new Axios({useToken, ...opts});
+    const axios = new Axios({useToken, ...opts});
     return axios.instance()
-
 } 
 
 const checkOnlineStatus = async () => {
+
     try {
         let apiUrl:string = Apis.getDefaultProfilePicture();
         const online = await fetch(apiUrl);
@@ -27,6 +24,7 @@ const checkOnlineStatus = async () => {
 
 
 export function sendMessage(params:object):Function {
+
     let useToken:boolean = true;
     const Api = _GetApi(useToken,{timeout:120000});
      
@@ -59,6 +57,7 @@ export function sendMessage(params:object):Function {
 
 
 export function getAboutInfo(options?:object) {
+    
     let useToken:boolean = true;
     const Api    = _GetApi(useToken);
 
@@ -190,8 +189,6 @@ export function getQuestionList(questionListById:string) {
         } 
     };
 };
-
-
 
 
 export function getPostList(postListById:string) {
@@ -742,6 +739,7 @@ export const handleErrors  = (error:object, options?:object) => {
 
 const handleErrorResponse = (response:object, options?:object) => {
     let error:string;
+    console.log(response);
     
     if (response['status'] === 500) {
         error = 'Something wrong happenned. Please try again';
