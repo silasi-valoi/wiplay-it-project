@@ -2,17 +2,20 @@
 #--Backend--
 twilio.env
 .env
+._env
+
+*.pem
 
 *.py~
 __pycache__/
- 
+
+db/ 
 migrations/
 media/
 **/media/profiles/
 **/media/draft-editor-files/
 .db.sqlite3
 node_modules/
-
 
 #--Frontend--
 
