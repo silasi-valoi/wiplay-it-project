@@ -41,7 +41,7 @@ class DefaultProfilePictureView(BaseApiView, APIView):
 	def get(self, *args, **kwargs):
 		serializer = self.serializer_class(*args, **kwargs)
 		
-		return Response(serializer.data,  status=status.HTTP_200_OK )
+		return Response(serializer.data,  status=status.HTTP_200_OK)
 
 class AboutView(BaseApiView, APIView):
 	permission_classes = (AllowAny,)

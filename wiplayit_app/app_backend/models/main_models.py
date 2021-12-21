@@ -349,7 +349,7 @@ class DraftEditorMediaContent(models.Model):
 
 class DefaultProfilePicture(models.Model):
     profile_picture = models.ImageField(
-                        upload_to='profiles/%y/%m/%d/',
+                        upload_to='default-profiles/',
                         blank=True,
                         default="default-profiles/user-image-placeholder.png"
                       )

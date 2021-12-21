@@ -709,6 +709,13 @@ export function authenticate(params:object):Function {
                 handleSuccessAuth(formName, data, dispatch);
 
             }).catch(error =>{
+
+                if(isTokenRefresh){
+                    console.log(error)
+                    localStorage.removeItem('@@CacheEntities');
+                    return;
+                }
+
                 handleErrors(error, errorOpts)
             });
         }

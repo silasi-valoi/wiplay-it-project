@@ -55,21 +55,32 @@ export default class Axios {
     };
 
     refreshToken(){
+        if(!this.useToken) return;
                         
         if (this.tokenExpired()) {
+            
             let loginAuth = this._getAuth();
             let token = this.getToken(loginAuth);
-            if (!token) return;
-           
-            const authProps:object ={
-                apiUrl :Apis.refreshTokenApi(), 
-                form   :{token},
-                formName:'loginForm',
-                isTokenRefresh : true,
-                useToken : false,
-            };
+            
+            if(token){
 
-            store.dispatch<any>(authenticate(authProps));
+                const authProps:object ={
+                    apiUrl :Apis.refreshTokenApi(), 
+                    form   :{token},
+                    formName:'loginForm',
+                    isTokenRefresh : true,
+                    useToken : false,
+                };
+
+                if(!store.dispatch<any>(authenticate(authProps))){
+
+                    this.useToken = false;
+                }
+
+                return;
+            }
+
+            this.useToken = false;
         }
     };
    
@@ -90,9 +101,10 @@ export default class Axios {
 
     instance = () => {
         const instance = this.createInstance();
+        this.refreshToken();
        
         if (this.useToken) {
-            this.refreshToken();
+            
             let userAuth = this._getAuth();  
             let tokenKey = this.getToken(userAuth)
             
