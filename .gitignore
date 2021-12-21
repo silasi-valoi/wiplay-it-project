@@ -11,8 +11,9 @@ __pycache__/
 
 db/ 
 migrations/
-media/*
-!media/default-profiles/
+media/
+**/media/profiles
+**/media/draft-editor-files
 
 .db.sqlite3
 node_modules/
