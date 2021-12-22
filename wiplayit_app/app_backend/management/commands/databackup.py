@@ -276,6 +276,9 @@ class Command(BaseCommand):
           
 
     def save(self, model, data):
+        print(data)
+        if data['created_at']:
+            return
         data_id = data['id'] 
         data_query = model.objects.filter(id=data_id)
 
