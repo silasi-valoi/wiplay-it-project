@@ -29,10 +29,10 @@ ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', '192.168.43.15', 'localhost']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wiplayitdb',#os.getenv('DATABASE_NAME'),
-        'USER': 'silasi',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': 'localhost', #os.getenv('DATABASE_HOST'),
+        'HOST': os.getenv('DATABASE_HOST'),
         'PORT': '', #os.getenv('DATABASE_PORT'),
     }
 }

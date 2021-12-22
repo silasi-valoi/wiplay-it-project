@@ -7,18 +7,18 @@ from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from allauth.account.models import EmailAddress
 
 from app_backend.models import *
-from auth_backend.custom_adapter import download_file_from_url
+from app_backend.registrations.adapter import download_file_from_url
 
 
 class Command(BaseCommand):
-    help = 'Get the specified user'
+    help = 'Backup data from another database to another'
 
-    #def add_arguments(self, parser):
-    #    parser.add_argument('user_ids', nargs='+', type=int)
+    def add_arguments(self, parser):
+        parser.add_argument('database_name', nargs='+', type=str)
 
     def database_connect(self, *args, **kwargs):
-        #DATABASE_NAME = 'Baloyi$wiplayitdb'
-        DATABASE_NAME = 'wiplayit_db'
+        print(args[0], kwargs)
+        DATABASE_NAME =  args[0]
         DATABASE_USER = os.getenv("DATABASE_USER")
         DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
         DATABASE_HOST = os.getenv('DATABASE_HOST')
@@ -33,8 +33,13 @@ class Command(BaseCommand):
         
 
     def handle(self, *args, **options):
-        try:
-            connection = self.database_connect()
+        for database in options['database_name']:
+            try:
+                connection = self.database_connect(database)
+            except Exception as e:
+                raise CommandError('The database "%s" does not exist' % database)
+
+
             cursor = connection.cursor()
             
             self.extract_users(cursor)
@@ -49,14 +54,10 @@ class Command(BaseCommand):
             self.extract_answers(cursor)
             #self.extract_comments(cursor)
             #self.extract_replies(cursor)
-                  
-           
+      
             cursor.connection.close()
-        
-        except Exception as e:
-            raise e
-
-        self.stdout.write(self.style.SUCCESS('Successfully'))
+                  
+            self.stdout.write(self.style.SUCCESS('Successfully'))
 
     def extract_posts(self, cursor):
         posts = "SELECT * FROM posts"
