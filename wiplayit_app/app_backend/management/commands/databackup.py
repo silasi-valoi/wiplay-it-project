@@ -17,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument('database_name', nargs='+', type=str)
 
     def database_connect(self, *args, **kwargs):
-        print(args[0], kwargs)
+        
         DATABASE_NAME =  args[0]
         DATABASE_USER = os.getenv("DATABASE_USER")
         DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             
             self.extract_users(cursor)
             self.extract_socialapps(cursor)
-            self.extract_socialacconts(cursor)
+            self.extract_socialaccounts(cursor)
             self.extract_socialtokens(cursor)
             self.extract_email_address(cursor)
             self.extract_phone_numbers(cursor)
@@ -134,7 +134,7 @@ class Command(BaseCommand):
 
         
     def extract_replies(self, cursor):
-        eplies = "SELECT * FROM replies"
+        replies = "SELECT * FROM replies"
         cursor.execute(replies)
         columns = cursor.description
         results = cursor.fetchall()
@@ -166,7 +166,7 @@ class Command(BaseCommand):
             self.save(User, dict_results)
 
            
-    def extract_socialacconts(self, cursor):
+    def extract_socialaccounts(self, cursor):
         socialaccounts = "SELECT * FROM socialaccount_socialaccount"
 
         cursor.execute(socialaccounts)
@@ -237,6 +237,9 @@ class Command(BaseCommand):
             for i, value in enumerate(row):
                 key = columns[i][0]
                 dict_results[key] = value 
+            print("SocialToken")
+
+            print(dict_results)
 
             self.save(SocialToken, dict_results)
          
