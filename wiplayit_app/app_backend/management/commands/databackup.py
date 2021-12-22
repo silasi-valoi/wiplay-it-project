@@ -277,7 +277,7 @@ class Command(BaseCommand):
 
     def save(self, model, data):
         print(data)
-        if data['created_at']:
+        if data.get('created_at', None):
             return
         data_id = data['id'] 
         data_query = model.objects.filter(id=data_id)
