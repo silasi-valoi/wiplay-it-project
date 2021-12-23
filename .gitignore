@@ -11,7 +11,7 @@ __pycache__/
 
 db/ 
 migrations/
-media/
+
 **/media/profiles
 **/media/draft-editor-files
 

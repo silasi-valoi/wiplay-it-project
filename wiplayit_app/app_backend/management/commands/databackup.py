@@ -279,8 +279,9 @@ class Command(BaseCommand):
         print(data)
         if data.get('created_at', None):
             return
-        data_id = data['id'] 
-        data_query = model.objects.filter(id=data_id)
+         
+        data_query = model.objects.filter(id=data['id'])
+        print(data_query[0])
 
         if len(data_query) == 0:
             return model.objects.get_or_create(**data)
