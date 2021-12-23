@@ -1,8 +1,6 @@
 'use strict'
 
 import React from 'react';
-import { Link, BrowserRouter  } from "react-router-dom";
-import { MatchMediaHOC } from 'react-match-media';
 import { Editor } from "draft-js";
 
 import { 

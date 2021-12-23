@@ -10,8 +10,8 @@ from app_backend.slug_generator import generate_unique_slug
 class BaseModel(models.Model):
     updated = models.BooleanField('updated', default=False)
     deleted = models.BooleanField('deleted', default=False)
-    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    date_updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True)
 

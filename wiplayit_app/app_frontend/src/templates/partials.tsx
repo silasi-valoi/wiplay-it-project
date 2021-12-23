@@ -81,10 +81,10 @@ export const AuthorDetails = (props:object)=>{
 
     let timeStamp:string;
     if(!updated){
-        timeStamp = data['created_at'];
+        timeStamp = data['date_created'];
 
     }else{
-        timeStamp = data['updated_at'];
+        timeStamp = data['date_updated'];
     }
 
     
