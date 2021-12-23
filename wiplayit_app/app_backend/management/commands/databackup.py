@@ -276,13 +276,8 @@ class Command(BaseCommand):
           
 
     def save(self, model, data):
-        print(data)
-        if data.get('created_at', None):
-            return
-         
         data_query = model.objects.filter(id=data['id'])
-        print(data_query[0])
-
+        
         if len(data_query) == 0:
             return model.objects.get_or_create(**data)
             
