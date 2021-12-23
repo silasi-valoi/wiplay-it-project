@@ -53,10 +53,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
                 ("change_user_followings", "Can User Followings"),
             )
 
-           
+    '''       
     def get_my_token(self):
         return Token.objects.get(user=self.user)
-    my_token = property(get_my_token) 
+    my_token = property(get_my_token)
+    ''' 
         
 
     def get_full_name(self):
@@ -91,7 +92,7 @@ class Profile (models.Model):
     profile_picture = models.ImageField(
                         upload_to='profiles/%y/%m/%d/',
                         blank=True,
-                        default="profiles/user-image-placeholder.png"
+                        default="default-profiles/user-image-placeholder.png"
                       )
     followers       = models.IntegerField(default=0)
     followings      = models.IntegerField(default=0)
