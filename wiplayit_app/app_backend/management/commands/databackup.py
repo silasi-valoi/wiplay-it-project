@@ -237,10 +237,7 @@ class Command(BaseCommand):
             for i, value in enumerate(row):
                 key = columns[i][0]
                 dict_results[key] = value 
-            print("SocialToken")
-
-            print(dict_results)
-
+            
             self.save(SocialToken, dict_results)
          
     def extract_email_address(self, cursor):
