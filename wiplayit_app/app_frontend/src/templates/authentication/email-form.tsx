@@ -20,8 +20,7 @@ const EmailForm = props => {
         form, 
         successMessage,
         formIsValid,
-        formName, 
-        defaultFormName,
+        formName,
         isSocialAuth } = props.authForm;
 
     form = form && form[formName]? 
@@ -33,20 +32,16 @@ const EmailForm = props => {
     formIsValid =  onPasswordResetForm || onEmailResendForm?
                              validateForm(form, formName):false;
     
-
-    let submitButtonStyles = submitting || onSignUpForm || !formIsValid?
-                                                     {opacity:'0.60'}:{};
+        
+    let onSubmitStyles = props['onSubmitStyles'];
     
-    let fieldSetStyles = submitting || onSignUpForm ? {opacity:'0.60'}:{};
-    let toggleProps = {successMessage:false, value:true, formName}
     let formTitle   = onEmailResendForm && 'Confirmation Resend' ||
                       onPasswordResetForm && 'Password Reset';
 
 
     let formDescription = `Enter your e-mail address or phone number.`;
 
-    let emailSent:boolean = passwordRestAuth && passwordRestAuth['emailSent'];
-
+    
     return(
         <div className="email-form-box" id="form-container">
             <ul className="form-title-box">
@@ -71,7 +66,7 @@ const EmailForm = props => {
                         </div>
                     }
                         
-                    <fieldset style={ fieldSetStyles} 
+                    <fieldset style={onSubmitStyles} 
                             disabled={ submitting || onSignUpForm} >
 
                         <div  className="email-fields">
@@ -115,16 +110,14 @@ export default EmailForm;
 export const EmailPasswordResetSuccess =(props)=>{
     let {passwordRestAuth} = props;
     let {identifier} = passwordRestAuth || {};
-    let toggleProps = {value : true, formName : 'passwordResetForm'};
-   
-
+    
     let toggleFormProps = {
-            ...props,
-            toggleBtnName:'Resend',
-            toggleFormProps:{
-                value : true,
-                formName:'passwordResetForm'
-            }
+        ...props,
+        toggleBtnName:'Resend',
+        toggleFormProps:{
+            value : true,
+            formName:'passwordResetForm'
+        }
     };   
 
     return(
@@ -171,15 +164,7 @@ export const SmsCodeForm = props => {
 
     let error = form.error; 
 
-    let formIsValid =  onPasswordResetForm || onEmailResendForm?
-                             validateForm(form, defaultFormName):false;
-
-    let email = successMessage?props.email:null;
-
-    let submitButtonStyles = submitting || !formIsValid?
-                                                     {opacity:'0.60'}:{};
-    
-    let fieldSetStyles = submitting && {opacity:'0.60'} || {};
+    let onSubmitStyles = props['onSubmitStyles']; 
 
     return(
         <div className="sms-code-form-box" id="form-container">
@@ -200,7 +185,7 @@ export const SmsCodeForm = props => {
                     {props?.children[0]}
 
                                          
-                    <fieldset style={fieldSetStyles} disabled={submitting}>
+                    <fieldset style={onSubmitStyles} disabled={submitting}>
                         <div  className="email-fields">
                             {error &&
                                 <NonFieldErrors {...error}/>

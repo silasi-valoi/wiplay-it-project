@@ -37,9 +37,7 @@ export const PasswordForm =(props)=>{
     let {submitting,
          form,
          formName,
-         onSignUpForm,
-         onPasswordChangeForm,
-         successMessage} = props.authForm;
+         onSignUpForm} = props.authForm;
         
 
     if (formName !== 'passwordChangeForm' && 
@@ -57,18 +55,13 @@ export const PasswordForm =(props)=>{
     if(!form) return null;
 
     let error =  form.error; 
-    let disabledStyle = submitting? {opacity:'0.60'} : {};
-    let formIsValid = validateForm(form);
-
-    let submitButtonStyles = submitting? {opacity:'0.60'}:{};
-    
-    let fieldSetStyles = submitting? {opacity:'0.60'}:{};
+    let onSubmitStyles = props['onSubmitStyles'];
 
     return(
         <form className="password-change-form" 
               onSubmit={(event)=> props.onSubmit(event, 'passwordChangeForm')} >
                          
-            <fieldset style={fieldSetStyles}
+            <fieldset style={onSubmitStyles}
                       disabled={submitting || onSignUpForm}>
 
                 <ul className="password-form-description">

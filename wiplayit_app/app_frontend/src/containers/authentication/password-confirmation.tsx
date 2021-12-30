@@ -1,26 +1,13 @@
 import React, { Component } from 'react';
 import {X} from 'react-feather'
 
-import {NavBar} from 'templates/authentication/utils';
-//import AccountConfirmation from 'templates/authentication/confirmation';
-//import EmailForm, {SmsCodeForm}   from 'templates/authentication/email-form';
 import {PasswordConfirmForm} from 'templates/authentication/password-change'
 import { closeModals}   from  'containers/modal/helpers';
 import { ModalCloseBtn } from "templates/buttons";
-import { AlertComponent } from 'templates/partials';
 import AuthenticationHoc from 'containers/authentication/auth-hoc'
 
-import {authenticationSuccess} from 'actions/actionCreators';
-import HomePage from "containers/main/home-page";
 
-import { displaySuccessMessage, displayErrorMessage } from 'utils/helpers';
-
-import {formIsValid,
-        authSubmit,
-        validatePhoneNumber,
-        validateEmail,
-        getFormFields,
-        constructForm,} from 'containers/authentication/utils';   
+import {formIsValid} from 'containers/authentication/utils';   
 
 import {store} from "store/index";
 //import Apis from 'utils/api';

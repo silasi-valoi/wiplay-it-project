@@ -1,8 +1,7 @@
 import React from 'react';
 import { MatchMediaHOC } from 'react-match-media';
 import {  Link } from "react-router-dom";
-import { CountryDropdown,
-       RegionDropdown } from 'react-country-region-selector';
+import { CountryDropdown } from 'react-country-region-selector';
 
 import { NonFieldErrors,
          CountryFieldErrors,
@@ -28,9 +27,7 @@ export const  SignUpForm = props => {
     let error = form['error']; 
     
     formIsValid = onSignUpForm? validateForm(form, formName):false;
-    let submitButtonStyles = submitting || !formIsValid?{opacity:'0.60'}:{};
-    let fieldSetStyles = submitting ? {opacity:'0.60'}:{}; 
-
+    
     const toggleSignUpFormProps = {
             ...props,
             toggleBtnName:'Cancel',
@@ -39,7 +36,7 @@ export const  SignUpForm = props => {
                 formName:'signUpForm',
             }
         };
-    
+    const onSubmitStyles = props['onSubmitStyles']
     
     return(
         <div className="form-container" id="form-container">
@@ -47,7 +44,7 @@ export const  SignUpForm = props => {
                 <li className="">Create Account</li>
             </ul> 
             <form onSubmit={props.onSubmit} className="sign-up-form">
-                <fieldset disabled={submitting} style={fieldSetStyles}
+                <fieldset disabled={submitting} style={onSubmitStyles}
                         className="fieldset-signup" >
 
                     <div className="sign-up-box">

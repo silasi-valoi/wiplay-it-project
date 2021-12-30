@@ -28,13 +28,8 @@ export const  LoginForm = props => {
 
     let error = form.error; 
     formIsClean  = !onSignUpForm? formIsValid(form):false;
-
-    let submitButtonStyles = submitting || onSignUpForm || !formIsClean?
-                                                     {opacity:'0.60'}:{};
-    
-    let fieldSetStyles = submitting || onSignUpForm ? {opacity:'0.60'}:{}; 
-
-const toggleLoginFormProps:object = {
+   
+    const toggleLoginFormProps:object = {
         ...props,
         toggleBtnName   :'Cancel',
         toggleFormProps : {
@@ -51,7 +46,7 @@ const toggleLoginFormProps:object = {
             </ul> 
             <form onSubmit={props.onSubmit} className="login-form">
                 <fieldset 
-                    style={ fieldSetStyles}
+                    style={ !onSignUpForm && props.onSubmitStyles }
                     disabled={ submitting || onSignUpForm }
                     className="fieldset-login">
 

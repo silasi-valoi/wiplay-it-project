@@ -1,5 +1,4 @@
 import * as React from 'react';
-//import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { Diff } from 'utility-types';
@@ -151,11 +150,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             }
                         
             this.unsubscribe();
-
             this.isMounted = false;
-            
         };
-
 
         componentDidUpdate(nextProps , prevState){
         };
@@ -252,10 +248,11 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
         
         handleConfirmationResend(userAuth:object){
+            
             if (!userAuth['confirmationResendAuth']) {
                 return;
             }
-
+            
             let currentUser:object = this.props['currentUser'];
             let email:string = currentUser && currentUser['email'];
             let isPhoneNumber:boolean = validatePhoneNumber(email);
@@ -269,11 +266,12 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 authForm['successMessage'] = successMessage;
                 
                 this.isMounted && this.setState({authForm});
-                delete confirmationResendAuth['successMessage'];
-                
+                                
                 if (isPhoneNumber) {
                     this.formConstructor('phoneNumberConfirmationForm');
                 }
+
+                delete confirmationResendAuth['successMessage'];
 
             }
             
@@ -488,8 +486,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                     form = {...form, ...extraForm};
                     delete options['form'];
                 }
-             
-               
+                          
                 this._SetForm(form, formName, options);
             }
         };
@@ -501,20 +498,17 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             let value:boolean = params['value'];
 
             if (value === false ) {
-                console.log(params, 'hidding form and toogling', formName, defaultFormName)
                 this.hideToggledForm(formName);
 
                 if(defaultFormName) this.formConstructor(defaultFormName); 
 
             }else{
-                console.log(params, 'toogling form', formName)
                 this.formConstructor(params['formName']);
             }
         };
 
         hideToggledForm = (formName:string) => {
-            console.log("passwordResetForm" === formName)
-                               
+                                           
             switch (formName) {
                 case "loginForm":
                     return store.dispatch<any>(action.toggleAuthForm({onLoginForm: false}));
@@ -523,8 +517,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                     return store.dispatch<any>(action.toggleAuthForm({onSignUpForm : false}));
                  
                 case "passwordResetForm":
-                    console.log('hidding a form', formName)
-
+                    
                     return store.dispatch<any>(
                         action.toggleAuthForm({onPasswordResetForm:false, onPasswordResetSmsCodeForm:false})
                         );
@@ -536,10 +529,11 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                     return null;
             }
         };
-
-    
-              
+            
         getProps = ():object => {
+            let authForm = this.state['authForm'];
+            const submitting:boolean = authForm && authForm['submitting'];
+
             return {
                 ...this.props,
                 ...this.state,
@@ -552,6 +546,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 responseTwitter  : this.responseTwitter.bind(this),
                 validateForm     : formIsValid.bind(this), 
                 toggleAuthForm   : this.toggleAuthForm.bind(this), 
+                onSubmitStyles   : submitting && {opacity:'0.60'} || {},
             };
         };
 
@@ -559,8 +554,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             if(!this.isMounted) return null;
 
             let props = this.getProps();
-            let fieldSetStyles = props['submitting'] && {opacity:'0.60'} || {};
-          
+                      
             return (
                 <BrowserRouter>
                     <BaseComponent {...(props as BaseProps)}/> 

@@ -73,7 +73,6 @@ export default class Axios {
                 };
 
                 if(!store.dispatch<any>(authenticate(authProps))){
-
                     this.useToken = false;
                 }
 

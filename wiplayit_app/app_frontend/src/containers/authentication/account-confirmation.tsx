@@ -30,18 +30,13 @@ import Apis from 'utils/api';
 
 class AccountConfirmationPage extends Component{
     public isFullyMounted:boolean = false;
-    private subscribe;
-    private unsubscribe;
-
+    
     constructor(props) {
         super(props);
         this.state = {
             onPhoneNumberSmsCodeForm : true,
             formTitle        : 'Enter code',
             formDescription  : ['Enter code to confirm your account'],
-            isPhoneNumber    : false,
-            isEmail          : false,
-          
         };
     };
 
@@ -105,21 +100,19 @@ class AccountConfirmationPage extends Component{
      
     render() {
         let props = this.getProps();
-        let  submitting = props['submitting'];
+        let  submitting = props['authForm']['submitting'];
+        let onSubmitStyles = props['onSubmitStyles'];
         
-        let submitButtonStyles = submitting? {opacity:'0.60'} : {};
-    
-        let fieldSetStyles = submitting && {opacity:'0.60'} || {};
-
         return (
-            <div className="">
-                <fieldset style={ fieldSetStyles} disabled={submitting} >
+            <form className="">
+                <fieldset style={onSubmitStyles} disabled={submitting} >
                     <div className="account-confirm-modal-container">
                         { props['isPhoneNumber'] &&
                             <div className="account-confirm-modal-box">
                                 <SmsCodeForm {...props}>
                                     <SmsCodeHelperText {...props}/>  
                                     <button 
+                                        disabled={submitting}
                                         type="button" 
                                         onClick={()=> this.resendConfirmation()} 
                                         className="resend-email-btn btn-sm" >
@@ -134,7 +127,7 @@ class AccountConfirmationPage extends Component{
                         }
                     </div>
                 </fieldset>
-            </div>
+            </form>
         );
     };
 };
@@ -161,13 +154,16 @@ const SmsCodeHelperText = (props)=>{
 
 
 const EmailConfirmation = (props)=>{
-    let {successMessage, form, currentUser} = props;
+    
+    let {successMessage, form,  submitting, currentUser} = props['authForm'];
+
     let email = currentUser && currentUser.email;
     form = form && form['emailResendForm'];
     let error = form && form.error;
         
     return (
         <div className="email-confirm-container">
+             
             <ul className="email-confirm-title-box">
                 <li className="">Account Confirmation</li>
             </ul>
@@ -195,7 +191,9 @@ const EmailConfirmation = (props)=>{
                             You didn't receive any email?
                         </p>
 
-                        <button type="button" 
+                        <button
+                            disabled={submitting}
+                            type="button" 
                             onClick={()=> props.resendConfirmation()} 
                             className="resend-email-btn btn-sm" >
                                 Resend

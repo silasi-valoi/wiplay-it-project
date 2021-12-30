@@ -634,8 +634,6 @@ function sendUpdateResquest(params:object, dispatch:Function){
     
 };
 
-
-
 export function authenticateWithGet(params:object):Function {
   
     let useToken = false;
@@ -702,6 +700,10 @@ export function authenticate(params:object):Function {
             dispatch(action.authenticationPending(params));
         
             Api.post(apiUrl, form).then(response => {
+                if(isTokenRefresh){
+                    return true;
+                }
+
                 let {data}  = response;
                 if (formName === 'phoneNumberConfirmationForm'){
                     data = {...data, isConfirmed:true}
@@ -713,7 +715,7 @@ export function authenticate(params:object):Function {
                 if(isTokenRefresh){
                     console.log(error)
                     localStorage.removeItem('@@CacheEntities');
-                    return;
+                    return false;
                 }
 
                 handleErrors(error, errorOpts)

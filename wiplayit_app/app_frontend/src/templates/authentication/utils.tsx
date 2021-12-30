@@ -1,11 +1,5 @@
 import React from 'react';
-import {  Link } from "react-router-dom";
-import { MatchMediaHOC } from 'react-match-media';
-import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import  AjaxLoader from 'templates/ajax-loader';
-import {history} from "App";
-
 
 
 export const NavBar = props => {
@@ -50,11 +44,11 @@ export const  ToogleAuthFormBtn  = props => {
 
 
 export const  RegistrationSubmitBtn  = props => {
-    let submitButtonStyles = props.submitting? {opacity:'0.60'}: {};
+    let onSubmitStyles = props['onSubmitStyles'];
    
     return(
         <button type="submit" 
-                style={submitButtonStyles} 
+                style={onSubmitStyles} 
                 disabled={props.submitting}
                 className="registration-submit-btn btn-sm">
             Submit
