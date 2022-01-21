@@ -381,7 +381,7 @@ div.public-DraftEditor-content {
     }
 
     .post-draft-editor-box {
-        
+        border :  px solid red;
     }
 
     .post-editor-box {

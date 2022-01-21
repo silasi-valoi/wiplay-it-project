@@ -104,7 +104,7 @@ class AccountConfirmationPage extends Component{
         let onSubmitStyles = props['onSubmitStyles'];
         
         return (
-            <form className="">
+            <div className="">
                 <fieldset style={onSubmitStyles} disabled={submitting} >
                     <div className="account-confirm-modal-container">
                         { props['isPhoneNumber'] &&
@@ -123,11 +123,14 @@ class AccountConfirmationPage extends Component{
                             
                             ||
 
-                            <EmailConfirmation {...props}/>
+                            <form>
+                                <EmailConfirmation {...props}/>
+                             </form>
+                           
                         }
                     </div>
                 </fieldset>
-            </form>
+            </div>
         );
     };
 };

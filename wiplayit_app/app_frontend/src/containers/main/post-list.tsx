@@ -25,11 +25,14 @@ class  PostListPage extends Component  {
         this.state = {
             isPostListBox : true,
             postListById  : 'filteredPosts',
-             pageName     : "Posts", 
             isReloading   : false,
             error         : null,
         };
     };
+
+    static pageName(){
+        return "Posts"
+    }
 
     public get isMounted() {
         return this.isFullyMounted;

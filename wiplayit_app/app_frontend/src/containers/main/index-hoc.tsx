@@ -616,6 +616,7 @@ export function MainAppHoc(Component) {
                 addBookmark             : this.addBookmark.bind(this),
                 reloadPage              : this.reloadPage.bind(this),
                 pushToRouter            : this.pushToRouter.bind(this),
+                pageName                : Component.pageName(),
                 ...this.state,
             };
         };
@@ -624,11 +625,12 @@ export function MainAppHoc(Component) {
             if(!this.isMounted){
                 return null;
             }
-
+          
             let props = this.getProps();
             let alertMessageStyles = props['displayMessage']? { display : 'block'}: { display : 'none' };
 
             let onModalStyles = props['modalIsOpen']? {opacity:'0.70',}: {opacity:'2',};
+            console.log(props)
                       
             return (
                 <div  className="app-container">

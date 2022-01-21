@@ -260,19 +260,14 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             let confirmationResendAuth:object = userAuth['confirmationResendAuth'];
             if (confirmationResendAuth['successMessage']) {
                 let authForm:object = this.state['authForm'];
-                               
-                let successMessage = confirmationResendAuth['successMessage'];
-                              
-                authForm['successMessage'] = successMessage;
+                authForm['successMessage'] = confirmationResendAuth['successMessage'];
                 
                 this.isMounted && this.setState({authForm});
+                delete confirmationResendAuth['successMessage'];
                                 
                 if (isPhoneNumber) {
                     this.formConstructor('phoneNumberConfirmationForm');
                 }
-
-                delete confirmationResendAuth['successMessage'];
-
             }
             
             

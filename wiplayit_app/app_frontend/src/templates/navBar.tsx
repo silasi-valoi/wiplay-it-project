@@ -49,6 +49,7 @@ export const createPostProps = {
         linkName    : 'Add Post',
         isPost      : true,
         withTextArea: true,
+        editorPlaceHolder : `Add Post...`,
         className   : "create-post-btn btn",
         editorLinkDesktopStyles,
         editorLinkMobileStyles,
@@ -61,6 +62,7 @@ export const createQuestionProps = {
         isPost       : true,
         withTextArea :true,
         linkName     : "Ask Question",
+        editorPlaceHolder : `Add Question...`,
         className    : "create-question-btn btn",
         editorLinkMobileStyles,
         editorLinkDesktopStyles,
@@ -302,22 +304,24 @@ export const NavBarSmallScreen = props => {
 		<nav  className="mobile-navbar-top fixed-top navbar-expand-lg navbar-light"
               id="navigation-mobile">
             <div style={{display:'flex'}} className="navbar-contents-top">
-               
-                <ul className="navbar-login-link">
-                    <li className="">
-                        { !isAuthenticated &&
-                            <OpenAuthModalBtn {...authenticationProps}/>
-                        }
-                    </li>                    
-                </ul>
-                
+                          
                 <ul className="logo-contents">
-                    <li>Wiplayit</li>
+                    <li className="logo" >Wiplayit</li>
                 </ul>
+
+                { !isAuthenticated &&
+                    <ul className="navbar-login-link">
+                        <li className="">
+                            <OpenAuthModalBtn {...authenticationProps}/>
+                        </li>                    
+                    </ul>
+                       
+                    ||
                 
-                <ul className="navigation-img-item">
-                    <NavBarModalMenu{...props}/>
-                </ul>
+                    <ul className="navigation-img-item">
+                        <NavBarModalMenu {...props}/>
+                    </ul>
+                }
             </div>
 
             <div className="mobile-navbar-center">
@@ -516,14 +520,14 @@ export const PartialNavBar = props =>{
     
     let path_to_profile = `/`;
     let userProfile = {};
-    const state     = {currentUser};
-   
+       
     if (currentUser) {
       path_to_profile = `/profile/${currentUser.id}/${currentUser.slug}/`;
       userProfile     = currentUser.profile;
     }
 
     authenticationProps = {...authenticationProps, ...props}
+    console.log(props)
        
     return (
         <nav className="navigation partial-page-navbar fixed-top" id="navigation">

@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 
-import  * as action  from 'actions/actionCreators';
 import { getQuestion } from 'dispatch/index';
-
 import  AjaxLoader from 'templates/ajax-loader';
 import { QuestionComponent} from 'templates/question';
 import {store} from "store/index";
 import { AnswersBox } from 'containers/main/answer-page';
-import GetTimeStamp from 'utils/timeStamp';
 import {cacheExpired} from 'utils/helpers';
 import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 import  MainAppHoc from "containers/main/index-hoc";
 
 
 
-class QuestionPage extends Component {
+class  QuestionPage extends Component {
     private isFullyMounted:boolean = false;
     private subscribe;
     private unsubscribe;
@@ -34,6 +31,10 @@ class QuestionPage extends Component {
         };
 
     };
+
+    static pageName(){
+        return "Question"
+    }
 
     public get isMounted() {
         return this.isFullyMounted;

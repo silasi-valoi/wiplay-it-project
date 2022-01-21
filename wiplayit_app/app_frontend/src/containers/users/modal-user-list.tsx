@@ -173,24 +173,28 @@ class UserListBox extends Component {
                 <UserListModalNavBar {...props}/>
                 {users &&
                     <div>
-                        {users['isLoading'] &&
+                        { users['isLoading'] &&
                             <div className="page-spin-loader-box">
                                 <AjaxLoader/>
                             </div>
-                        }
-                        
-                        {users['error'] &&
-                            <PageErrorComponent {...props}/>
-                        }
 
-                        {users['userList'] &&
+                            ||
+                            
                             <div onScroll={props.handleScroll()}
                                 style={onScroolStyles} 
                                 className="user-list-container"
                                 id="user-list-container"
                                 >
-                                <UserList {...props}/>
+                                { users['userList'] &&
+                                    <UserList {...props}/>
+                                }
+
+                                { users['error'] &&
+                                    <PageErrorComponent {...props}/>
+                                }
+
                             </div>
+                            
                         }
                     </div>
                 }
@@ -208,9 +212,10 @@ export default UserListBox;
 
 const UserListModalNavBar = (props)=> {
     
-    let {usersById, users, obj, modalTitle} = props
+    let { usersById, users, obj, modalTitle } = props
 
-    users       = usersById && users && users[usersById];
+    users = usersById && users && users[usersById];
+    console.log(users)
 
     let usersLength = users && users.userList && users.userList.length;
 

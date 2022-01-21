@@ -176,7 +176,7 @@
     font-size   : 14px;
     color       : #fefefe;
     font-weight : bold;
-    margin-top  : 10px;
+    margin-top  : 15px;
 }
 
 .mobile-navbar-center, 
@@ -277,9 +277,19 @@
         padding : 0 7px 7px; 
     }
 
+    .navbar-login-link {
+        width: auto;
+    }
+
     .logo-contents {
         justify-content: center;
         display: flex;
+        width: 100%;
+        
+    }
+
+    .logo {
+        margin-left: 30%;
     }
 
     .logo-img-box {
@@ -321,9 +331,8 @@
     }
 
     .navigation-img-item { 
-        padding : 7px  15px;  
-        width   : 100%;
-
+        padding : 7px  25px 7px 15%;  
+    
     }
     
     .navigation-img-box, #nav-bar-modal-men {

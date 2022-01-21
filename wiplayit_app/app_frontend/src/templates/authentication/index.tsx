@@ -1,13 +1,11 @@
 import React from 'react';
-import {  Link } from "react-router-dom";
-import * as Icon from 'react-feather';
 import { MatchMediaHOC } from 'react-match-media';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import  LoginForm from "templates/authentication/login";
 import  SignUpForm  from "templates/authentication/signup";
 import  EmailForm  from "templates/authentication/email-form";
-import {ModalCloseBtn, LinkButton} from 'templates/buttons';
+import {LinkButton} from 'templates/buttons';
 import {NonFieldErrors} from 'templates/authentication/errors';
 
 import {SpinLoader, ToogleAuthFormBtn} from  'templates/authentication/utils'
@@ -56,8 +54,7 @@ const RegistrationSmall = props => {
     if(!authForm) return null;
 
     let {onLoginForm, onSignUpForm, onPasswordResetForm} = authForm;
-    console.log(authForm)
-    
+        
     const AuthForm = ()=>{
 
         if(onSignUpForm){

@@ -17,6 +17,10 @@ class  NotificationsContainer extends Component  {
         };       
     }
 
+    static pageName(){
+        return "Notifications"
+    }
+
     componentDidMount() {
        
     }

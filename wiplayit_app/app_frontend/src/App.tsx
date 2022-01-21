@@ -1,5 +1,5 @@
 import React from 'react';
-import {Switch, Route,} from "react-router-dom";
+import {Switch, Route,} from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import HomePage from "containers/main/home-page";
 

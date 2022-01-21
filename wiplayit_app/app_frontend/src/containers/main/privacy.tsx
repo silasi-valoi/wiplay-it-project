@@ -11,6 +11,10 @@ class  PrivacyContainer extends Component  {
         };       
     }
 
+    static pageName(){
+        return "Privacy"
+    }
+
 
     componentDidMount() {
       console.log(this.props)

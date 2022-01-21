@@ -33,7 +33,6 @@ class UserProfileContainer extends Component {
         this.state = {
             userItemsComponent : UserAnswers,
             isProfileBox       : true,
-            pageName           : "Profile", 
             profileById        : '',
             userProfile        : undefined,
             usersById          : 'filteredUsers',
@@ -44,6 +43,10 @@ class UserProfileContainer extends Component {
         } 
 
     };
+
+    static pageName(){
+        return "Profile"
+    }
     
     public get isMounted() {
         return this.isFullyMounted;

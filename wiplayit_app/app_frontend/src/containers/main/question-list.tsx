@@ -26,12 +26,14 @@ class  QuestionListPage extends Component  {
             isQuestionListBox : true,
             questionListById  : 'filteredQuestions',
             isReloading       : false,
-            pageName          : "Questions",
             error             : '',
             questionListTab : {color:'#A33F0B'},
         }
      
-   }
+    }
+    static pageName(){
+        return "Questions"
+    }
 
    public get isMounted() {
         return this.isFullyMounted;

@@ -25,12 +25,15 @@ class  PostPage extends Component  {
         this.state = {
             isPostBox   : true,
             isReloading : false,
-            pageName    : "Post", 
             postById    : '',
             postData    : null,
             error       : '',
         };
     };
+
+    static pageName(){
+        return "Post"
+    }
 
     public get isMounted() {
         return this.isFullyMounted;

@@ -172,14 +172,12 @@ export const SmsCodeForm = props => {
                 <li className="">{formTitle}</li>
             </ul>
         
-            { successMessage &&
-                <ul className="success-resend-message">
-                    <li className="">{successMessage}</li>
-                </ul>
-            }
-           
-
             <div className="sms-code-form">
+                { successMessage &&
+                    <ul className="success-resend-message">
+                        <li className="">{successMessage}</li>
+                    </ul>
+                }
                                                                 
                 <form  onSubmit={props.onSubmit}>
                     {props?.children[0]}
