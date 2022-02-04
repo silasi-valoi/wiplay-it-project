@@ -47,6 +47,10 @@ class HomePage extends Component<any, any> {
     public set isMounted(value:boolean) {
         this.isFullyMounted = value;
     }
+
+    static pageName(){
+        return "Home"
+    }
  
   
     // static getDerivedStateFromError(error) {

@@ -1,8 +1,8 @@
 from django.apps import AppConfig
 
 
-class main_backendConfig(AppConfig):
-    name = 'app_backed'
+class AppBackendConfig(AppConfig):
+    name = 'app_backend'
 
 
 

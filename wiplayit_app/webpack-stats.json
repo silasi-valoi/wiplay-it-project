@@ -1,1 +1,1 @@
-{"status":"done","chunks":{"main":[{"name":"app.bundle.js","path":"/home/silasi/Mywork/wiplay-it-project/wiplayit_app/app_backend/static/dist/app.bundle.js"}]}}
+{"status":"done","chunks":{"main":["app.bundle.js"]},"assets":{"app.bundle.js":{"name":"app.bundle.js","path":"/home/silasi/Projects/python-projects/wiplay-it-project/app_backend/static/app_frontend/app.bundle.js"}}}

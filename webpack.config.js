@@ -37,7 +37,7 @@ module.exports = {
     devtool: 'inline-source-map',
 
     plugins: [
-        new BundleTracker({filename: './webpack-stats.json'}),
+        new BundleTracker({filename: './wiplayit_app/webpack-stats.json'}),
 
         // new HtmlWebpackPlugin({
         //   title: 'Development',
