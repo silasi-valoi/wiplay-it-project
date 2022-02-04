@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Icon from 'react-feather';
-import { ModalManager}   from  "containers/modal/modal-container";
+
 import { ModalCloseBtn } from "templates/buttons"
 import LinkInput from 'containers/draft-js-editor/input';
-import { Editor, Entity,CompositeDecorator, EditorState } from 'draft-js';
+import {Editor, CompositeDecorator} from 'draft-js';
 import TextareaAutosize from 'react-autosize-textarea';
 
 
@@ -30,7 +30,7 @@ export const ToolBar = props => {
                                       "btn-sm active toolbar-button":
                                       "btn-sm toolbar-button";
                 button = <Button {...buttonProps} key={style}>
-                            <Icon.Bold className="toolbar-btn-icon"  size={20}/>
+                            <Icon.Bold className="toolbar-btn-icon"  size={15}/>
                          </Button>   
             }
 
@@ -41,7 +41,7 @@ export const ToolBar = props => {
                                       "btn-sm toolbar-button";
       
                 button = <Button {...buttonProps} key={style}>
-                        <Icon.Italic className="toolbar-btn-icon"  size={20}/>
+                        <Icon.Italic className="toolbar-btn-icon"  size={15}/>
                     </Button>   
             }
         }
@@ -65,14 +65,14 @@ export const ToolBar = props => {
                buttonProps['accept']       = 'image/*'; 
              
                 button = <ImageButton  key={style} {...buttonProps}>
-                            <Icon.Camera className="toolbar-btn-icon" size={20}/>
+                            <Icon.Camera className="toolbar-btn-icon" size={15}/>
                         </ImageButton> 
             }
             else if (style === "Video"){
                 buttonProps['name']         = 'video'
                 buttonProps['accept']       = 'video/*';
                 button = <ImageButton  key={style} {...buttonProps}>
-                            <Icon.Video className="toolbar-btn-icon" size={20}/>
+                            <Icon.Video className="toolbar-btn-icon" size={15}/>
                         </ImageButton>
             }
 
@@ -85,7 +85,7 @@ export const ToolBar = props => {
             buttonProps['className']    = "btn-sm toolbar-button";
 
             button = <Button  key={style} {...buttonProps}>
-                        <Icon.MoreHorizontal  className="toolbar-btn-icon"  size={20}/>
+                        <Icon.MoreHorizontal  className="toolbar-btn-icon"  size={15}/>
                     </Button>
 
         }
@@ -96,7 +96,7 @@ export const ToolBar = props => {
             buttonProps['buttonFormat'] = 'insert_link'; 
             buttonProps['className']    = "btn-sm toolbar-button";
             button = <Button key={style} {...buttonProps}>
-                        <Icon.Link2 className="toolbar-btn-icon"  size={20}/>
+                        <Icon.Link2 className="toolbar-btn-icon"  size={15}/>
                      </Button>  
 
         }
@@ -299,7 +299,8 @@ export const PostEditor = (props) => {
                  className="editors-box post-textarea-editor-box">
                 <TextAreaEditor   {...props} rows={2}/>
                 
-                <div className="post-draft-editor-box" onClick={()=> handleFocus()}>
+                <div className="post-draft-editor-box"
+                     onClick={()=> handleFocus()}>
                     <DraftEditor {...props}/>
                 </div>
             </div>

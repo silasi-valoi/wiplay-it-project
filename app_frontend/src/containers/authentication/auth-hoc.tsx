@@ -4,7 +4,9 @@ import { compose } from 'redux';
 import { Diff } from 'utility-types';
 import { BrowserRouter } from "react-router-dom";
 
-import {matchMediaSize, displayErrorMessage, displaySuccessMessage} from 'utils/helpers';
+import {matchMediaSize,
+        displayErrorMessage, 
+        displaySuccessMessage} from 'utils/helpers';
 import {authenticate} from 'dispatch/index';
 import {closeModals}   from  'containers/modal/helpers';
 import  * as action  from 'actions/actionCreators';

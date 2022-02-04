@@ -630,8 +630,7 @@ export function MainAppHoc(Component) {
             let alertMessageStyles = props['displayMessage']? { display : 'block'}: { display : 'none' };
 
             let onModalStyles = props['modalIsOpen']? {opacity:'0.70',}: {opacity:'2',};
-            console.log(props)
-                      
+                                  
             return (
                 <div  className="app-container">
                     <div className="app-box-container">

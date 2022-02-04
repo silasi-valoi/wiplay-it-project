@@ -82,12 +82,12 @@
         width         : 70px;
         height        : 30px;
         font-family   : 'Squada one';
-        margin        : 10px 0 0 51%; 
+
     }
 
     .editor-submit-btn-box {
-        width   : 30%;  
-
+        border  : px solid red;
+        
     }
 
     .modal-user-box {
@@ -123,10 +123,15 @@
         font-size: 18px;
         min-height: 100px;
         font-family: 'calibri', sans-serif;
+        border:px solid black;
+    }
+    
+    .draft-editor {
+       border: px solid black;
     }
 
     #editors-box .DraftStyleDefault-block:first-child {
-        border: px solid red;
+        border: px solid blue;
     }
 
     #modal-editor {
@@ -143,13 +148,13 @@
     .editors-box  {
         background-color : #fffef7;
         overflow-y       : auto;
+        overflow-x: hidden;
         font-family      : 'calibri', sans-serif;
         border           : px solid red;
     }
  
     .toolbar-button {
         overflow      : hidden;
-        position      : relative;
         display       : block;
         background    : #fefefe; 
         width         : auto;
@@ -251,13 +256,13 @@
 }
 
 .toolbar-box {
-    width  : 70%;
+    width  : 100%;
     border : px solid black;
 
 }
 
 #toolbar {
-    border   : px solid black;
+    border   : x solid black;
 
   
 }
@@ -271,15 +276,12 @@
 .media-btns, .text-btns{
   display         : flex;  
   list-style-type : none; 
-  padding         : 0;
-  margin          : 0;
   font-size       : 13px; 
   border          : px solid black;
 }
 
 .media-btns {
-    padding-left  : 20px;
-    width         : 50%;
+    width : 60%;
 }
 
 .text-btns{

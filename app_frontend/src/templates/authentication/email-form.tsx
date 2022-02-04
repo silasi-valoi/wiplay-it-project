@@ -40,6 +40,8 @@ const EmailForm = props => {
 
 
     let formDescription = `Enter your e-mail address or phone number.`;
+    let disabled:boolean = submitting || onSignUpForm; 
+    let disablingStyles:object = disabled? {opacity:'0.60'}: {};
 
     
     return(
@@ -66,9 +68,8 @@ const EmailForm = props => {
                         </div>
                     }
                         
-                    <fieldset style={onSubmitStyles} 
-                            disabled={ submitting || onSignUpForm} >
-
+                    <fieldset style={disablingStyles} 
+                            disabled={disabled}>
                         <div  className="email-fields">
                             <p></p>
                                 <div className="email-box auth-input-field">

@@ -16,7 +16,7 @@
         margin: 5% 25% 0;
         min-height: 130px;
         background : #edf0f3;
-        border : 1px solid  #edf0f3;
+        border : 1px solid #edf0f3;
     }
 
     .auth-modal-container {
@@ -27,7 +27,7 @@
     .registration-container {
         padding-bottom: 50px; 
         background : #edf0f3;
-        border     : 1px solid  #edf0f3;
+        border : 1px solid  #edf0f3;
     }
 
     .password-change-container {
@@ -85,9 +85,8 @@
 
     .google-login, .facebook-login {
         text-align: left !important;
-        height:  40px;
         width: 100%;
-        font-size: 17px;
+        font-size: 13px;
         color: white;
         text-indent: 2px;
         border-radius: 3px;
@@ -99,7 +98,8 @@
         background: #ffff;
         height: 30px;
         padding: 4px;
-        margin-right : 10px;
+        margin-right: 5px;
+        font-size: 14px;
         border-radius: 2px;
     }
 
@@ -157,7 +157,6 @@
 
     .message-success {
         background: #edf0f3;
-        font-size: 14px;
         list-style-type: none;
     } 
 
@@ -243,6 +242,14 @@
         margin-top: 15px;
     }
 
+    .login-submit-box {
+        display: block;
+    }
+    
+    .login-submit-box .submit-btn-box {
+        display: flex;
+        justify-content: center;
+    }
 
     .separator {
         border: 1px solid #D2D2D2;
@@ -267,9 +274,15 @@
     
     .create-account-box  {
         width   : 100%;
+        border: px solid red;
         display: flex;
         justify-content: center;
         padding : 0px 0px 3px; 
+    }
+
+    .create-account-box button {
+        width: 50%;
+        font-size: 13px;
     }
 
     .signup-container-contents {

@@ -1,11 +1,9 @@
 import React from 'react';
-import {  Link } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
-import {formIsValid} from 'containers/authentication/utils';
 
+import {formIsValid} from 'containers/authentication/utils';
 import { NonFieldErrors,
          EmailFieldErrors} from 'templates/authentication/errors';
-
 import { RegistrationSubmitBtn,
          ToogleAuthFormBtn, 
          SpinLoader } from  'templates/authentication/utils'
@@ -37,7 +35,9 @@ export const  LoginForm = props => {
             value    : false,
         }
     }
-    
+
+    let disabled:boolean = submitting || onSignUpForm; 
+    let disablingStyles:object = disabled? {opacity:'0.60'}: {};
 
     return(
         <div className="form-container" id="form-container">
@@ -46,8 +46,8 @@ export const  LoginForm = props => {
             </ul> 
             <form onSubmit={props.onSubmit} className="login-form">
                 <fieldset 
-                    style={ !onSignUpForm && props.onSubmitStyles }
-                    disabled={ submitting || onSignUpForm }
+                    style={disablingStyles}
+                    disabled={disabled}
                     className="fieldset-login">
 
                     { error && !isSocialAuth &&
@@ -84,7 +84,7 @@ export const  LoginForm = props => {
                             <span className="floating-label">Password</span>
                         </div>
 
-                        <div className="registration-btns-box">  
+                        <div className="login-submit-box registration-btns-box">  
                             <div className="submit-btn-box">
                                 <RegistrationSubmitBtn {...props}/>
                             </div>
@@ -92,11 +92,12 @@ export const  LoginForm = props => {
                                 <PasswordResetBtn {...props}/>
                             </div>    
                         </div>
-                         <div className="cancel-login-btn-box">
-                            <ToogleAuthFormBtn {...toggleLoginFormProps}/>
-                        </div>   
-
+                        
                         <SignUpToogle {...props}/> 
+                        
+                        <div className="cancel-login-btn-box">
+                            <ToogleAuthFormBtn {...toggleLoginFormProps}/>
+                        </div> 
                     </div>
                 </fieldset>
                 {!isSocialAuth && !onSignUpForm &&
@@ -134,7 +135,7 @@ const  PasswordResetBtn  = props => {
 const _SignUpToogle = (props)=>{
     let toggleFormProps = {
             ...props,
-            toggleBtnName:'Sign Up Here',
+            toggleBtnName:'Sign Up',
             toggleFormProps:{
                 value : true,
                 formName:'signUpForm'

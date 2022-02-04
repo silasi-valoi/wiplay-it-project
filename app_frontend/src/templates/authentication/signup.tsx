@@ -160,7 +160,7 @@ export default SignUpForm;
 const _LoginToogle = (props)=>{
     const toggleLoginFormProps = {
             ...props,
-            toggleBtnName:'Login Here',
+            toggleBtnName:'Login',
             toggleFormProps:{
                 defaultFormName : 'loginForm',
                 value : false,

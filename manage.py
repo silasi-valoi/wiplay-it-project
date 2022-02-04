@@ -3,7 +3,7 @@
 import os
 import sys
 
-project_home = './Mywork/wiplay-it-project/wiplayit_app/'
+project_home = './Projects/python-project/wiplay-it-project/'
 project_folder = os.path.expanduser(project_home)
 
 

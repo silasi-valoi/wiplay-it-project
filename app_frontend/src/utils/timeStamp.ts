@@ -102,8 +102,6 @@ export default class GetTimeStamp {
                 
             }else{
                 dateCreated =  month + ' ' + day + ', ' + year;
-                console.log(month, day, year)
-
             }
         }
 

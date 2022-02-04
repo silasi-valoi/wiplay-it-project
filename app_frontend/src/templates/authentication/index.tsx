@@ -28,7 +28,7 @@ let toggleLoginFormProps = {
     }
 
 let toggleSignUpFormProps = {
-        toggleBtnName  : 'Create new Account',
+        toggleBtnName  : 'Create Account',
         toggleFormProps:{
             formName  : 'signUpForm',
             value : true,
@@ -226,33 +226,35 @@ const SocialLogin = props =>  {
             <div className="social-login">
                 <div className="google-login-box">
                 <GoogleLogin
-                    clientId = "499495811255-0v3hjt4lena190or9euvdla2qi5f8qrk.apps.googleusercontent.com"
+                    clientId="499495811255-0v3hjt4lena190or9euvdla2qi5f8qrk.apps.googleusercontent.com"
                     
                     onSuccess={props.responseGoogle}
                     onFailure={props.responseGoogle}
                     render={renderProps => (
-
-                    <button  className='btn-openid google-login'
-                    onClick={renderProps.onClick} 
-                         disabled={renderProps.disabled}>
-                         <span className="google-login-icon fa fa-google"></span>   
+                        <button
+                        className='btn-sm social-login-btn google-login'
+                        onClick={renderProps.onClick} 
+                        disabled={renderProps.disabled}>
+                        <span className="google-login-icon fa fa-google">
+                        </span>   
                         Login with Google 
                     </button>
                )}
          
             />
         </div>
-
-           
-   
+ 
         <div className="facebook-login-box">
           <FacebookLogin
             appId = "2482459181845798"
             callback={props.responseFacebook}
             render={renderProps => (
-                <button className='facebook-login' onClick={renderProps.onClick}>
-                <span className="facebook-login-icon fa fa-facebook"></span> 
-                  Login with Facebook
+                <button 
+                    className='btn-sm facebook-login social-login-btn' 
+                    onClick={renderProps.onClick}>
+                    <span className="facebook-login-icon fa fa-facebook">
+                    </span> 
+                    Login with Facebook
                 </button>
             )} 
           />

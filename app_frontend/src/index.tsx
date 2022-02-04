@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { Router}  from "react-router-dom";
-//import 'font-awesome/css/font-awesome.min.css';
-//import 'bootstrap/dist/js/bootstrap.js';
+import 'font-awesome/css/font-awesome.min.css';
+import 'bootstrap/dist/js/bootstrap.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'css/page-not-found.css';
 import 'css/admin/admin.css';

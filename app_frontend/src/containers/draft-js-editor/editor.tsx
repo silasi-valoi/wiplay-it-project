@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 
-import {CharacterMetadata, CompositeDecorator, AtomicBlockUtils,
-         RichUtils,convertToRaw, convertFromRaw,Entity,
-         genKey, EditorState, ContentBlock} from 'draft-js'; 
+import {AtomicBlockUtils,
+         RichUtils,convertToRaw, Entity,
+         EditorState} from 'draft-js'; 
 
 import  {ModalSubmitPending}  from 'actions/actionCreators';
-import {ModalManager}   from  "../modal/modal-container";
 
 import {List, Repeat} from 'immutable';
 
 import  Helper, {GetLoggedInUser} from 'utils/helpers';
-import {TextAreaEditor,
-        DraftEditor,
+import {DraftEditor,
         QuestionEditor,
         PostEditor,
         DesktopToolBar,
@@ -19,14 +17,12 @@ import {TextAreaEditor,
         DesktopModalNavBar } from  "templates/draft-editor";
 import {insertLink, decorator} from '../draft-js-editor/plugins'
 import {AlertComponent} from 'templates/partials';
-import {showModal}  from 'actions/actionCreators';
-import {handleModalScroll} from '../modal/helpers';
+
 import {store} from 'store/index';
 
 import Apis from 'utils/api';
 import {handleSubmit, _GetApi }  from "dispatch/index"
 import  * as action  from "actions/actionCreators";
-import * as checkType from 'helpers/check-types'; 
   
 
 const helper   = new Helper();  
