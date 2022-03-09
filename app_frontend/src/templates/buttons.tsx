@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Router } from "react-router-dom";
+
 import * as Icon from 'react-feather';
 import {history} from "App" 
 import { MatchMediaHOC } from 'react-match-media';
@@ -23,6 +23,7 @@ import {IsBookMarked, pushToRouter} from 'utils/helpers';
     };
 
 export const LinkButton = (props)=>{
+    
     let linkPath = props['linkPath'];
     let styles = props['styles'];
 
@@ -36,7 +37,7 @@ export const LinkButton = (props)=>{
     );
 };
 
-export const ToggleItemsBtn = (props:object)=>{
+export const ToggleItemsBtns = (props:object)=>{
         let getItemsList:Function = props['getItemsList'];
         let itemsNum:number = props['items']?.length;
                 

@@ -367,6 +367,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
         onSubmit = (e) => {
             e && e.preventDefault();
+            
             authSubmit(this);
         };
 
@@ -489,6 +490,11 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         toggleAuthForm = (params:object):void => {
+            const authForm = this.state['authForm']
+            const submitting:boolean = authForm && authForm['submitting'];
+
+            if (submitting) return;
+
             let defaultFormName:string = params['defaultFormName'];
             let formName:string = params['formName'];
 

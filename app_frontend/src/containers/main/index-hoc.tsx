@@ -18,20 +18,17 @@ import {handleSubmit,
 
 import  * as action  from 'actions/actionCreators';
 import { closeModals}   from  'containers/modal/helpers';
-
-import { PartalNavigationBar,
-         NavigationBarBottom,
-         NavigationBarSmallScreen,
-         NavigationBarBigScreen } from "templates/navBar";
-
+import NavBarSmallScreen from 'templates/navigations/nav-bar-small';
+import NavBarBigScreen from 'templates/navigations/nav-bar-big';
+import PartalNavBar from 'templates/navigations/nav-bar-partial';
+import { NavBarBottom } from 'templates/navigations/nav-bar-partial';
 
 import {AlertComponent} from 'templates/partials';
-import * as checkType from 'helpers/check-types'; 
+
 import {Modal}   from  "containers/modal/modal-container";
 
 import {store} from 'store/index';
 import {history} from "App";
-import GetTimeStamp from 'utils/timeStamp';
 import Apis from 'utils/api';
 import {isAuthenticated, isAdmin, getUserFromCache} from 'utils/authService';
 import Helper, { IsBookMarked,
@@ -642,10 +639,10 @@ export function MainAppHoc(Component) {
                         <div>
                             <fieldset style={ onModalStyles } 
                                       disabled={props['modalIsOpen']}>
-                                <NavigationBarSmallScreen  {...props}/>      
-                                <PartalNavigationBar {...props}/>
-                                <NavigationBarBigScreen {...props} />
-                                <NavigationBarBottom {...props}/>
+                                <NavBarSmallScreen  {...props}/>      
+                                <PartalNavBar {...props}/>
+                                <NavBarBigScreen {...props} />
+                                <NavBarBottom {...props}/>
                                 
                                 <Component {...props}/>                    
                             </fieldset>

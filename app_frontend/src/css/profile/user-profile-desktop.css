@@ -1,0 +1,319 @@
+
+
+@media (min-width: 980px) {
+  
+ 
+    .profile-page {
+        background : #F9F7F7;
+        margin     : auto;
+        width      : 100%;
+    }
+
+    .profile-container {
+        border: px solid black;
+        width: 100%;
+        background: #F4F2F1;
+    } 
+
+    .profile {
+        border: px solid blue;
+        display: flex;
+        width: 100%;
+        margin-top:10px;
+        background: #F4F2F1;
+    }
+
+    #profile-box {
+        border       : px solid red;
+        width        : 70.9%;
+        margin-right : 20px; 
+    }
+
+    .profile-box {
+        width              : 100%;
+        border-bottom      : 2px solid #D5D7D5; 
+        background         : white;
+       /* -webkit-box-shadow : -2px 8px 18px -5px rgba(138,138,138,1);
+        -moz-box-shadow    : -2px 8px 18px -5px rgba(138,138,138,1);
+        box-shadow         : -2px 8px 18px -5px rgba(138,138,138,1);*/
+    }
+
+
+    .profile-contents {
+        border      : px solid blue;
+        padding     : 25px 10px 15px;
+        margin      : 0px 5%;
+        display     : flex; 
+    }
+ 
+    .profile-section-top {
+        background : white;
+        border     : px solid blue;
+        display    : flex;
+        width      : 100%;
+        padding    : 10px 10px 0; 
+    }
+
+    .profile-img-container {
+        border         : px solid red;
+        margin         : 0 28px 0 40px;
+        padding-bottom : 5px;    
+         
+    }
+
+
+    .profile-img-box {
+        border        : 1px solid   #D5D7D5;
+        border-radius : 50%;
+        width         : 140px;
+        height        : 140px;
+    }
+
+    .profile-img-box:hover {
+        cursor : pointer; 
+
+    }
+
+    .profile-image {
+        border        : 1px solid #F9F7F7;
+        border-radius : 50%;
+        width         : 140px;
+        height        : 140px;
+        max-width     : 100%;
+        object-fit    : cover;
+        position      : absolute; 
+    }
+
+    .edit-img-btn-box {
+        border      :  px solid blue;
+        padding     :  6px 30%;
+    };
+
+    .edit-img-btn-box button {
+        background-color :  rgba(0, 0, 0, 0.3) !important; 
+        font-size : 25px !important;
+        color     : #F4F2F1; ;
+        width     : 85px;
+        height    : 30px;
+        font-weight: bold;
+  
+    }
+
+    .profile-name-box {
+        border      : px solid red;
+        min-height  : 150px;
+        padding-top : 20px;  
+    }
+
+    .profile-name {
+        font-size   : 23px !important;
+        color       : black;
+        border      : px solid blue;
+        font-family : 'Ubuntu';
+        font-weight : bold;
+        margin      : 0 10px 0;
+    }
+
+    .user-credential {
+        margin   : 0 10px 0;
+        border   : px solid red;
+    }
+
+    .user-profile-options-box  {
+        border  : px solid red;
+         
+    }
+
+    .relation-box {
+        display  : flex;
+        border   : px solid black;  
+    }
+
+    .profile-credential-box {
+        width    : 100%;
+        border   : px solid black;  
+        
+    }
+
+    .user-profile-followers-box {
+        width   : 100%; 
+        border  : px solid blue;
+
+    }
+
+
+    .follow-user-profile-btn-box  {
+        margin         :  0 10px 0;
+    }
+
+    .credentials-container {
+        border      :  px solid #D5D7D5;
+        display     :  flex;
+        width       :  100%;
+         
+    }
+
+    #credentials-box {
+        border    : 1px solid  #D5D7D5;
+    }
+
+
+    .credentials-box {
+        border       :  px solid black;
+        width        :  40% !important;
+        margin-right :  20px;
+        height       :  99%;
+        background   :  #fff; 
+    }
+
+    .user-activities {
+        border-bottom : 1px solid  #D5D7D5; 
+        background : #fff; 
+        margin-top : 18px; 
+
+        /*
+        -webkit-box-shadow: -2px 8px 18px -5px rgba(138,138,138,1);
+        -moz-box-shadow: -2px 8px 18px -5px rgba(138,138,138,1);
+        box-shadow: -2px 8px 18px -5px rgba(138,138,138,1);*/
+    }
+
+    .user-activities-box {
+        width       : 100%;
+        border      : 1px solid #D5D7D5;
+        background  : #fff; 
+
+    }
+
+    .user-activities-title-box{
+        border-bottom :  1px solid  #D5D7D5; 
+    }
+
+    .user-activities-title-box p {
+        border     : px solid red;
+        margin     : 10px 0 0; 
+    }
+
+    .user-activities-btn-box {
+        /*border-bottom : 2px solid #A33F0B;*/
+        margin-right  : 14px;
+        margin-bottom : 5px;
+    }
+
+    .activities {
+        color         :  grey; /*#f0eeed;*/
+        font-family   : 'Kanit';
+        background    :  #fefbfa;
+        border        : none;
+        width         : auto;
+        font-size     : 13px;
+         
+    }
+
+
+    .activities-counter {
+        border     : 1px solid #D5D7D5;
+        background : white;
+        padding    : 4px 10px; 
+    }
+
+   
+
+    #with-shaidos  {
+        border             : 1px solid  #D5D7D5; 
+        width              : 30%;
+        min-height         : 0 !important;  
+        background         : white;
+        margin             : 4px 0 0;
+        -webkit-box-shadow : -2px 8px 18px -5px rgba(138, 138, 138, 1);
+        -moz-box-shadow    : -2px 8px 18px -5px rgba(138, 138, 138, 1);
+        box-shadow         : -2px 8px 18px -5px rgba(138, 138, 138, 1);
+    }
+
+    .profile-user-list-container {
+        width     : 30%;
+        padding   : 10px 0; 
+
+    }
+
+    .profile-user-list-box{
+        border         : 1px solid  #D5D7D5;
+        background     : #F4F2F1;
+        border-radius  : 10px; 
+    }
+
+
+    
+
+    .user-name-container {
+        margin-left : 7px;
+        margin-top  : 7px;
+    }
+
+    .user-extra-data-box {
+        border : 1px solid red;
+        width  : 100%; 
+    } 
+
+
+    .user-name {
+        font-size   : 12px;
+        color       : black;
+        font-family : 'Ubuntu';
+        font-weight : bold;
+        line-height : 1;
+        margin      : 18px 10% 7px !important;
+        padding     : 0px 25%;
+        display     : flex; 
+    }
+
+.user-follow-box {
+    border : 1px solid black;
+}
+
+.profile-name-box {
+     border:px solid red;
+     width:100%;
+  }
+
+.profile-name-box {
+    border: px solid red;
+}
+
+
+.name {
+    
+    font-weight: 600;
+    font-family: 'Kanit';
+    font-size: 13px;
+    color: black;
+    border: px solid blue;
+    line-height: 2;
+
+}
+.edit-user-photo {
+  font-size: 13px;
+  color: black;
+  width: 70px;
+  height: 30px;
+}
+
+
+.edit-user-name {
+  font-size: 10px;
+  color: #615f5e;
+  width: 70px;
+  height: 30px;
+  background: white;
+  border: none;
+  box-shadow: none;
+}
+
+.edit-user-name {
+  
+}
+
+
+}
+
+
+

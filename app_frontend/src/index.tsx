@@ -7,13 +7,15 @@ import 'bootstrap/dist/js/bootstrap.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'css/page-not-found.css';
 import 'css/admin/admin.css';
-import 'css/admin/about-admin.css'
-import 'css/App.css';
+import 'css/admin/about-admin.css';
 import 'draft-js/dist/Draft.css';
 import 'css/draft-editor/app-editor.css';
+import 'css/App.css';
 import 'css/index.css';
-import "css/home.css";
-import "css/nav-bar/navbar.css";
+import 'css/home.css';
+import 'css/nav-bar/index.css';
+import 'css/nav-bar/nav-bar-mobile.css';
+import 'css/nav-bar/nav-bar-desktop.css'
 import "css/mobile-question-page.css";
 import "css/desktop-question-page.css";
 
@@ -27,7 +29,9 @@ import "css/notifications.css";
 import "css/bookmarks.css";
 import "css/about.css";
 import "css/message-form.css";
-import "css/profile/profile.css"
+import "css/profile/index.css";
+import "css/profile/user-profile-mobile.css";
+import "css/profile/user-profile-desktop.css"
 
 import 'css/authentication/index.css';
 import 'css/authentication/registration-mobile.css';

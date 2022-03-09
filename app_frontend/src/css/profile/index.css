@@ -1,0 +1,64 @@
+
+
+
+.credentials-menu {
+  border-bottom : 1px solid #D5D7D5;
+  width         : 100%;
+  display       : flex;
+}
+
+.about-user-box {
+  border : px solid blue;
+  margin : 14px 5%;
+  display : flex;
+  font-size : 10px;
+}
+
+.user-location {
+  display: flex;
+  margin-left: 2%;
+}
+
+.user-location li {
+  border : px solid blue;
+  padding: 0 2px;
+}
+
+.about-box {
+  border  : px solid blue;
+  width : 100%;
+  padding-top : 2%;
+  margin: 3% 5%;
+}
+
+.edit-profile-btn-box {
+  border  : px solid blue;
+  margin: 2%;
+  
+}
+
+.edit-profile-btn-box button { 
+  	border : px solid black;
+  	font-size: small;
+  	font-family: Verdana, Geneva, Tahoma, sans-serif;
+  	font-size   : 14px;
+  	font-weight : bold;
+  	font-family : 'Open Sans';
+  	color       : grey;
+}
+
+.about {
+  border    : px solid blue;
+  font-size : 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.user-activities {
+	display: flex;
+	overflow-x  : scroll;
+  	overflow-y  : hidden;
+  	white-space : nowrap;
+	background : #f1f1f1; 
+}
+
+

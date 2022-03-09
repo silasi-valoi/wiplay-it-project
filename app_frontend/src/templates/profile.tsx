@@ -203,27 +203,41 @@ export const ProfileComponent = props => {
                     <div className="credentials-box">
                         <div id="credentials-box">
                             <div className="credentials-menu">
-                                <div className="about-box">
-                                    <p className="about">About</p>
-                                </div>
+                                <ul className="about-box">
+                                    <li className="about">About</li>
+                                </ul>
 
-                                <div className="edit-credential-btn-box">
+                                <ul className="edit-profile-btn-box">
                         
                                     {userCanEdit && userIsConfirmed &&
-                                        <div>
+                                        <li>
                                             <EditorModalBtnBigScreen {...editObjProps}/>
                                             <EditorModalBtnSmallScreen/>
-                                        </div>
+                                        </li>
                                     }
-                                </div>
+                                </ul>
                             </div>
 
                             <div className="about-user-box">
-                            <Icon.MapPin id="feather-location" size={20}/>
-                                <p className="user-location">
-                                     {profile?.country }  
-                                     {profile?.live } 
-                                </p>
+                                <Icon.MapPin 
+                                    id="feather-location" 
+                                    size={15}
+                                />
+                                { !profile.country &&
+                                    <ul className="user-location">
+                                    
+                                        <li>Free State </li>
+                                        <li>/</li>
+                                        <li>South Africa</li>
+                                    </ul>
+
+                                    ||
+
+                                    <p className='credentials-default'>
+
+                                    </p>
+                                }                               
+                                
                             </div>
                   
                             <div className="about-user-box">
@@ -247,9 +261,7 @@ export const ProfileComponent = props => {
                 </div>
             </div>
 
-
             <div className="profile-user-list-container">
-
                 <UserList {...props}/>
             </div>
 
@@ -800,15 +812,20 @@ export const UserActivitiesBtns = props => {
         
     return (
         <div className="user-activities">
-            <div style={answersBtnStyles} className="user-activities-btn-box">
-            <button type="button" 
-                    onClick={()=> props.showUserItems(itemsParams.answers(userProfile))} 
-                    className="btn-sm activities user-answers" >
-                {totalAnswers} {totalAnswers <= 1? "Answer":"Answers"}
-            </button>
+            <div style={answersBtnStyles}
+                 className="user-activities-btn-box">
+                <button type="button" 
+                        className="btn-sm activities user-answers"
+                        onClick={()=> {
+                            props.showUserItems(
+                               itemsParams.answers(userProfile)
+                            )
+                        }}>
+                    {totalAnswers} {totalAnswers <= 1? "Answer":"Answers"}
+                </button>
             </div>
 
-            <div  style={questionsBtnStyles}className="user-activities-btn-box">
+            <   div  style={questionsBtnStyles}className="user-activities-btn-box">
             <button type="button"
                     onClick={() => props.showUserItems(itemsParams.questions(userProfile))} 
                     className="btn-sm activities user-questions" >

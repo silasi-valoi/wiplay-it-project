@@ -1,0 +1,281 @@
+
+
+@media (min-width:980px) {
+  
+    .page-name-box {
+        border  : px solid black;
+        width   : 100%;
+        padding : 14px 0 0 10px !important; 
+    }
+
+
+    .nav-bar-arrow-icon  {
+        color: #A33F0B;
+        font-size: 24px;
+        font-weight: bold;
+    }
+     
+   .home-page-cont {
+       border:1px solid #D5D7D5;
+       background: white;
+       width:  600px;
+       margin: auto;
+    }
+
+    .profile-dropdown {
+        margin-left:200px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .navigation {
+        background    : white;
+        display       : flex;
+        padding       : 3px 5px; 
+        border-bottom : 1px solid  #D5D7D5;
+    }
+  
+    .navigation-box {
+        width  : 100%;
+        justify-content: flex-end;
+        border: px solid black;
+    }
+
+    .navigation-menu {
+        display : flex;
+        width : 100%;
+        border : px solid red;
+    }
+
+    .navigation-item {
+        border : px solid black !important;
+        list-style-type : none;
+        margin          : 0;
+        padding         : 0;
+        font-family     : 'Jura';
+        font-weight     : bold;
+        border-radius   : 0 !important;
+        border          : none;
+        color           : #615f5e; 
+        background      : white;
+        text-align      : center;
+    }
+
+    .nav-menu {
+        display : flex;
+        justify-content: flex-end;
+        margin: 0 5px;
+        border : px solid black ;
+    }
+
+    .items {
+        font-family     : 'Jura';
+        font-size       : 13px !important;
+        color           : #615f5e; 
+        border          : px solid red;
+        text-align      : center;
+        margin          :  20px 10px 0; 
+        float           : right;
+    }
+
+    .items:hover   {
+        color:#A33F0B; 
+        text-decoration: none;
+    }
+
+    #help-navigation {
+        padding: 15px 20px;
+    }
+
+    .help-navigation-box {
+        border  : px solid black;
+        display : flex;
+        width   : 100%;
+    }
+
+    .help-menu-box{
+        border    : px solid blue;
+        display   : flex;
+        width     : 100%;
+        justify-content: flex-end !important; 
+    }
+
+    .help-menu-contents {
+        border :  px solid red;
+        margin :  0 27px;
+    }
+
+    .help-menu-contents button {
+        border    : px solid black;
+        font-size : 15px;
+        margin    : 0 10px; 
+    }
+
+    .help-menu-contents button:hover {
+        color  : #A33F0B;
+    }
+
+    .help-logo-contents {
+        color       : #A33F0B;
+        font-weight : bold;
+        font-size   : 20px;
+        padding-left : 130px;
+        font-family: 'Ubuntu';
+    }
+
+    .help-logo-contents li:hover {
+        cursor: pointer;
+    }
+
+    .logo-box {
+        background : #ffff;
+        width : 100%;
+        margin: 0 5px;
+        display: flex;
+        justify-content: flex-end;
+        border : px solid blue;
+
+    }
+
+    .logo-img-box {
+        margin-right: 20%;
+        border : px solid red;
+    }
+
+    .logo-img {
+        border-radius: 50%;
+        width        : 45px;
+        height       : 45px;
+    }
+
+    .logo-img:hover {
+        color:  #A33F0B;
+        text-decoration: none;
+    }
+   
+    .post-question-box {
+        display : flex;
+        border  : px solid blue;
+        justify-content: flex-end !important; 
+    }
+
+    .post-question-btn-box {
+        display :  flex;
+    }
+
+    .create-post-btn-box, .create-question-btn-box {
+        border  : px solid black;
+        display : flex;
+    }
+
+    .create-question-btn, .create-post-btn {
+        background  : #A33F0B;
+        color       : #fefefe;
+        font-weight : bold;
+        font-size   : 11px;
+        height      : 30px; 
+        margin-top  : 9px;             
+    }
+
+    .create-question-btn:hover, .create-post-btn:hover {
+        color  : #fefefe;
+    }
+
+    .post-question-btn-box p {
+        margin : 12px 5px 0;
+        font-weight : bold;
+        font-size : 13px;
+    }
+
+    .navbar-login-link  {
+        border : px solid blue;
+        width: 20%;
+    }
+    .navbar-login-link li  {
+        border: px solid red;
+        margin: 5% 5% 0;
+    }
+    
+    .navbar-login-link button {
+        border : 1px solid red;
+    }
+
+    .navigation-img-box {
+        border : px solid red;
+        width :  70%;
+        margin: 0 5px;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .dropdown-menu-box {
+        border : px solid blue;
+        
+    }
+
+    #navBardropdown {
+        border : px solid blue;
+                     
+    }
+
+    .nav-bar-img-box {
+        border : px solid black; 
+        margin-right: 10%;
+        padding-top: 7%;
+    }
+
+    .nav-bar-img {
+        border-radius : 50%;
+        width : 30px;
+        height : 30px;
+        border : px solid red;
+    }
+
+    .navbar-dropdown {
+        padding-right: 17px;
+    }
+
+    .profile-photo:hover, #navBardropdown:hover {
+        cursor: pointer !important; 
+    }
+
+    .active {
+        border-bottom: 3px solid #A33F0B;
+        color:  #A33F0B;  
+    }
+
+    .img-container-sm {
+        border: 1px solid  #D5D7D5;/*#F9F7F7;*/
+        display: inline-block;
+        border-radius: 50px;
+        width: 30px;
+        height:30px;
+        margin: auto;
+        margin-left:0px;        
+    }
+
+    .profile-photo {
+        border-radius  :  100%;
+        width          : 100%;
+        height         : 100%;
+        object-fit     : cover;
+    }
+
+    .profile-user-name {
+        border:px solid red;
+        position: relative;
+        display:inline-block;
+        font-family: 'Jura';
+        left:5px;
+        font-size: 10px;
+    }
+}
+
+
+
+
+
+
+
+
+

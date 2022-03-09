@@ -1,0 +1,198 @@
+
+.navigation-bar-mobile {
+    -webkit-box-shadow: -2px 0px 5px 0px rgba(213,213,215,1);
+    -moz-box-shadow: -2px 0px 5px 0px rgba(213,213,215,1);
+    box-shadow: -2px 0px 5px 0px rgba(213,213,215,1);
+}
+
+.navigation-bar-mobile {
+    border-top    : px solid #D5D7D5;
+    width         : 100%;
+    margin        : auto;
+    overflow      : none;
+    border-radius : 4px;
+    outline       : none;
+    height        : auto; 
+    bottom        : 0;
+    top           : auto; 
+    position      : fixed;
+    right         : auto;
+    left          : auto;
+    z-index       : 3; 
+    background    : #fff;
+}
+
+.navbar-menu {
+    border  : px solid blue;
+    display :  flex;
+}
+
+.navbar-item {
+    border : px solid red;
+    width  : 100%;
+}
+
+.navbar-item button {
+    display: flex;
+    flex-direction: column;
+    margin: 0 5px;
+    font-size: 12px;
+    text-align: center;
+
+}
+
+#feather-bell {
+    margin-left: 20px;
+}
+
+#feather-home {
+    margin-left: 4px;
+}
+
+#feather-edit, #feather-users   {
+    margin-left: 8px
+}
+
+.navbar-btn-text {
+    border: px solid black;
+}
+
+.navbar-contents-top {
+    background:#A33F0B;
+}
+
+.menu-img-container {
+    border-bottom : 1px solid #D5D7D5;
+    padding : 0 0 20px ; 
+}
+
+.navbar-feedback-btn {
+    color      : #fefefe;;
+    font-size  : 12px;
+    margin      : 12px 10px 0;
+    font-family : 'Cambay';
+}
+
+.partial-navbar-login-link button,
+.navbar-login-link button {
+    border-radius: 15px;
+    color: green;
+    font-family: 'Signika';
+    font-weight: bold;
+}
+
+.partial-navbar-login-link button {
+    border : 1px solid #A33F0B;
+    justify-content: flex-end;
+}
+
+
+.partial-navbar-login-link {
+    justify-content: flex-end;
+}
+
+.logo-contents {
+    font-weight : bold;
+    font-family : 'Ubuntu';
+    font-size   : 17px;
+    color       : #fefefe;
+    padding     : 12px 0 7px; 
+}
+
+.menu-img-box {
+    border-radius : 50%;
+    border        : 1px solid #D5D7D5;
+    width         : 35px;
+    height        : 35px; 
+    margin-left   : 18px; 
+}
+
+.menu-img {
+    border-radius : 50%;
+    width         : 35px;
+    height        : 35px; 
+}
+
+.menu-username {
+    font-weight : bold;
+    font-family : 'Ubuntu';
+    font-size   : 12px; 
+    margin-left : 18px; 
+    margin-top  : 8px;
+}
+
+.menu-user-credential{
+    border       : px solid blue;
+    font-family  : 'Cambay';
+    font-size    : 12px; 
+    margin-left  : 18px; 
+}
+
+.nav-dropdown-menu {
+    border : px solid red;
+    width : 18%; 
+    margin : 20px 25% 0 0;
+}
+
+.nav-bar-modal-menu-box {
+    overflow-y: scroll;
+    border : px solid  black;
+}
+
+.logout-btn, .dropdown-item {
+    width        : 100% !important;
+    text-align   : left !important;
+    padding      : 7px;
+    padding-left : 20px;
+    font-size    : 13px; 
+    margin       : 10px 0;
+    font-family  : 'Cambay';
+    border       : px solid red;
+}
+
+.logout-btn {
+    color: red;
+}
+ 
+.menu-username-box:hover, .logout-btn:hover {
+    cursor     : pointer;
+    background :  #B9BABB !important;
+}
+
+.modal-title-box {
+    width   : 100%;
+}
+    
+.modal-title {
+    border      : px solid black;
+    font-size   : 14px;
+    color       : #fefefe;
+    font-weight : bold;
+    margin-top  : 15px;
+}
+
+.mobile-navbar-center, 
+.partial-page-navbar,
+.partial-form-navbar {
+    display    : flex;
+    width      : 100%;
+        
+}
+
+.partial-form-navbar {
+    border-bottom : 1px solid #D5D7D5;
+}
+
+.edit-profile-navbar {
+    background-color: #fefefe;
+} 
+
+.partial-navbar-back-btn-box {
+    border:  px solid black;  
+    
+}
+
+.partial-navbar-back-btn-box button {
+    border:  px solid black;
+    margin: 10px;  
+}

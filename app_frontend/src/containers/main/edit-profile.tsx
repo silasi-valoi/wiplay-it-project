@@ -27,6 +27,10 @@ class EditProfileRouter extends Component{
         }
     }; 
 
+    static pageName(){
+        return 'Edit Profile'
+    }
+
     render() {
         return (
             <div>

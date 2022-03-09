@@ -4,21 +4,17 @@ import {  Link, BrowserRouter } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
 import * as Icon from 'react-feather';
 
-import { SubmitBtn,
-         OpenAuthModalBtn,
-         SmsCodeModalBtn,
-         AuthenticationBtn,
+import { OpenAuthModalBtn,
          OpenUsersModalBtn,
          ModalCloseBtn,
          LinkButton,
          OpenEditorBtn  } from "templates/buttons";
 import { Modal}   from  "containers/modal/modal-container";
-import { store } from "store/index";
+
 import Apis from 'utils/api';
 import { closeModals}   from  'containers/modal/helpers';
 import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
 
-import { showModal } from 'actions/actionCreators';
 import { history } from "App"
 
 
@@ -457,6 +453,8 @@ export const NavigationMenuBtns =(props)=>{
          currentUser,
          isAuthenticated,
          notificationsTab} = props || {};
+
+    
 
     return(
         <div className="navbar-bottom-menu">

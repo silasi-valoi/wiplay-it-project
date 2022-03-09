@@ -272,21 +272,13 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = '/static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-USE_S3 = os.getenv('USE_S3') == 'True'
-
-if USE_S3:
+if os.getenv('USE_S3') == 'True':
     # aws settings
     AWS_ACCESS_KEY_ID = os.getenv('S3_BUCKET_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('S3_BUCKET_SECRET_ACCESS_KEY')
