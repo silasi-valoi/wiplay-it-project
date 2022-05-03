@@ -1,8 +1,8 @@
 
 import React, {Component} from 'react';
-import {HelpPageNavBar} from 'templates/navBar';
+import { HelpPageNavBar } from 'templates/navigations/nav-bar-partial';
 import MessageFormContainer from '../main/message';
-import Apis from 'utils/api';
+import {Apis} from 'api';
 import  MainAppHoc from "../main/index-hoc";
 
 
@@ -14,6 +14,10 @@ class FeedBackContainer extends Component{
             pageName : "Feedback", 
         }; 
     };
+
+    static pageName(){
+        return "FeedBack"
+    }
 
     componentDidMount() {
         

@@ -2,22 +2,20 @@ import { MatchMediaHOC } from 'react-match-media';
 import React, { Component } from 'react';
 
 import TextareaAutosize from 'react-autosize-textarea';
-import {handleModalScroll} from 'containers/modal/helpers';
-import { EditProfileNavBar } from 'templates/navBar';
+import {handleModalScroll} from 'containers/modal/utils';
+import { EditProfileNavBar } from 'templates/navigations/nav-bar-partial';
 import {  ChangeImageBtn  } from 'templates/buttons';
 import MainAppHoc from "containers/main/index-hoc";
 
 import  * as types  from 'actions/types';
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
-import {handleSubmit, getUserProfile}  from "dispatch/index"
+import {handleSubmit}  from "dispatch/index"
 import { AlertComponent } from 'templates/partials';
 import  AjaxLoader from 'templates/ajax-loader';
-import  Helper, {displaySuccessMessage} from 'utils/helpers';
-import Apis from 'utils/api';
-import * as checkType from 'helpers/check-types'; 
+import {displaySuccessMessage, createFormData} from 'utils';
+import {Apis} from 'api';
 
-const helper   = new Helper();  
 
 class EditProfileRouter extends Component{
 
@@ -45,7 +43,6 @@ export default MainAppHoc(EditProfileRouter);
 
 export class EditProfile extends Component{
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -58,14 +55,11 @@ export class EditProfile extends Component{
             displayMessage : false,
 
             form         : {
-               first_name       : "",
-               last_name        : "",
-               credential       : "",
-               live             : "",
-               country          : '',
-               favorite_quote   : "",
-               phone_number     : "",
-               profile_picture  : "", 
+                first_name : "",
+                last_name  : "",
+                bio        : "",
+                location   : "",
+                profile_picture  : "", 
            },
         };
      
@@ -85,7 +79,6 @@ export class EditProfile extends Component{
         if(!this.isMounted) return;
 
         const onStoreChange = () => {
-            let currentUser = this.state['currentUser']; 
             let byId = this.state['byId']
 
             let storeUpdate  = store.getState();
@@ -95,8 +88,6 @@ export class EditProfile extends Component{
             userProfile = userProfile[byId];
             
             let modal:object = entities['modal'] 
-            let editorModal    = modal['editor']; 
-            let dropImageModal = modal['dropImage'];
               
             if (userProfile) {
                 this.setState({submitting : userProfile['submitting']});
@@ -169,7 +160,6 @@ export class EditProfile extends Component{
            
         }else{
 
-            let byId = this.props['byId']; 
             let userProfile = this.props['obj'];
             this.setState({...this.props, userProfile});
             this.populateEditForm(userProfile);
@@ -232,7 +222,7 @@ export class EditProfile extends Component{
 
         let form:object = this.state['form'];
         let editUserProfileProps = this.getUserEditProps()
-        let formData = helper.createFormData(form)
+        let formData = createFormData(form)
 
         return Object.assign(editUserProfileProps, {formData})
     };
@@ -330,9 +320,8 @@ export class EditProfile extends Component{
 
 const ProfileEditComponent = props => {
     
-    let {submitting, userProfile, editUserProfileProps } = props;
-    let submitButtonStyles = submitting?{opacity:'0.60'}:{};
-    
+    let {submitting} = props;
+        
     let fieldSetStyles = submitting? {opacity:'0.60'}:{};
 
 
@@ -388,8 +377,8 @@ const ProfileEditComponent = props => {
                             type="text" 
                             placeholder="Your location"
                             className=""
-                            name="live"
-                            value={props.form.live}
+                            name="location"
+                            value={props.form.location}
                             onChange={props.handleChange}
                         />
                     </div>        
@@ -406,27 +395,13 @@ const ProfileEditComponent = props => {
                             type="text"
                             placeholder="About you" 
                             className=""
-                            name="credential"
-                            value={props.form.credential}
+                            name="bio"
+                            value={props.form.bio}
                             onChange={props.handleChange}
                         />
                     </div>
                 </div>
-
-      
-                <div className="user-favorite-quote-box">
-                    <ul className="item-title-box">
-                        <li className="item-title">
-                            Quote
-                        </li>
-                    </ul>
-
-                    <div className="input-box">
-                        <TextareaAutosize {...props.textAreaProps}  rows={3}/>  
-                    </div>   
-                </div>
             </fieldset>
-    
         </div>
     );
 };
@@ -468,7 +443,7 @@ const EditProfilePicture = (props:object)=>{
 
 const EditProfilePicSmalScreen = MatchMediaHOC(EditProfilePicture, '(max-width:980px)')
 
-export const NavBarTitle = props  => (
+export const NavBarTitle = ()  => (
   <div className="navbar-title-box">
    <b className="navbar-title">Edit Profile</b>  
   </div>    
@@ -477,7 +452,6 @@ export const NavBarTitle = props  => (
 
 export class DropImage extends React.Component {
     private isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
  
     constructor(props) {
@@ -516,7 +490,6 @@ export class DropImage extends React.Component {
             let {entities}  = storeUpdate;
             
             let modal = entities['modal'];
-            let byId  = this.props['byId'];
 
             let dropImageModal = modal['dropImage'];
             
@@ -578,7 +551,7 @@ export class DropImage extends React.Component {
     handleImageAdd = ()=>{
         let file = this.state['file'];
         
-        let formData:object = helper.createFormData({'profile_picture': file});
+        let formData:object = createFormData({'profile_picture': file});
         let submitProps = {
                formData,
                isModal : true,
@@ -615,7 +588,6 @@ export class DropImage extends React.Component {
         let error = props['error'];
         let failed = props['failed'];
 
-        let submitButtonStyles = submitting?{opacity:'0.60'}:{};
     
         let fieldSetStyles = submitting? {opacity:'0.60'}:{};
        
@@ -691,7 +663,7 @@ export class DropImage extends React.Component {
                </div>
                </fieldset>
             </div>  
-        );
+        )
     };
 };
 

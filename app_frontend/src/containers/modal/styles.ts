@@ -1,6 +1,6 @@
 import React from 'react';
+import reducers from 'reducers';
 import * as Effects from '../modal/Effects';
-
 
 
 export let optionsModalStyles = {
@@ -116,13 +116,26 @@ let getModalEffect =()=> {
 };
 
 
-export let getDropImageStyles = ()=>{
+export let getDropImageStyles = () => {
         if (window.matchMedia("(min-width: 980px)").matches) {
             return desktopModalStyles;
         } else {
             return mobileImageModalStyles;
         } 
     };
+
+
+export const getImageViewStyles = () =>{
+        return {
+            content : {
+                margin : '0',
+                height :'100%',
+                overflow : 'none',   
+                border : '1px solid rgba(0, 0, 0, 0.5)',     
+                backgroundColor : 'rgba(0, 0, 0, 0.5)',  
+            }
+        }
+    }
 
 let desktopPasswordStyles = {
         content: {

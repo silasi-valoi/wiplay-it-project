@@ -1,21 +1,15 @@
 
 import React, { Component } from 'react';
-import {PartalNavigationBar,
-        NavigationBarBottom,
-        NavigationBarBigScreen} from "templates/navBar";
+
 import  MainAppHoc from "containers/main/index-hoc";
 import {store} from "store/index";
 import {getAboutInfo} from "dispatch/index"
+import { convertFromRaw } from 'utils';
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {Editor} from 'draft-js';
-import Helper from 'utils/helpers';
-
-const helper = new Helper();
-
 
 class  AboutContainer extends Component  {
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -23,6 +17,10 @@ class  AboutContainer extends Component  {
         this.state = { 
             pageName : "About", 
         };       
+    }
+
+    static pageName(){
+        return "About"
     }
     
     public get isMounted() {
@@ -56,16 +54,10 @@ class  AboutContainer extends Component  {
     }
 
     render(){
-        let props = {...this.props, ...this.state}
-        let isAuthenticated = props['isAuthenticated'];
+        let props = {...this.props, ...this.state};
 
         return(
             <div className="app-box-container">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props}/>
-                {isAuthenticated &&
-                    <NavigationBarBottom {...props}/> 
-                }
                 <div className="about-page">
                     <AboutComponent {...props}/>
                 </div>
@@ -84,7 +76,7 @@ export const AboutComponent = props => {
     return(
         <div className="about-container">
             {about && about.map( (about, index)=>{
-                let editorState = helper.convertFromRaw(about.about_text)
+                let editorState = convertFromRaw(about.about_text)
                 return(
                     <div key={index} className="about-contents">
                         <ul className="about-info-title-box">
@@ -95,6 +87,7 @@ export const AboutComponent = props => {
 
                         <div className="about-info-box">
                             <Editor
+                                onChange={()=> void {}}
                                 blockRendererFn={pageMediaBlockRenderer}
                                 editorState={editorState} 
                                 readOnly={true} 

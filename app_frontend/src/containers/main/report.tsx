@@ -1,9 +1,9 @@
 
 import React, { Component } from 'react';
-import {HelpPageNavBar} from "templates/navBar";
+import { HelpPageNavBar } from 'templates/navigations/nav-bar-partial';
 import MessageFormContainer from 'containers/main/message';
 import MainAppHoc from "containers/main/index-hoc";
-import Apis from 'utils/api';
+import {Apis} from 'api';
 
 
 class ReportContainer extends Component{
@@ -14,6 +14,10 @@ class ReportContainer extends Component{
             pageName : "Report", 
         };       
     };
+
+    static pageName(){
+        return "Report"
+    }
 
     componentDidMount() {
         

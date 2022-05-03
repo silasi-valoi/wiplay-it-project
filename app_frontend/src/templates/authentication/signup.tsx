@@ -9,33 +9,32 @@ import { NonFieldErrors,
 import { ToogleAuthFormBtn, 
          RegistrationSubmitBtn,
          SpinLoader} from  'templates/authentication/utils';
+import PhoneInput from 'react-phone-input-2';
 
 
 export const  SignUpForm = props => {
-    const {validateForm} = props;
+    const authForm = props.authForm;
+    
     let { 
           submitting,
           form,
           onSignUpForm,
-          formName,
-          formIsValid,
-          isSocialAuth} =  props.authForm;
+          isSocialAuth} = authForm;
 
     form = form && form.signUpForm;
     if (!form) return null;
 
-    let error = form['error']; 
-    
-    formIsValid = onSignUpForm? validateForm(form, formName):false;
+    let error = form['error'];
     
     const toggleSignUpFormProps = {
             ...props,
-            toggleBtnName:'Cancel',
-            toggleFormProps:{
+            toggleBtnName : 'Cancel',
+            toggleFormProps : {
                 value : false,
-                formName:'signUpForm',
+                formName : 'signUpForm',
             }
         };
+
     const onSubmitStyles = props['onSubmitStyles']
     
     return(
@@ -48,21 +47,7 @@ export const  SignUpForm = props => {
                         className="fieldset-signup" >
 
                     <div className="sign-up-box">
-                        <div className="country-select-box">
-                            <CountryFieldErrors {...error}/>
-                         
-                            <div className="country-select">
-                                <CountryDropdown
-                                    value={form.country}
-                                    labelType="full"
-                                    valueType="short"
-                                    priorityOptions={["ZA"]}
-                                    showDefaultOption={true}
-                                    onChange={(value) => props.selectCountry(value)}
-                                />
-                            </div>
-                        </div>
-            
+                                   
                         <div className="name-fields">
                             <div className="username-fields">
                                 <div className="name-field-box1 auth-input-field">
@@ -100,25 +85,46 @@ export const  SignUpForm = props => {
                                     <NonFieldErrors {...error}/>
                                 </div>
                             }
-                                               
+                          
+                            {props.withPhoneNumber &&
+                                <div className='phone-number-box auth-input-field'>
+                                    <span  onClick={props.toogleInput}>
+                                        Register using your email address
+                                    </span>
+                                    <PhoneInput
+                                        country={'za'}
+                                        value={form.phone_number}
+                                        onChange={(phoneNumber, phoneNumberInfo)=> {
+                                            props.handleCountry(phoneNumber, phoneNumberInfo)
+                                        }}
+                                    />
+                                </div>
 
-                            <div className="email-box auth-input-field">
-                                <input
-                                    placeholder=""
-                                    className="email"
-                                    type="text"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={props.handleFormChange}
-                                    required 
-                                />
-                                <span className="floating-label">Email Address</span>
-                            </div>
+                                ||
+
+                                <div className="email-box auth-input-field">
+                                    
+                                    <span  onClick={props.toogleInput}>
+                                        Register using your phone number
+                                    </span>
+                                    <input
+                                        placeholder=""
+                                        className="email"
+                                        type="text"
+                                        name="email"
+                                        value={form.email}
+                                        onChange={props.handleFormChange}
+                                        required 
+                                    />
+                                    <span className="floating-label">Email Address</span>
+                                </div>
+                            }
                         </div>
 
                         <div className="password-fields signup-fields">
                             <div className="password-box auth-input-field">
                                 <input
+                                    autoComplete='true'
                                     placeholder=""
                                     className="password"
                                     type="password"

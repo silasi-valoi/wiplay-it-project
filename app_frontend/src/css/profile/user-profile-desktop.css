@@ -4,6 +4,7 @@
   
  
     .profile-page {
+        border: px solid red;
         background : #F9F7F7;
         margin     : auto;
         width      : 100%;
@@ -170,7 +171,7 @@
         border-bottom : 1px solid  #D5D7D5; 
         background : #fff; 
         margin-top : 18px; 
-
+        
         /*
         -webkit-box-shadow: -2px 8px 18px -5px rgba(138,138,138,1);
         -moz-box-shadow: -2px 8px 18px -5px rgba(138,138,138,1);
@@ -185,6 +186,7 @@
     }
 
     .user-activities-title-box{
+        padding-left : 10px;
         border-bottom :  1px solid  #D5D7D5; 
     }
 
@@ -197,6 +199,7 @@
         /*border-bottom : 2px solid #A33F0B;*/
         margin-right  : 14px;
         margin-bottom : 5px;
+        margin-left : 15px;
     }
 
     .activities {
@@ -210,12 +213,15 @@
     }
 
 
-    .activities-counter {
-        border     : 1px solid #D5D7D5;
+    .items-count {
         background : white;
         padding    : 4px 10px; 
     }
 
+    .profile-activites {
+        border-top : 1px solid  #D5D7D5; 
+        padding : 0 15px;
+    }
    
 
     #with-shaidos  {
@@ -241,9 +247,6 @@
         border-radius  : 10px; 
     }
 
-
-    
-
     .user-name-container {
         margin-left : 7px;
         margin-top  : 7px;
@@ -266,52 +269,55 @@
         display     : flex; 
     }
 
-.user-follow-box {
-    border : 1px solid black;
-}
+    .user-follow-box {
+        border : 1px solid black;
+    }
 
-.profile-name-box {
-     border:px solid red;
-     width:100%;
-  }
+    .profile-name-box {
+        border:px solid red;
+        width:100%;
+    }
 
-.profile-name-box {
-    border: px solid red;
-}
+    .profile-name-box {
+        border: px solid red;
+    }
 
+    .name {
+        font-weight: 600;
+        font-family: 'Kanit';
+        font-size: 13px;
+        color: black;
+        border: px solid blue;
+        line-height: 2;
+    }
 
-.name {
-    
-    font-weight: 600;
-    font-family: 'Kanit';
-    font-size: 13px;
-    color: black;
-    border: px solid blue;
-    line-height: 2;
+    .edit-user-photo {
+        font-size: 13px;
+        color: black;
+        width: 70px;
+        height: 30px;
+    }
 
-}
-.edit-user-photo {
-  font-size: 13px;
-  color: black;
-  width: 70px;
-  height: 30px;
-}
+    .edit-user-name {
+        font-size: 10px;
+        color: #615f5e;
+        width: 70px;
+        height: 30px;
+        background: white;
+        border: none;
+        box-shadow: none;
+    }
 
+    .image-view-box {
+	    width : 25%;
+	    height : 45%;
+	    margin : 10% 37.5%;
+	    border-radius : 150%; 
+    }
 
-.edit-user-name {
-  font-size: 10px;
-  color: #615f5e;
-  width: 70px;
-  height: 30px;
-  background: white;
-  border: none;
-  box-shadow: none;
-}
-
-.edit-user-name {
-  
-}
-
+    .image-view-box  img {
+	    border-radius :150%;
+    }
 
 }
 

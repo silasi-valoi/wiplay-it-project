@@ -31,7 +31,6 @@ export const NavBar = props => {
 
     const _authenticationProps:object = {
             ...authenticationProps,
-            ...props
         };
     
     return (

@@ -30,7 +30,6 @@ import BookmarkContainer from 'containers/main/bookmarks';
 
 import ReportContainer from 'containers/main/report';
 import NotFoundPage from 'containers/main/page-not-found';
-import {store} from "store/index";
 
 
 export const history = createBrowserHistory();
@@ -44,8 +43,8 @@ function App() {
         <div>
             <Switch>
                 <Route exact path="/" component={HomePage}/>
-                <Route path="/profile/:id/:slug/" component={UserProfileContainer}/>
-                <Route path="/question/:slug/:id/" component={QuestionPage}/>
+                <Route path="/profile/:slug/" component={UserProfileContainer}/>
+                <Route path="/question/:slug/" component={QuestionPage}/>
                 <Route path="/user/registration/" component={AuthenticationPage}/>
                 <Route path="/registration/account/confirm/:key/" component={AccountEmailConfirmationPage}/>
                 <Route path="/reset/:uid/:token/" component={PasswordChangePage}/>
@@ -54,8 +53,8 @@ function App() {
                 <Route path="/posts/" component={PostListPage}/>
                 <Route path="/answer/:id/" component={AnswerContainer}/>
                 <Route path="/questions/" component={QuestionListPage}/>
-                <Route path="/post/:slug/:id/" component={PostPage}/>
-                <Route path="/edit/profile/:slug/:id/" component={EditProfileRouter}/>
+                <Route path="/post/:slug/" component={PostPage}/>
+                <Route path="/profile/update/:slug/" component={EditProfileRouter}/>
             
                 <Route path="/:slug/answer/" component={QuestionPage}/>
                 <Route path="/feedback/" component={FeedBackContainer}/>

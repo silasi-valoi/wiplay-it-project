@@ -1,0 +1,17 @@
+
+.draft-js-link {
+    color  : #0470F9; 
+    border : px solid black;
+}
+
+.draft-js-link:hover {
+    color  : #0470F9;
+
+}
+
+
+.active {
+    border : 1px solid  #D5D7D5  !important;
+    color  : #A33F0B !important; 
+    border-radius : 40%;
+}

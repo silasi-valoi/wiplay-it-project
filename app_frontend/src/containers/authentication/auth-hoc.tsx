@@ -6,21 +6,22 @@ import { BrowserRouter } from "react-router-dom";
 
 import {matchMediaSize,
         displayErrorMessage, 
-        displaySuccessMessage} from 'utils/helpers';
+        createFormData,
+        displaySuccessMessage} from 'utils';
 import {authenticate} from 'dispatch/index';
-import {closeModals}   from  'containers/modal/helpers';
+import {closeModals}   from  'containers/modal/utils';
 import  * as action  from 'actions/actionCreators';
 import {store} from 'store/index';
 import {history} from 'App';
-import Apis from 'utils/api';
-import Helper from 'utils/helpers';
+import {Apis} from 'api';
 
 import {getFormFields,
         authSubmit,
         validatePhoneNumber,
-        getAuthUrl,
+        updateAuthForm,
         formIsValid,
         constructForm } from 'containers/authentication/utils';
+
 
 
 type Props = {
@@ -77,20 +78,20 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         readonly state: State = {
-            isMounted:false,
-            onScroolStyles :null,
-            canDisplayMessage    : false,
-            message              : null,
-            isConfirmed          : false,
-            authForm             : {},
+            isMounted : false,
+            onScroolStyles : null,
+            canDisplayMessage : false,
+            message : null,
+            isConfirmed  : false,
+            authForm : {},
             passswordChanged     : false, 
-            modalIsOpen:false,
-            defaultFormName:'loginForm',
-            passwordRestAuth:undefined,
-            smsCode              : undefined,
-            formIsValid          : false,
-            successMessage       : null,
-            cacheEntities        : JSON.parse(localStorage.getItem('@@CacheEntities')),
+            modalIsOpen : false,
+            defaultFormName :'loginForm',
+            passwordRestAuth : undefined,
+            smsCode : undefined,
+            formIsValid : false,
+            successMessage : null,
+            cacheEntities : JSON.parse(localStorage.getItem('@@CacheEntities')),
          
         };
 
@@ -105,10 +106,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         public set isMounted(value:boolean) {
             this.isFullyMounted = value;
         }
-
-        private helper:Helper   = new Helper();
-
- 
+       
 
         responseFacebook = (response:object):void => {
             console.log(response)
@@ -131,17 +129,19 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             accessToken && this._SendSocialAuthentication(accessToken, apiUrl)
         };
 
-        _SendSocialAuthentication = (accessToken, apiUrl):void => {
-            this.formConstructor('loginForm');
-
+        _SendSocialAuthentication = (accessToken, apiUrl) : void => {
+            if(this.state.authForm['submitting ']) return 
+            
+            this.formConstructor('loginForm', {onSocialAuth:true});
+            
             const socialLoginProps:object = {
                 isSocialAuth : true,
-                form : this.helper.createFormData({"access_token": accessToken}),
+                form : createFormData({"access_token": accessToken}),
                 formName:'loginForm',
                 apiUrl,
             };
 
-            return store.dispatch<any>(authenticate(socialLoginProps));
+            return store.dispatch<any>(authenticate(socialLoginProps))
         };
 
         componentWillUnmount =()=> {
@@ -173,40 +173,23 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             return closeModals()
         };
 
-        handleResize = () => {
-            let formBox = document.getElementById('form-container');
-        
-            if (formBox) {
-                
-                let formBoxTop = formBox.getBoundingClientRect().top;
-                let clientHeight = window.innerHeight - formBoxTop - 20;
-                console.log(formBox.getBoundingClientRect())
-                console.log(window.innerHeight)
-                if(!this.state['onScroolStyles']){
+        componentDidMount =()=> {
+            this.isMounted = true;
+            this.onAuthStoreUpdate();
+            let state:object = store.getState(); 
+            
+            let entities:object =  state['entities'];
+            let authForm:object = entities['authForm'];
 
-                    setTimeout(()=> {
-                        
-                        let onScroolStyles = {
-                            height : `${clientHeight}px`,
-                            border: '1px solid blue',
-                        };
-                        //this.isMounted && this.setState({onScroolStyles});
-                    }, 100);
+            if (process) {
+                const ENV =  process.env; 
+                authForm = {
+                    facebookLoginId : ENV.FACEBOOK_LOGIN_ID,
+                    googleLoginId : ENV.GOOGLE_LOGIN_ID
                 }
             }
 
-        };
-
-        componentDidMount =()=> {
-                       
-            this.isMounted = true;
-            let storeUpdate = store.getState(); 
-            let {entities} =  storeUpdate;
-            let authForm:object = entities['authForm'];
-           
-            this.setState({authForm})
-            
-            this.onAuthStoreUpdate();
+            store.dispatch<any>(action.toggleAuthForm(authForm))
         };
 
         onAuthStoreUpdate =()=> {
@@ -233,11 +216,20 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
                     delete userAuth['error'];
                 }
-                authForm['submitting'] = userAuth['isLoading'];
+                let authenticating = userAuth['isLoading'];
+                authForm['submitting'] = authenticating;
                 
 
                 if(Object.keys(authForm).length){
-                    this.setState({authForm});
+                    let onSocialAuth = authForm['onSocialAuth'];
+                    const isMobile = matchMediaSize("max-width : 980px");
+
+                    if(isMobile && onSocialAuth && !authenticating) {
+                        authForm['onSocialAuth'] = false
+                        authForm['onLoginForm'] = false;
+                    }
+                
+                    this.setState({authForm : {...authForm}});
                 }
                             
                 this.handlePasswordReset(userAuth);
@@ -250,7 +242,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
 
         
         handleConfirmationResend(userAuth:object){
-            
             if (!userAuth['confirmationResendAuth']) {
                 return;
             }
@@ -271,8 +262,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                     this.formConstructor('phoneNumberConfirmationForm');
                 }
             }
-            
-            
         };
         
         handlePasswordReset = (userAuth:object):void => {
@@ -314,7 +303,6 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         };
 
         updateSuccessMessage(successMessage:string, passwordRestAuth:object){
-
             let authForm:object = this.state['authForm']; 
             
             authForm['successMessage'] = successMessage;
@@ -378,49 +366,30 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             let form:object = authForm['form'];
             let formName = authForm['formName'];
 
-            let _form:object = form && form[formName];
-            
-             
-            if (_form) {
+            form = form && form[formName];
+                         
+            if (form) {
 
                 let name:string = event.target['name'];
                 let data:string = event.target['value'];
                                
-                form[formName][name] = data;
+                form[name] = data;
+                updateAuthForm(this, form, formName); 
            
-                store.dispatch<any>(action.toggleAuthForm({form, formName}))
             }
         };
 
-        selectCountry = (value):void => {
+        selectCountry = (value) : void => {
             let authForm:object = this.state['authForm'];
             let form:object = authForm['form'];
             let formName = authForm['formName'];
 
             form[formName]['country'] = value;
-
+            
             store.dispatch<any>(action.toggleAuthForm({form, formName}));
         }
-
-        _SetForm = (form:object, formName:string, options?:object):void => {
-           
-            let authForm:object = this.state['authForm'];
-     
-            let currentForm:object = authForm['form'];
-               
-            
-            form = constructForm(form, currentForm, formName);
-            let formOpts:object =  this.getFormOpts(formName, true);
-                
-            if(options){
-                formOpts = {...formOpts, ...options};
-            }
-            
-            store.dispatch<any>(action.toggleAuthForm({form, formName, ...formOpts}));
-
-        };
-
-        getFormOpts = (formName:string, value:boolean):object => {
+       
+        getFormOpts = (formName:string, value:boolean) : object => {
         
             switch(formName){
                 case 'loginForm':
@@ -438,32 +407,32 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                         successMessage,
                         passwordRestAuth,
                         
-                    };
+                    }
                 
                 case 'emailResendForm':
-                    return {onEmailResendForm : value};
+                    return {onEmailResendForm : value}
                        
                 case 'passwordResetSmsCodeForm':
-                    return {onPasswordResetSmsCodeForm: value};
+                    return {onPasswordResetSmsCodeForm: value}
 
                 case 'phoneNumberConfirmationForm':
-                    return {onPhoneNumberConfirmationForm : value};
+                    return {onPhoneNumberConfirmationForm : value}
                        
                 case 'passwordChangeConfirmForm':
-                    return {onPasswordChangeConfirmForm : value};
+                    return {onPasswordChangeConfirmForm : value}
 
                 case 'passwordChangeForm':
-                    return {onPasswordChangeTokenForm : value};
+                    return {onPasswordChangeTokenForm : value}
                   
                 default:
-                    return {};
+                    return {}
             };
         };
         
         formConstructor = (formName:string, options?:object) => {
             let formFields = getFormFields();
             let form:object = formFields[formName];
-            
+                       
             if (formName === 'passwordResetForm' || 
                 formName === 'emailResendForm') {
                 form = formFields['emailForm'];
@@ -484,53 +453,69 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                     form = {...form, ...extraForm};
                     delete options['form'];
                 }
-                          
-                this._SetForm(form, formName, options);
+
+                let formOptions:object =  this.getFormOpts(formName, true);
+                
+                if(options){
+                    formOptions = {...formOptions, ...options};
+                }
+                             
+                updateAuthForm(this, form, formName, formOptions);
+                
             }
         };
+
+        toogleInput = (type:string) => {
+            console.log(type)
+
+        }
 
         toggleAuthForm = (params:object):void => {
-            const authForm = this.state['authForm']
-            const submitting:boolean = authForm && authForm['submitting'];
-
-            if (submitting) return;
-
-            let defaultFormName:string = params['defaultFormName'];
+            const authForm = this.state['authForm'];
+        
+            if (authForm['submitting']) return;
+          
             let formName:string = params['formName'];
-
             let value:boolean = params['value'];
-
+        
             if (value === false ) {
-                this.hideToggledForm(formName);
+                this.hideAuthForm(formName);
 
-                if(defaultFormName) this.formConstructor(defaultFormName); 
-
-            }else{
-                this.formConstructor(params['formName']);
+                let defaultFormName:string = params['defaultFormName'];
+                if(defaultFormName){
+                    console.log("With the default form")
+                   formName = defaultFormName;
+                }else{
+                    return
+                }
             }
+
+            this.formConstructor(formName);
+            
         };
 
-        hideToggledForm = (formName:string) => {
-                                           
-            switch (formName) {
-                case "loginForm":
-                    return store.dispatch<any>(action.toggleAuthForm({onLoginForm: false}));
+        hideAuthForm = (formName:string) => {
+            let formOptions:object;
 
-                case "signUpForm":
-                    return store.dispatch<any>(action.toggleAuthForm({onSignUpForm : false}));
-                 
-                case "passwordResetForm":
-                    
-                    return store.dispatch<any>(
-                        action.toggleAuthForm({onPasswordResetForm:false, onPasswordResetSmsCodeForm:false})
-                        );
+            if (formName === 'loginForm') {
+                formOptions = {onLoginForm: false};
                 
-                case "emailResendForm":
-                    return store.dispatch<any>(action.toggleAuthForm({onEmailResendForm : false}));
+            }else if(formName === 'signUpForm'){
+                formOptions = { onSignUpForm : false };
+
+            } else if(formName === 'passwordResetForm') {
+                formOptions = {
+                    onPasswordResetForm : false,
+                    onPasswordResetSmsCodeForm : false
+                };
                 
-                default:
-                    return null;
+            } else if(formName === 'emailResendForm'){
+                formOptions = {onEmailResendForm : false};
+
             }
+
+            updateAuthForm(this, {}, formName, formOptions);
+                          
         };
             
         getProps = ():object => {
@@ -589,4 +574,4 @@ const mapStateToProps = (state, ownProps) => {
 const composedHoc = compose(connect(mapStateToProps, mapDispatchToProps),  AuthenticationHoc);
 
 
-export default  AuthenticationHoc;
+export default  composedHoc;

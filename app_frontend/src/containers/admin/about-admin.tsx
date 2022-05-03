@@ -1,26 +1,15 @@
 import React, { Component } from 'react';
-import  * as action  from "actions/actionCreators";
-import { Link } from "react-router-dom";
 import {store } from "store/index";
 import { OpenEditorBtn  } from "templates/buttons";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {Editor} from 'draft-js';
-import * as checkType from 'helpers/check-types'; 
-import {PageErrorComponent} from "templates/partials";
-import Apis from 'utils/api';
+import {Apis} from 'api';
 import {UPDATE_ABOUT, CREATE_ABOUT} from 'actions/types';
-import {getAdmin}  from "dispatch/index"
-import Helper from 'utils/helpers';
-import  AjaxLoader from "templates/ajax-loader";
-import GetTimeStamp from 'utils/timeStamp';
-
+import { convertFromRaw } from 'utils';
 import  MainAppHoc from "containers/main/index-hoc";
-
-const helper   = new Helper();
 
 class AboutAdminPage extends Component {
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -112,7 +101,6 @@ class AboutAdminPage extends Component {
         
         let props = this.getProps();
   
-        let entities  = props['entities'] ;
         
                     
         return (
@@ -124,9 +112,6 @@ class AboutAdminPage extends Component {
         );
     };
 };
-
-
-
 
 
 export default  MainAppHoc(AboutAdminPage);
@@ -160,11 +145,8 @@ export const AboutAdminComponent = props => {
         
     };
 
-    console.log(props ,about)
     let createAboutProps = EditAboutProps();
-    console.log(createAboutProps)
-    
-    
+       
     return(
         <div className="about-admin-contents" id="about-admin-contents">
             <div className="">
@@ -175,7 +157,7 @@ export const AboutAdminComponent = props => {
                 
                 let editAboutProps = EditAboutProps(about);
               
-                let editorState = helper.convertFromRaw(about.about_text)
+                let editorState = convertFromRaw(about.about_text)
                 if (!editorState) return null;
 
                 return(
@@ -189,6 +171,7 @@ export const AboutAdminComponent = props => {
 
                         <div className="about-info-box">
                             <Editor
+                                onChange={()=> void {}}
                                 blockRendererFn={pageMediaBlockRenderer}
                                 editorState={editorState} 
                                 readOnly={true} 

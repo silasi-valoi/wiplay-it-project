@@ -1,86 +1,24 @@
 
 import React from 'react';
-import {  Link, BrowserRouter } from "react-router-dom";
+import {  BrowserRouter } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
 import * as Icon from 'react-feather';
 import {Redirect} from './utils';
-import { OpenAuthModalBtn,
-         OpenUsersModalBtn,
-         ModalCloseBtn,
-         LinkButton,
-         OpenEditorBtn  } from "templates/buttons";
+import { OpenUsersModalBtn,
+         ModalCloseBtn  } from "templates/buttons";
 import { Modal}   from  "containers/modal/modal-container";
 
-import Apis from 'utils/api';
-import { closeModals}   from  'containers/modal/helpers';
-import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
+import { closeModals}   from  'containers/modal/utils';
 
-import { history } from "App"
-
-
-
-let editorLinkMobileStyles = {
-        background : '#A33F0B !important',
-        color      : '#fefefe', 
-        border     : '1px solid blue',
-        marginTop  : '7px',  
-        fontWeight : 'bold',
-        fontSize   : '12px',
-        display    : 'flex',
-        maxWidth   : '100%',
-        width      : '100px', 
-        
-    }
-
-let editorLinkDesktopStyles = {
-       background  : '#A33F0B',
-       color       : '#fefefe',
-       height      : '30px',
-       margin      : '15px 7px 0',
-       fontWeight  : 'bold',
-    }
-
-export const createPostProps = {
-        objName     : 'Post',
-        linkName    : 'Add Post',
-        isPost      : true,
-        withTextArea: true,
-        editorPlaceHolder : `Add Post...`,
-        className   : "create-post-btn btn",
-        editorLinkDesktopStyles,
-        editorLinkMobileStyles,
-        apiUrl : Apis.createPostApi(),
-        actionType: CREATE_POST,
-    };
-
-export const createQuestionProps = {
-        objName      : 'Question',
-        isPost       : true,
-        withTextArea :true,
-        linkName     : "Ask Question",
-        editorPlaceHolder : `Add Question...`,
-        className    : "create-question-btn btn",
-        editorLinkMobileStyles,
-        editorLinkDesktopStyles,
-        actionType :  CREATE_QUESTION,
-        apiUrl  : Apis.createQuestionApi()
-    };
-
-let authenticationProps = {
-        authenticationType : 'Login',
-        linkName  : "Login/Register",
-        modalName : 'authenticationForm',
-};
 
 export const NavBarMenuItems = props => {
     let {currentUser, isAuthenticated} = props;
     let profile = currentUser && currentUser.profile;
           
-    let state = {userProfile : currentUser, isAuthenticated};
+    let state = {id : currentUser.id, isAuthenticated};
     
-    let pathToProfile = currentUser && `/profile/${currentUser.id}/${currentUser.slug}/`;
+    let pathToProfile = currentUser && `/profile/${currentUser.slug}/`;
     let toProfileProps = {pathname:pathToProfile, state};
-
   
     return(
         <BrowserRouter>
@@ -213,7 +151,7 @@ export const ModalMenu = props =>{
 
 
 export const ModalMenuToggle = props => {
-    let {isAuthenticated, currentUser, logout} = props;
+    let {isAuthenticated, currentUser} = props;
     if (!currentUser) return null;
     if (!isAuthenticated) return null;
 
@@ -329,9 +267,8 @@ export const NavigationBarBottom = MatchMediaHOC(
 
 export const EditProfileNavBar = props  => {
 
-    let {submitting, userProfile } = props;
+    let {submitting } = props;
     let submitButtonStyles = submitting?{opacity:'0.60'}:{};
-    let fieldSetStyles     = submitting? {opacity:'0.60'}:{};
 
     const BackBtn = () => {
         let backButton;
@@ -381,7 +318,7 @@ export const EditProfileNavBar = props  => {
 
 
 
-export const CustomBackBtn = props => {
+export const CustomBackBtn = () => {
 
     return(
         <button type="button" 
@@ -398,7 +335,7 @@ export const CustomBackBtn = props => {
 
 
 
-export const HelpPageNavBar = props => {
+export const HelpPageNavBar = () => {
         
         
     return(
@@ -442,7 +379,7 @@ const HelpNavBarMenuItems = () => {
 };
 
 
-const BigScreenHelpMenu = props => {
+const BigScreenHelpMenu = () => {
  
     return(
         <div className="">
@@ -453,7 +390,7 @@ const BigScreenHelpMenu = props => {
 
 
 
-const SmallScreenHelpMenu = props => {
+const SmallScreenHelpMenu = () => {
  
     return(
         <div className="help-dropdown-box">
@@ -475,7 +412,7 @@ const SmallScreenHelpMenu = props => {
     )
 };
 
-const HelpMenu         = MatchMediaHOC(BigScreenHelpMenu,'(min-width: 980px)');
+const HelpMenu = MatchMediaHOC(BigScreenHelpMenu,'(min-width: 980px)');
 const HelpDropDownMenu = MatchMediaHOC(SmallScreenHelpMenu,'(max-width: 980px)');
 
 

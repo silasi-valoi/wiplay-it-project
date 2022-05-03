@@ -13,12 +13,9 @@ import {
 
 import  * as types  from 'actions/types';
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
-import Helper from 'utils/helpers';
+import { convertFromRaw } from 'utils';
 import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
-import Apis from 'utils/api';
-
-
-const helper   = new Helper(); 
+import {Apis} from 'api';
 
 
 export const AnswersComponent = props => {
@@ -28,31 +25,20 @@ export const AnswersComponent = props => {
         index,
         answer, 
         answerListById,
-        newAnswerListById,
-        isNewAnswers,
         isQuestionBox,
-        isProfileBox, 
         isAuthenticated,
         currentUser } = props;
 
     if(!answer) return null;
    
    
-    let optionsBtnStyles = {
-         fontSize   : '8px',
-         background : 'white',
-         fontFamily : 'Mukta',
-         fontWeight : 'bold',
-         color      : '#4A4A4A',
-         margin     : '0 0 2px'
-    };
 
     let editorState;
 
     let answerText:string = answer.answer ||  answer.add_answer
 
     if (answerText) {
-        editorState  = helper.convertFromRaw(answerText);
+        editorState  = convertFromRaw(answerText);
     }
 
     let usersById =  `answerUpVoters${answer.id}`;
@@ -61,10 +47,6 @@ export const AnswersComponent = props => {
                      && `${answer.upvotes} Upvoters` 
                      || `${answer.upvotes} Upvoter`;
    
-    let state:object = {
-          answer,
-          usersIsFor : 'answerUpVoters', 
-        }
   
     let answerUpvotersProps:object = {
             apiUrl,
@@ -137,12 +119,6 @@ export const AnswersComponent = props => {
     let itemsName:string = comments?.length > 1  && "Comments" ||
                         comments?.length == 1 && "Comment" || '';
 
-    let itemsProps:object = {
-            itemsName,
-            items: comments,
-            itemsById : `commentsPost${answer.id}`,
-            getItemsList : props.getCommentList
-        }
 
     const btnsList   = { 
             authorCounter : AnswerUpVotersBtn,
@@ -163,8 +139,8 @@ export const AnswersComponent = props => {
     }
     
     const linkProps:object = {
-        linkPath:`/question/${question['slug']}/${question['id']}/`,
-        state:{question},
+        linkPath:`/question/${question['slug']}/`,
+        state:{id : question['id']},
     }
 
                                            
@@ -188,6 +164,7 @@ export const AnswersComponent = props => {
             <div className="answer">
                 {editorState &&
                     <Editor
+                        onChange={()=> void {}}
                         blockRendererFn={pageMediaBlockRenderer}
                         editorState={editorState}
                         readOnly={true}

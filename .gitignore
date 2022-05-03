@@ -18,6 +18,7 @@ app_env/
 
 .db.sqlite3
 node_modules/
+app_frontend/src/config.json
 
 #--Frontend--
 

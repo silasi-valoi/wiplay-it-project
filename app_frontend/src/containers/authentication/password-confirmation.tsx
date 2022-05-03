@@ -1,22 +1,20 @@
 import React, { Component } from 'react';
-import {X} from 'react-feather'
 
 import {PasswordConfirmForm} from 'templates/authentication/password-change'
-import { closeModals}   from  'containers/modal/helpers';
-import { ModalCloseBtn } from "templates/buttons";
+import { closeModals}   from  'containers/modal/utils';
 import AuthenticationHoc from 'containers/authentication/auth-hoc'
 
 
 import {formIsValid} from 'containers/authentication/utils';   
 
 import {store} from "store/index";
+import { authenticationSuccess } from 'actions/actionCreators';
 //import Apis from 'utils/api';
 
 
 
 export class PasswordConfirmationPage extends Component{
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -64,6 +62,20 @@ export class PasswordConfirmationPage extends Component{
         this.unsubscribe = store.subscribe(onStoreChange);
     };
 
+
+    handlePasswordConfirmSuccess(loginAuth:object){
+        if (!this._isMounted) return;
+        
+        let isLoggedIn = loginAuth && loginAuth['isLoggedIn'];
+        let oldPasswordConfirmed:boolean = this.state['oldPasswordConfirmed']
+                                                                             
+        if(isLoggedIn && !oldPasswordConfirmed){
+            this.setState({oldPasswordConfirmed:true});
+            this.togglePasswordChangeForm();
+            
+        }
+    };
+
     handlePasswordRestSuccess(passwordResetAuth){
         if (!passwordResetAuth) return;
         
@@ -78,25 +90,12 @@ export class PasswordConfirmationPage extends Component{
         }
     };
 
-    handlePasswordConfirmSuccess(loginAuth:object){
-        if (!this._isMounted) return;
-        
-        let isLoggedIn = loginAuth && loginAuth['isLoggedIn'];
-        let oldPasswordConfirmed:boolean = this.state['oldPasswordConfirmed']
-                                                                             
-        if(isLoggedIn && !oldPasswordConfirmed){
-            this.setState({oldPasswordConfirmed:true});
-            this.togglePasswordChangeForm();
-            delete loginAuth['isLoggedIn'];
-        }
-    };
-
     togglePasswordConfirmForm() : void {
         let currentUser = this.props['currentUser'];
 
         this.setState({currentUser, oldPasswordConfirmed:false});
 
-        this._SetForm('loginForm', {from :{email:currentUser['email']}});
+        this._SetForm('loginForm', {form :{email:currentUser['email']}});
                
     };
 
@@ -108,11 +107,28 @@ export class PasswordConfirmationPage extends Component{
         let old_password = form && form['password'];
 
         if (old_password) {
+            this.cachePassword({old_password});
+            
             closeModals(true);
             const toggleForm:Function = this.props['togglePasswordChangeForm'];
-            toggleForm({old_password});            
+            
+            setTimeout(() => {
+                toggleForm('passwordChangeForm', {old_password});    
+            }, 500);
+                      
         }
     };
+
+    cachePassword(passswordParams:object) {
+        let timeStamp = new Date();
+                
+        let passwordConfirmAuth = {
+                timeStamp   : timeStamp.getTime(),
+                passwordValidated : true,
+                ...passswordParams,
+        };
+        store.dispatch<any>(authenticationSuccess({passwordConfirmAuth}));
+    }; 
 
     _SetForm(formName:string, params?:object){
         const _formConstructor:Function = this.props['formConstructor']
@@ -156,15 +172,9 @@ export class PasswordConfirmationPage extends Component{
 
     render(){
         let props = this.getProps();
-        
+                
         return(
             <div className="password-confirm-box">
-                <div className="authentication-dismiss">
-                    <ModalCloseBtn>
-                        <X id="feather-x" size={20} color="red"/>
-                    </ModalCloseBtn>
-                </div>
-
                 <PasswordConfirmForm {...props}/>
             </div>
         )

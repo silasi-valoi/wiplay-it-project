@@ -6,7 +6,6 @@ import {handleSubmit,
         getCurrentUser,
         getPost,
         getUserList,
-        getAboutInfo,
         getUserProfile,
         getPostList,
         getQuestion,
@@ -17,7 +16,7 @@ import {handleSubmit,
         authenticate }  from 'dispatch/index';
 
 import  * as action  from 'actions/actionCreators';
-import { closeModals}   from  'containers/modal/helpers';
+import { closeModals}   from  'containers/modal/utils';
 import NavBarSmallScreen from 'templates/navigations/nav-bar-small';
 import NavBarBigScreen from 'templates/navigations/nav-bar-big';
 import PartalNavBar from 'templates/navigations/nav-bar-partial';
@@ -26,24 +25,23 @@ import { NavBarBottom } from 'templates/navigations/nav-bar-partial';
 import {AlertComponent} from 'templates/partials';
 
 import {Modal}   from  "containers/modal/modal-container";
-
+import { isFunction } from 'typeChecker';
 import {store} from 'store/index';
 import {history} from "App";
-import Apis from 'utils/api';
-import {isAuthenticated, isAdmin, getUserFromCache} from 'utils/authService';
-import Helper, { IsBookMarked,
-                 displayAlertMessage,
-                 displaySuccessMessage,
-                 displayErrorMessage } from 'utils/helpers';
+import {Apis} from 'api';
+import {isAuthenticated, isAdmin} from 'authService';
+import { IsBookMarked,
+         createFormData,
+         displayAlertMessage,
+         displaySuccessMessage,
+         displayErrorMessage } from 'utils';
 
-const helper   = new Helper();
 
 
 export function MainAppHoc(Component) {
 
     return class MainApp extends Component {
         private isFullyMounted:boolean = false;
-        private subscribe;
         private unsubscribe;
 
 
@@ -122,7 +120,7 @@ export function MainAppHoc(Component) {
         
         
 
-        static getDerivedStateFromProps(props, state) {
+        static getDerivedStateFromProps() {
             //console.log(state, props)
             return null
         }
@@ -133,7 +131,7 @@ export function MainAppHoc(Component) {
             
         };
 
-        componentDidUpdate(prevProps, nextProps) {
+        componentDidUpdate() {
         };
       
                 
@@ -141,7 +139,7 @@ export function MainAppHoc(Component) {
             this.isMounted = true;
             this.onStoreUpdate() //Subscribe on store change 
       
-            window.onpopstate = (event) => {
+            window.onpopstate = () => {
                 // Everytime a browser back button is hit, 
                 // Close modals if any is open 
                 
@@ -171,29 +169,18 @@ export function MainAppHoc(Component) {
                 
                 
                 let storeUpdate = store.getState();
-                var timeStamp = new Date();
                 let { entities } = storeUpdate;
                 
-                let index = entities['index'];
                 let userAuth = entities['userAuth']; 
                 let currentUser = entities['currentUser']
                 let modal = entities['modal'];
-                let question = entities['question'];
-                let userProfile = entities['userProfile'];
                 let message = entities['message'];
                 let alertMessage = entities['alertMessage'];
                 let errors = entities['errors']
-
                 
                 let editorModal      = modal['editor']; 
-                let optionsModal     = modal['optionsMenu'];
                 let dropImageModal   = modal['dropImage'];
-                let userListModal    = modal['userList'];
-                let smsCodeFormModal = modal['smsCodeForm']; 
-                              
-                if (userAuth) {
-                    this.handleAuth(userAuth);
-                }
+                      
 
                 if (errors && errors.error) {
                     
@@ -204,6 +191,10 @@ export function MainAppHoc(Component) {
                     }else{
                         this._HandleErrors(errors)
                     }
+                }
+
+                if (userAuth) {
+                    this.handleAuth(userAuth);
                 }
 
                 this.handleAlertMessage(alertMessage);
@@ -234,6 +225,7 @@ export function MainAppHoc(Component) {
                 this.handleUserLogout(userAuth);
                 this.handlePasswordChangeSuccess(userAuth);
                 this.handleAccountConfirmation(userAuth);
+                this.handlePhoneNumberOrEmailSuccess(userAuth);
             }
         };
 
@@ -271,16 +263,16 @@ export function MainAppHoc(Component) {
         handlePasswordChangeSuccess(userAuth:object){
             if (!userAuth['passwordChangeAuth'])return;
 
-            let passwordChangeAuth = userAuth['passwordChangeAuth']
+            let passwordChangeAuth:object = userAuth['passwordChangeAuth'];
              
-                                                      
+                     
             if(passwordChangeAuth['successMessage']){
-                displaySuccessMessage(this, passwordChangeAuth['successMessage'])
-                delete passwordChangeAuth['successMessage'];
-        
+                displaySuccessMessage(this, passwordChangeAuth['successMessage']);
+                delete userAuth['passwordChangeAuth'];
+                
                 let passwordConfirmAuth = {
-                        passwordValidated : false,
-                        old_password : undefined,
+                    passwordValidated : false,
+                    old_password : undefined,
                 };
 
                 this.setState({passwordChanged : true,})
@@ -339,9 +331,9 @@ export function MainAppHoc(Component) {
             let question:object = data && data['question'];
 
             if (question) {
-                let path:string = `/question/${question['slug']}/${question['id']}/`;
+                let path:string = `/question/${question['slug']}/`;
                 let state:object = {
-                    question,
+                    id : question['id'],
                     recentlyCreated : true
                 };
                 
@@ -355,9 +347,9 @@ export function MainAppHoc(Component) {
             let post:object = data && data['post'];
 
             if (post) {
-                let path:string = `/post/${post['slug']}/${post['id']}/`;
+                let path:string = `/post/${post['slug']}/`;
                 let state:object = {
-                    post, 
+                    id : post['id'], 
                     recentlyCreated : true
                 }
                 history.push(path, state);
@@ -384,8 +376,8 @@ export function MainAppHoc(Component) {
 
         clearItemFromStore =()=> {
             //Remove item from cache and store
-            let storeUpdate = store.getState();
-            let {entities} = storeUpdate;
+            
+            let {entities} = this.props;
 
             let cacheEntities = this._cacheEntities();
                             
@@ -450,7 +442,7 @@ export function MainAppHoc(Component) {
             }
         };
 
-        handleUserLogin(userAuth:object){
+        handleUserLogin = (userAuth:object) => {
             if (!userAuth || !userAuth['loginAuth'])return;
 
             let loginAuth = userAuth['loginAuth'];
@@ -460,14 +452,11 @@ export function MainAppHoc(Component) {
             if(isLoggedIn && !isAuthenticated){
                 this.isMounted && this.setState({isAuthenticated:true})
                 closeModals(true);
-
-                this.pushToRouter({linkPath:'/'});
             }
         };
 
-        handleAccountConfirmation =(userAuth:object) => {
+        handleAccountConfirmation = (userAuth:object) => {
             let loginAuth:object = userAuth['loginAuth'];
-            let userIsConfirmed:boolean = this.state['userIsConfirmed'];
             if(!loginAuth) return;
 
 
@@ -480,8 +469,20 @@ export function MainAppHoc(Component) {
                 displaySuccessMessage(this, successMessage);
             }
         };
-   
 
+        handlePhoneNumberOrEmailSuccess = (userAuth:object) => {
+            const phoneNumberOrEmailAuth:object = userAuth['phoneNumberOrEmailAuth'];
+
+            if (!phoneNumberOrEmailAuth) return;
+                       
+            if (phoneNumberOrEmailAuth['detail']) {
+
+                displaySuccessMessage(this, phoneNumberOrEmailAuth['detail']);
+                    
+                delete phoneNumberOrEmailAuth['detail'];
+            }
+        };
+   
         loginUser = () => {
             let modalProps =  {
                 authenticationType : 'Login',
@@ -490,7 +491,6 @@ export function MainAppHoc(Component) {
 
             return Modal(modalProps);
         };
-
 
         logout= () => {
             let apiUrl:string   =  Apis.logoutUser();
@@ -574,7 +574,7 @@ export function MainAppHoc(Component) {
                 return this.removeBookmark(params)
             }
                      
-            params['formData'] = helper.createFormData({data});
+            params['formData'] = createFormData({data});
             this.props.submit(params);
         };
 
@@ -585,25 +585,29 @@ export function MainAppHoc(Component) {
             switch(objName){
                 case 'Question':
                     let questionFollowers = obj.followers
-                    return helper.createFormData(
+                    return createFormData(
                                             {followers : questionFollowers}
                                         );
                    
                 case 'UserProfile':
                 case 'UsersList':
                     let userFollowers = obj.profile.followers;
-                    return helper.createFormData(
+                    return createFormData(
                                             {followers:userFollowers}
                                         );
                 default:
                     let upvotes  = obj.upvotes; 
-                    return helper.createFormData({upvotes});
+                    return createFormData({upvotes});
             }
 
         };
     
         getProps():object{
-
+            let pageName:string = "";
+            if (isFunction(Component.pageName)) {
+               pageName = Component.pageName();
+            }
+            
             return {
                 ...this.props,
                 logout                  : this.logout.bind(this),
@@ -613,7 +617,7 @@ export function MainAppHoc(Component) {
                 addBookmark             : this.addBookmark.bind(this),
                 reloadPage              : this.reloadPage.bind(this),
                 pushToRouter            : this.pushToRouter.bind(this),
-                pageName                : Component.pageName(),
+                pageName                :  pageName,
                 ...this.state,
             };
         };
@@ -637,11 +641,10 @@ export function MainAppHoc(Component) {
                         </div>
                         
                         <div>
-                            <fieldset style={ onModalStyles } 
-                                      disabled={props['modalIsOpen']}>
+                            <fieldset style={onModalStyles} disabled={props['modalIsOpen']}>
                                 <NavBarSmallScreen  {...props}/>      
                                 <PartalNavBar {...props}/>
-                                <NavBarBigScreen {...props} />
+                                <NavBarBigScreen {...props}/>
                                 <NavBarBottom {...props}/>
                                 
                                 <Component {...props}/>                    
@@ -658,7 +661,7 @@ export function MainAppHoc(Component) {
 
 
 //binds on `props` change
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch) => {
    
     return {
         getIndex             : (props)      => dispatch(getIndex(props)), 
@@ -679,7 +682,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
 
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
    
     return {
         entities      : state.entities,       

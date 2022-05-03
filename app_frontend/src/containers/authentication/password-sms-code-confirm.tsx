@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import EmailForm, {SmsCodeForm}   from 'templates/authentication/email-form'; 
 import {NavBar, ToogleAuthFormBtn} from 'templates/authentication/utils';
 import { AlertComponent } from 'templates/partials';
-import {OpenAuthModalBtn} from "templates/buttons";
 import {PasswordChangeForm,
         SuccessPasswordChange} from 'templates/authentication/password-change';
 import AuthenticationHoc from 'containers/authentication/auth-hoc'
-import {cacheExpired} from 'utils/helpers';
+import {cacheExpired} from 'utils';
 
-import {authenticationSuccess} from 'actions/actionCreators';
-import {store} from 'store/index';
 
 
 

@@ -34,8 +34,8 @@ export const  EmailFieldErrors = errors => {
 
 
 export const  PhoneNumberFieldErrors = errors => {
-    let error:string[] = errors.phone_nmber;
-
+    let error:string[] = errors?.phone_number;
+    
     if (!error) return null;
 
     return(

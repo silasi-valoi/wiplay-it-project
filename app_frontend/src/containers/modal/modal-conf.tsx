@@ -33,6 +33,22 @@ export const ModalOpener = {
         );
     },
 
+    imageViewModal(modalName:string, contentsProps){
+
+        return ModalManager.open(
+            <ImageViewModal {...contentsProps} onRequestClose={() => true}/>,
+            modalName
+        );
+    },
+
+    draftjsMediaViewModal(modalName, contentsProps){
+        return ModalManager.open(
+            <ImageViewModal {...contentsProps} onRequestClose={() => true}/>,
+            modalName
+        );
+
+    },
+
     userListModal(modalName, contentsProps){
 
         return ModalManager.open(
@@ -194,6 +210,33 @@ export const PasswordConfirmModal = props => {
 
 
 
+export const ImageViewModal = props => {
+
+    let modalProps = {
+        modalStyles    : Styles.getImageViewStyles(),
+        effect         : Effects.ScaleUp,
+        ...props,
+    }; 
+
+    return(
+        <ModalContainer {...modalProps} />
+    ); 
+};
+
+
+export const DraftjsMediaViewModal = props => {
+
+    let modalProps = {
+        modalStyles    : Styles.getImageViewStyles(),
+        effect         : Effects.ScaleUp,
+        ...props,
+    }; 
+
+    return(
+        <ModalContainer {...modalProps} />
+    ); 
+};
+
 
 
 export const DropImageModal = props => {
@@ -209,11 +252,6 @@ export const DropImageModal = props => {
     ); 
 };
 
-
-
-
-
-
 export const UserListModal = props => {
     let modalProps = {
         modalStyles    : Styles.getEditorStyles(),
@@ -225,12 +263,6 @@ export const UserListModal = props => {
         <ModalContainer {...modalProps} />
     ); 
 };
-
-
-
-
-
-
 
 
 export function  ModalContainer(props)  {

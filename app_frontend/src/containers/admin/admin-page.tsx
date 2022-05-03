@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
-import  * as action  from "actions/actionCreators";
-import { Link } from "react-router-dom";
 import {store } from "store/index";
 
-import {PageErrorComponent} from "templates/partials";
-
 import {getAdmin}  from "dispatch/index"
-import{history} from 'App';
-import  AjaxLoader from "templates/ajax-loader";
-import GetTimeStamp from 'utils/timeStamp';
-
 import  MainAppHoc from "containers/main/index-hoc";
 
 
@@ -17,7 +9,6 @@ import  MainAppHoc from "containers/main/index-hoc";
 
 class AdminPage extends Component {
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -111,7 +102,6 @@ class AdminPage extends Component {
         }
 
         let props = this.getProps();
-        let entities   = props['entities'] ;
                       
         return (
             <div style={{paddingTop:'65px'}} className="admin-page" id="admin-page">

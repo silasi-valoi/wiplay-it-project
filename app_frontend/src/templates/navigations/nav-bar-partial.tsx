@@ -37,7 +37,7 @@ const _PartialNavBar = props =>{
       userProfile  = currentUser.profile;
     }
 
-    const _authenticationProps = {...authenticationProps, ...props}
+    const _authenticationProps = {...authenticationProps}
        
     return (
         <nav className="navigation partial-page-navbar fixed-top" 
@@ -90,9 +90,8 @@ export const NavBarBottom = MatchMediaHOC(
                                     
 export const EditProfileNavBar = props  => {
 
-    let {submitting, userProfile } = props;
+    let {submitting } = props;
     let submitButtonStyles = submitting?{opacity:'0.60'}:{};
-    let fieldSetStyles     = submitting? {opacity:'0.60'}:{};
 
     const BackBtn = () => {
         let backButton;
@@ -144,7 +143,7 @@ export const EditProfileNavBar = props  => {
 
 
 
-export const CustomBackBtn = props => {
+export const CustomBackBtn = () => {
 
     return(
         <button
@@ -160,7 +159,7 @@ export const CustomBackBtn = props => {
   );
 }
 
-export const HelpPageNavBar = props => {
+export const HelpPageNavBar = (props) => {
        
     return(
         <nav className="navigation fixed-top" id="help-navigation">
@@ -203,7 +202,7 @@ const HelpNavBarMenuItems = () => {
 };
 
 
-const BigScreenHelpMenu = props => {
+const BigScreenHelpMenu = () => {
  
     return(
         <div className="">
@@ -214,7 +213,7 @@ const BigScreenHelpMenu = props => {
 
 
 
-const SmallScreenHelpMenu = props => {
+const SmallScreenHelpMenu = () => {
  
     return(
         <div className="help-dropdown-box">

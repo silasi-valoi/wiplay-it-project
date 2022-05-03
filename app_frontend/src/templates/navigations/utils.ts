@@ -1,7 +1,7 @@
 import { history } from "App"
-import Apis from 'utils/api';
+import {Apis} from 'api';
 import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
-import { closeModals}   from  'containers/modal/helpers';
+import {closeModals}   from  'containers/modal/utils';
 
 export const Redirect = props => {
     closeModals(true)
@@ -62,7 +62,7 @@ export const createQuestionProps:object = {
     editorLinkMobileStyles,
     editorLinkDesktopStyles,
     actionType :  CREATE_QUESTION,
-    apiUrl  : Apis.createQuestionApi()
+    apiUrl : Apis.createQuestionApi()
 };
 
 export const authenticationProps:object = {

@@ -3,10 +3,8 @@ import styled from 'styled-components'
 import * as Icon from 'react-feather';
 
 import {OpenAuthModalBtn, LinkButton} from "templates/buttons";
-import * as checkType from 'helpers/check-types'; 
-import GetTimeStamp from 'utils/timeStamp';
-import {validateEmail,
-        validatePhoneNumber} from 'containers/authentication/utils';
+import { isString } from 'typeChecker'; 
+import GetTimeStamp from 'timeStamp';
 
 export const ButtonsBox = props => {
              
@@ -53,8 +51,8 @@ const Button = styled['button']`
 
 const AuthorLinkProps = (author:object):object => {
     return{
-        linkPath:`/profile/${author['id']}/${author['slug']}/`,
-        state:{user:author},
+        linkPath:`/profile/${author['slug']}/`,
+        state:{id:author['id']},
     }
 }
 
@@ -117,7 +115,7 @@ export const PageErrorComponent = props => {
        return null;
     }
 
-    if (!error || !checkType.isString(error)){
+    if (!error || !isString(error)){
         return null;
     }
    

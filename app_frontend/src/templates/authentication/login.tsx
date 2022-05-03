@@ -10,23 +10,17 @@ import { RegistrationSubmitBtn,
 
 
 export const  LoginForm = props => {
-    //console.log(props)
-    let { 
-        submitting,
+    
+    let {submitting,
         onSignUpForm,
         onLoginForm,
-        formIsClean,
-        formName, 
         form, 
         isSocialAuth} = props.authForm;
 
-
     form = form && form.loginForm;
     if (!form) return null;
-
     let error = form.error; 
-    formIsClean  = !onSignUpForm? formIsValid(form):false;
-   
+       
     const toggleLoginFormProps:object = {
         ...props,
         toggleBtnName   :'Cancel',
@@ -73,6 +67,7 @@ export const  LoginForm = props => {
 
                         <div className="login-fields auth-input-field">
                             <input
+                                autoComplete='true'
                                 className="login-password-field"
                                 placeholder=""
                                 type="password"

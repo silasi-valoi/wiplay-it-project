@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Registration from 'templates/authentication/index';
 
-import {matchMediaSize, displayErrorMessage, displaySuccessMessage} from 'utils/helpers';
+import { matchMediaSize } from 'utils';
 
 
 type Props = {
@@ -70,6 +70,7 @@ class AuthenticationPage extends React.Component<State, Props> {
         if(!this.isMounted) return null;
 
         let props = this.getProps();
+        
         return(
             <Registration {...props}/>
         )

@@ -1,38 +1,23 @@
 import React from 'react';
-import { BrowserRouter, Link } from "react-router-dom";
-import { MatchMediaHOC } from 'react-match-media';
 import {Editor} from 'draft-js';
 
-import Apis from 'utils/api';
+import {Apis} from 'api';
 import  * as types  from 'actions/types';
-import Helper from 'utils/helpers';
+import { convertFromRaw } from 'utils';
 import {
         DownVotePostBtn,
         UpVotePostBtn,
         OpenOptionlBtn,
         OpenEditorBtn,
-        ChangeImageBtn,
         LinkButton,
         OpenUsersModalBtn,} from 'templates/buttons';
 
-import CommentsBox from "containers/main/comment-page";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
 
 
-const helper   = new Helper();
-
-
 export const PostComponent = props => {
 
-    let optionsBtnStyles = {
-              fontSize   : '8px',
-              background : 'white',
-              fontWeight : 'bold',
-              width      : '40px',
-              color      : '#4A4A4A',
-              margin     : '0 0 2px'
-    }
 
     let {
         index,
@@ -40,25 +25,20 @@ export const PostComponent = props => {
         isAuthenticated,
         currentUser, 
         postById,
-        postListById}     =    props;
+        postListById} = props;
 
     if(!post) return null;
-    let postText:string = post.post || post.add_post;
 
     let editorState;
-    if (postText) {
-        editorState  = helper.convertFromRaw(postText);
+    if (post.post) {
+        editorState = convertFromRaw(post.post);
     }
-   
-    let usersById       = post && `postUpVoters${post.id}`;
-    let apiUrl          = post && Apis.getPostUpVotersListApi(post.id);
+       
+    let usersById = post && `postUpVoters${post.id}`;
+    let apiUrl = post && Apis.getPostUpVotersListApi(post.id);
     let linkName = post.upvotes > 1 && `${post.upvotes} Upvoters`
                                     || `${post.upvotes} Upvoter`;
-
-    let state = {
-            post,
-            usersIsFor : 'postUpVoters', 
-        }
+    
 
     let postUpvotersProps = {
             apiUrl,
@@ -124,18 +104,6 @@ export const PostComponent = props => {
     let UpVoteBtn =  post.upvoted? <DownVotePostBtn {...btnsProps}/>
                : <UpVotePostBtn {...btnsProps}/>
 
-    let comments:object[] = post?.comments;
-    let itemsName:string = comments?.length > 1  && "Comments" ||
-                        comments?.length == 1 && "Comment" || '';
-
-    let itemsProps:object = {
-            itemsName,
-            items: comments,
-            itemsById : `commentsPost${post.id}`,
-            getItemsList : props.getCommentList
-        }
-    
-
     const btnsList   = { 
             authorCounter : PostUpVotersBtn,
             btn1   : UpVoteBtn,
@@ -143,10 +111,6 @@ export const PostComponent = props => {
             btn3   : <OpenOptionlBtn {...btnsProps}/>,
         };
 
-   const userProps  = {
-            obj   : post,
-            currentUser
-        };
     
     const authorProps:object  = {
             author : post.author,
@@ -154,8 +118,8 @@ export const PostComponent = props => {
         };
 
     const linkProps = {
-        linkPath: `/post/${post.slug}/${post.id}/`,
-        state:{post},
+        linkPath: `/post/${post.slug}/`,
+        state:{id:post['id']},
     }
 
     return (
@@ -187,6 +151,7 @@ export const PostComponent = props => {
                     <div className="post-body">
                         {editorState &&
                             <Editor
+                                onChange={()=> void {}}
                                 blockRendererFn={pageMediaBlockRenderer}
                                 editorState={editorState}
                                 readOnly={true}

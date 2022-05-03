@@ -1,8 +1,6 @@
-import Helper, {cacheStoreData} from 'utils/helpers';
+import {cacheStoreData, getDataFromCache} from 'utils';
 import  * as types  from 'actions/types';
 
-
-const helper   = new Helper();
 
 const updateStateEntyties = (stateEntintieKey:string, 
                              action:object, 
@@ -22,11 +20,11 @@ const updateStateEntyties = (stateEntintieKey:string,
 
         }else {
             let newEntitie = CreateNewEntities(action);
-            stateEntintie = {...stateEntintie, ...newEntitie};
+            stateEntintie = { ...stateEntintie, ...newEntitie };
         }
 
     }else{
-        stateEntintie = {...stateEntintie,...payLoad};
+        stateEntintie = { ...stateEntintie, ...payLoad };
     
     }
     
@@ -79,7 +77,6 @@ export const InitialState = ():object => {
 
 export function entities(state:object=InitialState(), action:object):object {
 
-    let newStateEntintie;
 
     const index:number = action['index']    
     const byId:string = action['byId'];
@@ -118,6 +115,39 @@ export function entities(state:object=InitialState(), action:object):object {
 
         case 'AUTH_FORM':
             return updateStateEntyties('authForm', action, state)
+
+        case 'EMAIL_ADDRESS_REMOVE':
+
+            let emailAddress:object[] = payLoad['emailAddress']
+            let currentUser:object = getDataFromCache('currentUser')
+            
+            let user = currentUser['user']
+            
+            if (emailAddress) {
+                user['email_address'] = emailAddress
+            }
+                            
+            action['payLoad']['user'] = user
+            delete action['payLoad']['emailAddress'];
+
+            return updateStateEntyties('currentUser', action, state)
+
+        case 'PHONE_NUMBER_REMOVE':
+
+            let phoneNumbers:Object[] = payLoad['phoneNumbers'];
+            currentUser = getDataFromCache('currentUser');
+            user = currentUser['user'];
+          
+
+            if(phoneNumbers){
+                user['phone_numbers'] = phoneNumbers;
+            }
+
+            action['payLoad']['user'] = user
+            delete action['payLoad']['phoneNumbers'];
+
+            return updateStateEntyties('currentUser', action, state)        
+    
 
         case types.USER_AUTHENTICATION['PENDING'] :
         case types.USER_AUTHENTICATION['SUCCESS']:
@@ -210,7 +240,6 @@ export function entities(state:object=InitialState(), action:object):object {
             
 
         case types.UPDATE_QUESTION['SUCCESS']:
-            let updatedQuestion = payLoad['question'];
             let question:object  = state['question'][byId]
             let questions:[] = state['questions'][byId];
             
@@ -289,7 +318,6 @@ export function entities(state:object=InitialState(), action:object):object {
         case types.CREATE_ANSWER['SUCCESS']:
                
             let newAnswer:object =  payLoad['answer'];
-            let newAnswerList  =  [newAnswer];
             let previousAnswers =  state['answers'][byId];
 
             const answerList:object[] = previousAnswers['answerList'] || [];
@@ -327,7 +355,6 @@ export function entities(state:object=InitialState(), action:object):object {
     
         case types.CREATE_COMMENT['SUCCESS']:
             let newComment = payLoad['comment'];
-            let newComments = [newComment];  
             let previousComments = state['comments'][byId];
       
             let commentList:object[] = previousComments?.commentList || [];
@@ -343,10 +370,10 @@ export function entities(state:object=InitialState(), action:object):object {
             let comments = state['comments'][byId];
 
             if (comments) {
-                comments =   comments.commentList;
-                comments[index] = {...comments[index], ...payLoad['comment']};
+                let commentList = comments.commentList;
+                commentList[index] = {...commentList[index], ...payLoad['comment']};
             
-                payLoad['commentList'] =  comments;
+                payLoad['commentList'] =  commentList;
 
                 delete payLoad['comment'];
             }
@@ -367,7 +394,6 @@ export function entities(state:object=InitialState(), action:object):object {
 
         case types.CREATE_REPLY['SUCCESS']:
             let newReply:object = payLoad['reply'];
-            let newReplies:object[] = [newReply];
 
             let previousReplies = state['replies'][byId];
             
@@ -383,9 +409,9 @@ export function entities(state:object=InitialState(), action:object):object {
             let replies = state['replies'][byId]; 
           
             if (replies) {
-                replies = replies.replyList;
-                replies[index] = {...replies[index], ...payLoad['reply']}
-                payLoad['commentList'] = replies
+                let replyList = replies.replyList;
+                replyList[index] = {...replyList[index], ...payLoad['reply']}
+                payLoad['replyList'] = replyList;
 
                 delete payLoad['reply'];
             }

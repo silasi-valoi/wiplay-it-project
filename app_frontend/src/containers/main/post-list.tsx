@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import {MatchMediaHOC } from 'react-match-media';
 
 import { PostComponent} from "templates/post";
 import  * as action  from 'actions/actionCreators';
@@ -7,9 +6,8 @@ import {store} from "store/index";
 import  MainAppHoc from "containers/main/index-hoc";
 import {PageErrorComponent, UnconfirmedUserWarning} from "templates/partials";
 import {OpenEditorBtn}  from "templates/buttons";
-import {CREATE_POST} from 'actions/types';
 
-import {createPostProps} from "templates/navBar";
+import { createPostProps } from 'templates/navigations/utils';
 import  AjaxLoader from "templates/ajax-loader";
 import { getPostList } from 'dispatch/index';
 

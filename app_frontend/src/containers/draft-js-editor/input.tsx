@@ -16,12 +16,12 @@ class  LinkInput extends Component  {
 
 
     componentDidMount() {
-        console.log(this.props)
+      
     }
   
     onChange(e){
         e.preventDefault();
-        let form      = this.state['form'];
+        let form = this.state['form'];
         form['value'] = e.target.value;
         this.setState({form});
     }
@@ -35,9 +35,11 @@ class  LinkInput extends Component  {
       }
 
    render(){
-      const onChange = this.onChange;
-      const handleAddLink = this.props['handleAddLink'];
-      const form:object = this.props['form'];
+      const props = this.getProps()
+      const onChange = props.onChange;
+      const handleAddLink = props['handleAddLink'];
+      const form:object = props['form'];
+      let value:string = form['value'];
 
       return(
          <div className="hyperlink-form">
@@ -47,7 +49,7 @@ class  LinkInput extends Component  {
                   type='text'
                   onChange={onChange}
                   name="LINK"
-                  value={form['value']}
+                  value={value}
                   placeholder="Enter Url" 
                />
 

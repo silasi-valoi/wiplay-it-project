@@ -34,8 +34,6 @@ export const createActionError = (params:object):object => {
         error = error.detail;
     }
 
-    console.log(params)
-
     return {
         type : params['actionType']?.ERROR,
         byId : params['byId'],
@@ -81,9 +79,7 @@ export const updateActionError = (params:object):object => {
     if (error && error.detail) {
         error = error.detail;
     }
-
-    console.log(params)
-          
+         
     return {
         type : params['actionType']?.ERROR,
         byId : params['byId'],
@@ -365,7 +361,7 @@ export const getUserProfileError = (params:object) => {
     if (error && error.detail) {
         error = error.detail;
     }
-
+  
     return {
         type : types.GET_USER_PROFILE['ERROR'],
         byId: params['byId'],
@@ -612,16 +608,15 @@ export const handleError  = (error?:any, opts?:object):object => {
 };
 
 
-export const toggleAuthForm  = (options:object):object => {
+export const toggleAuthForm  = (authForm:object):object => {
     
     return {
         type: 'AUTH_FORM',
         payLoad: {
-            ...options,
+            ...authForm,
         }
     };
 };
-
 
 
 export const authenticationPending = (params?:object):object => ({
@@ -669,6 +664,34 @@ export const authenticationError = (params:object):object => {
         }
     };
 };
+
+
+export const emailSuccess = (emailAddress:object[]):object => {
+    
+    return {
+        type : 'EMAIL_ADDRESS_REMOVE',
+        payLoad : {
+            emailAddress,
+            timeStamp,
+            isLoading   : false,
+        }
+    };
+};
+
+
+
+export const phoneNumberSuccess = (phoneNumbers:object[]):object => {
+
+    return {
+        type : 'PHONE_NUMBER_REMOVE',
+        payLoad : {
+            phoneNumbers,
+            timeStamp,
+            isLoading   : false,
+        }
+    };
+};
+
 
 export const getCurrentUserSuccess = (user:object):object => {
  

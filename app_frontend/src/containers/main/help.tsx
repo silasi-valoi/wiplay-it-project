@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import {HelpPageNavBar} from "templates/navBar";
+import { HelpPageNavBar } from 'templates/navigations/nav-bar-partial';
 import MainAppHoc from "../main/index-hoc";
 
 
@@ -11,6 +11,10 @@ class  HelpContainer extends Component  {
         this.state = { 
             pageName : "Help", 
         };       
+    }
+
+    static pageName(){
+        return "Help"
     }
 
 

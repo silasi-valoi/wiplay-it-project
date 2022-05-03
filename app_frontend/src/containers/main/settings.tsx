@@ -1,30 +1,25 @@
 
 import React, {Component} from 'react';
 
-import GetTimeStamp from 'utils/timeStamp';
-import Api from 'utils/api';
+import GetTimeStamp from 'timeStamp';
 import {store} from 'store/index';
-
+import { updateAuthForm } from 'containers/authentication/utils';
 import MainAppHoc from 'containers/main/index-hoc';
 import {Modal} from 'containers/modal/modal-container';
-import {getCurrentUserSuccess, authenticationSuccess, toggleAuthForm} from 'actions/actionCreators';
+import {getCurrentUserSuccess, authenticationSuccess} from 'actions/actionCreators';
 import {SettingsTemplate} from 'templates/settings';
-import { displaySuccessMessage, displayErrorMessage } from 'utils/helpers';
+import { displaySuccessMessage, getDataFromCache } from 'utils';
+import { removeUserEmail } from 'dispatch';
+
+import {authenticationProps} from 'templates/navigations/utils';
 
 import {formIsValid,
-        validateEmail,
         authSubmit,
-        getFormFields,
-        constructForm} from 'containers/authentication/utils'; 
-
-import {PartalNavigationBar,
-        NavigationBarBottom,
-        NavigationBarBigScreen} from 'templates/navBar';
-
+        getAuthUrl,
+        getFormFields} from 'containers/authentication/utils'; 
 
 class  SettingsContainer extends Component  {
     private isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -42,21 +37,29 @@ class  SettingsContainer extends Component  {
         };       
     };
 
+    static pageName(){
+        return "Settings"
+    };
+
     public get isMounted() {
         return this.isFullyMounted;
     }; 
 
     public set isMounted(value:boolean) {
         this.isFullyMounted = value;
-    }
+    };
  
 
     componentDidMount() {
         this.isMounted = true
-        this.onSettingsStoreUpdate()
+        this.onSettingsStoreUpdate();
         let authForm:object = this.props['entities'].authForm;
 
         this.setState({authForm})
+        
+        if(!this.props['isAuthenticated']){
+            setTimeout(() => { Modal(authenticationProps) }, 1000);
+        }
     };
 
     componentWillUnmount =()=> {
@@ -71,7 +74,7 @@ class  SettingsContainer extends Component  {
             let  storeUpdate = store.getState(); 
             let {entities}   =  storeUpdate;
             let userAuth:object = entities['userAuth'];
-            let authForm:object = entities['authForm']
+            let authForm:object = entities['authForm'];
                    
             let formName:string = authForm['formName'];
             let form = authForm['form'];
@@ -80,6 +83,7 @@ class  SettingsContainer extends Component  {
                 
                 form[formName]['error'] = userAuth['error'];
                 authForm['form'] = form;
+                console.log(authForm)
                 
                 delete userAuth['error'];
             }
@@ -87,221 +91,244 @@ class  SettingsContainer extends Component  {
             authForm['submitting'] = userAuth['isLoading'];
 
             this.setState({authForm});
-
-            this.handlePhoneNumberAddSuccess(entities['phoneNumberOrEmailAuth']);
-                 
         };
+
         this.unsubscribe = store.subscribe(onStoreChange);
     };
 
-
-    handlePhoneNumberAddSuccess(phoneNumberOrEmailAuth){
-        if (!phoneNumberOrEmailAuth) return;
-
-        let phoneNumberOrEmailAdded = this.state['phoneNumberOrEmailAdded'];
-        let currentUser = this.props['currentUser'];
-
-        if (!phoneNumberOrEmailAdded) {
-            let successMessage = 'Your new phone number has been added successfully.'
-            displaySuccessMessage(this, successMessage)
-            
-            let {phone_numbers,
-                 email_address} =  phoneNumberOrEmailAuth || {};
-            
-            if (phone_numbers?.length ) {
-                currentUser = {...currentUser, phone_numbers};
-
-            }else if (email_address?.length) {
-                currentUser = {...currentUser, email_address};
-            }
-                   
-            this.setState({phoneNumberOrEmailAdded:true});
-            store.dispatch<any>(getCurrentUserSuccess(currentUser));
+  
+    toggleForm = (formName:string, options?:object) => {
+        if(!this.props['isAuthenticated']){
+            return setTimeout(() => { Modal(authenticationProps) }, 200);
         }
+
+        let form:object;
+        let _options:object;
+          
+        if(formName === 'addPhoneNumberForm'){
+            _options = {onAddPhoneNumberForm:true};
+            form = getFormFields()['phoneNumberForm'];
+
+        }else if(formName === 'addEmailForm'){
+            _options = {onAddEmailForm:true};
+            form = getFormFields()['emailForm'];
+
+        }
+
+        updateAuthForm(this, form, formName, _options); 
+    };
+
+    togglePasswordChangeForm = (oldPassword:string) => {
+
+        if (!oldPassword) {
+            oldPassword = this.getOldPassword();
+            if(!oldPassword) return this.openPasswordConfirmationModal();
+        }
+
+        let formName:string = 'passwordChangeForm';
+        let _options:object = {
+            onPasswordChangeForm : true,
+            passwordChanged : false
+        };
+        
+        let form = getFormFields()['passwordChangeForm'];
+                
+        form['old_password'] = oldPassword; 
+        updateAuthForm(this, form, formName, _options); 
+        
     };
     
-    cachePassword(passswordParams={}) {
-        let timeStamp = new Date();
+    getOldPassword = () :string => {
         
-        let passwordConfirmAuth = {
-                timeStamp   : timeStamp.getTime(),
-                passwordValidated : true,
-                ...passswordParams,
-        };
-        store.dispatch<any>(authenticationSuccess({passwordConfirmAuth}));
-    }; 
-
-    togglePasswordChangeForm = (params?:object) => {
-        let formName = 'passwordChangeForm';
-        let old_password = params && params['old_password'];
-        
-        if (old_password) {
-            this.cachePassword(params);
-        }
-        
-        let fromCache    = this.getOldPassword();     
-        if (!old_password && !fromCache) {
-                return this.openPasswordConfirmationModal();
-                
-        }else{
-            
-            let form = getFormFields().passwordChangeForm;
-                            
-            this.setState({onPasswordChangeForm:true, passwordChanged:false})
-            return this._SetForm(form, formName, {old_password})
-        }
-    }
-
-    togglePhoneNumberForm =()=> {
-        let formFields = getFormFields();
-        let form = formFields.phoneNumberForm;
-        let onAddPhoneNumberForm = true
-        this.setState({onAddPhoneNumberForm})
-        this._SetForm(form, 'addPhoneNumberForm')
-    }
-
-    toggleEmailForm =()=> {
-        let formFields = getFormFields();
-        let form = formFields.emailForm;
-        let onAddEmailForm = true
-        this.setState({onAddEmailForm})
-        this._SetForm(form, 'addEmailForm');
-    }
-
-    _SetForm=(form={}, formName='', formOpts={})=>{
-        let authForm:object = this.state['authForm'];
-        let currentForm:object = authForm['form'];
-                 
-        form = {...form, ...formOpts};
-        authForm = constructForm(form, currentForm, formName);
-        
-        store.dispatch<any>(toggleAuthForm({form, formName, ...formOpts}))
-    }
-
-    passwordConfirmExpired=(passwordConfirmAuth={})=>{
-        let timeStamp = passwordConfirmAuth['timeStamp'];
-        timeStamp = new GetTimeStamp({timeStamp});
-
-        if (timeStamp) {
-            return timeStamp.menutes() >= 1;
-        }
-
-        return true;
-    }
-
-    getOldPassword =()=> {
-        let cacheEntities:object = this.props['cacheEntities'];
-        let userAuth:object = cacheEntities['userAuth'];
+        let userAuth:object = getDataFromCache('userAuth')
         
         if (userAuth && userAuth['passwordConfirmAuth']) {
+            
             let passwordConfirmAuth = userAuth['passwordConfirmAuth'];
             let passwordExpired:boolean = this.passwordConfirmExpired(passwordConfirmAuth);
-        
+                        
             if (passwordExpired) {
-                return undefined;
+                return '';
             }
 
-            let {old_password, passwordValidated} = passwordConfirmAuth;
+            let { old_password, passwordValidated } = passwordConfirmAuth;
+            
             if (old_password && passwordValidated) {
                 return old_password;
             }
         }
-        return undefined;
-    }
-   
-    openPasswordConfirmationModal =()=> {
-        let currentUser = this.props['currentUser'];
-        let modalProps = {
-            togglePasswordChangeForm: this.togglePasswordChangeForm.bind(this),
-            currentUser,
-            modalName : 'passwordConfirmationForm',
-        }; 
-
-        Modal(modalProps)
-    }
-
-    onChange(event, formName:string) {
-        event.preventDefault();
-        formName && this.setState({formName});
-        let {form} = this.state['form'];
-        
-        if (form && formName) {
-                let name:string = event.target['name'];
-                let data:string = event.target['value'];
-
-                form[formName][name] = data;
-
-                store.dispatch<any>(toggleAuthForm({form, formName}))
-            }
+        return ''
     };
 
-    handleSubmit=(event, formName)=>{
-        event.preventDefault();
-        formName && this.setState({formName});
-        this.resetSuccessSubmitListers();
+    passwordConfirmExpired=(passwordConfirmAuth:object)=>{
+        let timeStamp = passwordConfirmAuth['timeStamp'];
+        timeStamp = new GetTimeStamp({timeStamp});
 
-        if (formName === 'passwordChangeForm') {
-            return this.submitPasswordChange(formName)
+        if (timeStamp) {
+            return timeStamp.menutes() >= 10;
         }
 
-        let useToken = true;
-        authSubmit(this, formName, useToken);
-    }
+        return true;
+    };
+   
+    openPasswordConfirmationModal = () => {
+        
+        let modalProps = {
+            ...authenticationProps,
+            authenticationType : 'passwordConfirmationForm',
+            togglePasswordChangeForm : this.togglePasswordChangeForm.bind(this),
+            currentUser : this.props['currentUser'],
+        }; 
+        
+        Modal(modalProps);
+    };
 
-    submitPasswordChange =(formName:string):void =>{
-        let {userAuth} = this.props['entities'];
-        let passwordChanged = this.props['passwordChanged'];
-        let passwordConfirmAuth = userAuth['passwordConfirmAuth'];
-                       
-        if (passwordConfirmAuth) {
-            let passwordValidated:boolean = passwordConfirmAuth.passwordValidated;
+    onChange = (event:React.ChangeEvent<HTMLInputElement>, formName:string) => {
+        event && event.preventDefault();
+        
+        try {
+            this.updateFormChanges(event, formName);
+            
+        } catch (error) {
+            throw new TypeError(`Form ${formName} doesn't exist.`);
+        }
+    };
 
-            if (!passwordValidated) {
+    updateFormChanges = (event: React.ChangeEvent<HTMLInputElement>, formName:string) => {
+        let { form } = this.state['authForm'];
+        form = form[formName];       
+        let name:string = event.target['name'];
+        let data:string = event.target['value'];
+
+        form[name] = data;
+        let opts:object;
+        if (formName === 'addEmailForm') {
+            opts = {onAddEmailForm:true}
+
+        }else if(formName === 'passwordChangeForm'){
+            opts = {onPasswordChangeForm:true}
+        }
+
+        updateAuthForm(this, form, formName, opts);
+    };
+    
+    handleSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, formName: string) => {
+        let authForm = this.state['authForm']
+        if(authForm['submitting']) return
+    
+        event &&  event.preventDefault();
+       
+        if (formName === 'passwordChangeForm') {
+            let oldPassword = this.getOldPassword();
+            
+            if (!oldPassword) {
                 return this.openPasswordConfirmationModal();
+                return
             }
         }
+        
+        let isAuthenticated = true;
+        authSubmit(this, isAuthenticated, formName);
+    };
 
-        let useToken:boolean = true;
-        authSubmit(this, formName, useToken);
+    passwordConfirmed = () => {
+
     }
 
-    resetSuccessSubmitListers():void{
+    handleCountry = (phoneNumber:string, phoneNumberInfo:object) => {
+        let { form } = this.state['authForm'];
+        let formName:string = 'addPhoneNumberForm';
+
+        form =  form[formName]
+       
+        form['phone_number'] = phoneNumber; 
+        form['country_code'] = phoneNumberInfo['countryCode'];
+        form['country_name'] = phoneNumberInfo['name'];
+        form['dial_code'] = phoneNumberInfo['dialCode'];
+        form['format'] = phoneNumberInfo['format'];
+       
+        updateAuthForm(this, form, formName, {onAddPhoneNumberForm:true});
+
+    }
+    
+    resetSuccessSubmitListers() : void {
         this.setState({phoneNumberOrEmailAdded:false, passwordChanged:false})
-    }
+    };
 
     validateForm(form){
-        return formIsValid(form)
+        return formIsValid(form);
+    };
+
+    removeEmail = (email:string, formName:string) => {
+        let form = getFormFields()['emailForm'];
+        form['email'] = email; 
+        this.removeItems(form, formName, {onEmailRemove : true});
+       
+    };
+
+    removePhoneNumber = (phone_number:string, formName:string) => {
+        let form:object = {};
+        console.log(phone_number)
+        form['phone_number'] = phone_number; 
+        this.removeItems(form, formName, {onPhoneNumberRemove : true});
+       
+    };
+
+    removeItems = (form:object, formName:string, opts?:object) => {
+        let authForm = this.state['authForm'];
+        if(authForm['submitting']) return
+               
+        updateAuthForm(this, form, formName, opts); 
+
+        setTimeout(() => {
+            authSubmit(this, true, formName);
+        }, 500);
     }
 
-    removeEmail(email){
+    sendConfirmationCode = (phoneNumber:object) => {
+        
+        let form:object = {}
+        form['phone_number'] = phoneNumber['phone_number'];
+        form['country_code'] = phoneNumber['country_code'];
 
+        this.sendConfirmation(form, 'sendConfirmationCodeForm')
+    }
+
+    sendEmailConfirmation = (email:string) => {
+        let form = getFormFields()['emailForm'];
+        form['email'] = email;
+        this.sendConfirmation(form, 'sendEmailConfirmationForm')
     };
 
-    removePhoneNumber(phone_number){
-
-    };
-
-    sendConfirmation(value){
-        let email = value;
+    sendConfirmation(form:object, formName:string){
+        let authForm = this.state['authForm'];
+        if(authForm['submitting']) return
+               
+        updateAuthForm(this, form, formName); 
+                
+        setTimeout(() => {
+            authSubmit(this, true, formName);
+        }, 300);
         
     };
 
-    reactBindings():object{
+    reactBindings() : object{
         return{
             handleFormChange         : this.onChange.bind(this),
+            togglePasswordChangeForm : this.togglePasswordChangeForm.bind(this),
+            handleCountry            : this.handleCountry.bind(this),
             onSubmit                 : this.handleSubmit.bind(this),
             removePhoneNumber        : this.removePhoneNumber.bind(this),
             removeEmail              : this.removeEmail.bind(this), 
-            sendConfirmation         : this.sendConfirmation.bind(this), 
-            toggleEmailForm          : this.toggleEmailForm.bind(this),
-            togglePhoneNumberForm    : this.togglePhoneNumberForm.bind(this),
-            togglePasswordChangeForm : this.togglePasswordChangeForm.bind(this),
+            sendConfirmationCode     : this.sendConfirmationCode.bind(this), 
+            sendEmailConfirmation    : this. sendEmailConfirmation.bind(this),
+            toggleForm               : this.toggleForm.bind(this),
             validateForm             : this.validateForm.bind(this),
         }
-    }
+    };
 
-    getProps():object{
-        return{
+    getProps() : object{
+        return {
             ...this.reactBindings(),
             ...this.props,
             ...this.state,
@@ -310,13 +337,9 @@ class  SettingsContainer extends Component  {
 
     render(){
         let props = this.getProps();
-        
+                
         return(
             <div className="">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} />
-                <NavigationBarBottom {...props}/> 
-
                 <div className="settings-page">
                     <div className="settings-container">
                         <SettingsTemplate {...props}/>
@@ -324,7 +347,7 @@ class  SettingsContainer extends Component  {
                 </div>
             </div>
         )
-    }
+    };
 };
 
 export default MainAppHoc(SettingsContainer); 

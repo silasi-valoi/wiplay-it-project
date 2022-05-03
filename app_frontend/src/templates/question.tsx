@@ -1,7 +1,6 @@
 import React from 'react';
 import * as Icon from 'react-feather';
-import { BrowserRouter, Link } from "react-router-dom";
-import { MatchMediaHOC } from 'react-match-media';
+
 import { OpenOptionlBtn,
          FollowQuestionBtn,
          UnfollowQuestionBtn,
@@ -12,7 +11,7 @@ import { OpenOptionlBtn,
 import {ButtonsBox} from "templates/partials";
 
 import  * as types  from 'actions/types';
-import Apis from 'utils/api';
+import {Apis} from 'api';
 
 export const QuestionComponent = props => {
     
@@ -20,24 +19,9 @@ export const QuestionComponent = props => {
           index,
           questionById,
           questionListById, 
-          isQuestionBox, 
           currentUser, 
           isAuthenticated}    = props;
-
-    let optionsBtnStyles = {
-        fontSize   : '8px',
-        background : 'white',
-        fontWeight : 'bold',
-        width      : '40px',
-        color      : '#4A4A4A',
-        margin     : '0 0 2px'
-    }
-   
-    let state = {
-        question,
-        usersIsFor : 'questionFollowers', 
-    }
-
+    
     let getUserAnswer = ()=>{
             let questionEntitie  = props.entities.question;
             questionEntitie  = questionEntitie[questionById];
@@ -122,8 +106,8 @@ export const QuestionComponent = props => {
         }
     
     const linkProps = {
-        linkPath: `/question/${question.slug}/${question.id}/`,
-        state:{question},
+        linkPath: `/question/${question.slug}/`,
+        state:{id:question['id']},
     }
   
     return(

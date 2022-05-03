@@ -29,27 +29,31 @@ export const  SpinLoader  = props => {
 };
 
 export const  ToogleAuthFormBtn  = props => {
+    const authForm = props.authForm;
     let toggleFormProps = props.toggleFormProps;
+    let submitting = authForm['submitting']
+    let disablingStyles:object = submitting? {opacity:'0.60'}: {};
     
     return(
         <button type="button" 
-                onClick={() => { props.toggleAuthForm(toggleFormProps)} } 
-                className="btn-sm text-highlight toggleBtn">
-                {props.toggleBtnName}
+            style={disablingStyles}
+            disabled={submitting}
+            onClick={() => {props.toggleAuthForm(toggleFormProps)}} 
+            className="btn-sm text-highlight toggleBtn">
+            {props.toggleBtnName}
         </button>
-        
     )
 };
 
 
-
 export const  RegistrationSubmitBtn  = props => {
-    let onSubmitStyles = props['onSubmitStyles'];
+    let submitting = props.authForm['submitting']
+    let disablingStyles:object = submitting? {opacity:'0.60'}: {};
    
     return(
         <button type="submit" 
-                style={onSubmitStyles} 
-                disabled={props.submitting}
+                style={disablingStyles} 
+                disabled={submitting}
                 className="registration-submit-btn btn-sm">
             Submit
         </button>

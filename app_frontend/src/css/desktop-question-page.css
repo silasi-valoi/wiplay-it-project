@@ -3,19 +3,17 @@
  
 @media (min-width:980px) {
     .app-box-container {
-        border : px solid red;
+        border : px solid blue;
     }
 
     .page-contents {
         width  : 42%;
         margin : 25px 29%;
-        
     }
-
-    
-    
-    #page-error-box, #answer-page,     
-    .question-page, .post-page,
+        
+    #answer-page,     
+    .question-page,
+    .post-page,
     .question-list-page  {
         padding-top : 10px;
         border   : 1px solid #D5D7D5; 

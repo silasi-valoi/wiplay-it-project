@@ -4,12 +4,10 @@ import {MessageForm} from 'templates/forms';
 import {formIsValid} from 'containers/authentication/utils';
 import {sendMessage} from 'dispatch/index';
 import {store} from "store/index";
-import Helper from 'utils/helpers';
-
+import {createFormData} from 'utils';
 
 class MessageFormContainer extends Component{
     private isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
     public handleChange;
     public handleSubmit;
@@ -55,7 +53,6 @@ class MessageFormContainer extends Component{
         const onStoreChange = () => {
             let storeUpdate  = store.getState();
             let {entities }  = storeUpdate;
-            let errors = entities['errors'];
             let message = entities['message'];
            
 
@@ -74,9 +71,10 @@ class MessageFormContainer extends Component{
     };
       
 
-    onChange(event) {
+    onChange = (event) => {
         event.preventDefault();
         let form = this.state['form'];
+        console.log(form)
         form[event.target.name] = event.target.value;
         this.setState({form});
     };
@@ -86,7 +84,7 @@ class MessageFormContainer extends Component{
         let form = this.state['form'];
         return {
            value       : form.description,
-           onChange    : this.handleChange,
+           onChange    : this.onChange.bind(this),
            name        : "description",
            className   : "message-textarea-field",
            placeholder : '',
@@ -103,9 +101,9 @@ class MessageFormContainer extends Component{
         }
 
         this.setState({submitting:true})
-        const helper   = new Helper();
+        
         let   apiUrl = this.props['apiUrl'];
-        let   formData = helper.createFormData({...form});
+        let   formData = createFormData({...form});
 
         store.dispatch<any>(sendMessage({apiUrl, formData}))
     };

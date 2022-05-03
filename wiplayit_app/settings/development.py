@@ -1,6 +1,5 @@
-
-from wiplayit_app.settings.common import *
 import os
+from wiplayit_app.settings.common import *
 
 
 DEBUG = True
@@ -11,7 +10,7 @@ EMAIL_USE_SSL = False
 EMAIL_PORT =  587
 
 EMAIL_HOST          = os.getenv("DEV_EMAIL_HOST")
-EMAIL_HOST_USER     = os.getenv("DEV_EMAIL_HOST_USER")
+EMAIL_HOST_USER     = os.getenv('AWS_SES_EMAIL_HOST_USER') #os.getenv("DEV_EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("DEV_EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
@@ -21,8 +20,29 @@ EMAIL_FROM         = EMAIL_HOST_USER
 TWILIO_ACCOUNT_SID  = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN   = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+'''
+LOGGING = {
+    
+    'handlers': {
+        
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        
+        'werkzeug': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+'''
 
 INSTALLED_APPS.append('coverage')
+INSTALLED_APPS.append('django_extensions')
 ALLOWED_HOSTS=['127.0.0.1', '192.168.43.14', '192.168.43.15', 'localhost']
 
 
@@ -50,6 +70,4 @@ CORS_ORIGIN_WHITELIST = [
      'https://silasi.pythonanywhere.com',
 
     ]
-
-
 

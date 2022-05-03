@@ -1,11 +1,6 @@
 
 import React, { Component } from 'react';
 import MainAppHoc from "containers/main/index-hoc";
-import {PartalNavigationBar,
-        NavigationBarBottom,
-        NavigationBarBigScreen } from "templates/navBar";
-
-
 
 
 class  NotificationsContainer extends Component  {
@@ -31,9 +26,7 @@ class  NotificationsContainer extends Component  {
 
         return(
             <div className="app-box-container">
-                <PartalNavigationBar {...props}/>
-                <NavigationBarBigScreen {...props} />
-                <NavigationBarBottom {...props}/>
+                
                 <div className="notifications-page">
                     <div className="empty-notifications-box">
                         <ul className="empty-notifications">

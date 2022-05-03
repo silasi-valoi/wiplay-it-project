@@ -7,7 +7,8 @@ import AccountConfirmationResendPage from
 import AccountConfirmationPage from 'containers/authentication/account-confirmation';
 import AuthenticationPage from 'containers/authentication/index';
 import {ModalCloseBtn} from 'templates/buttons';
-import AuthenticationHoc from 'containers/authentication/auth-hoc';
+import { PasswordConfirmationPage } from './password-confirmation';
+import { AuthenticationHoc } from './auth-hoc';
 
 
 class AuthenticationModalPage extends Component{
@@ -35,7 +36,8 @@ class AuthenticationModalPage extends Component{
 
     componentDidMount() {
         this.isMounted = true;
-           
+        console.log(this.props)
+  
     }
 
     getAuthContents(authenticationType:string) {
@@ -43,16 +45,19 @@ class AuthenticationModalPage extends Component{
         
         switch (authenticationType) {
             case "accountConfirmation":
-                return AccountConfirmationPage;
+                return AccountConfirmationPage
              
             case "passwordReset":
-                return PasswordResetPage;
+                return PasswordResetPage
 
             case "Login":
-                return AuthenticationPage;  
+                return AuthenticationPage 
 
             case "confirmationResend":
-                return AccountConfirmationResendPage;
+                return AccountConfirmationResendPage
+
+            case "passwordConfirmationForm":
+                return PasswordConfirmationPage
 
             default:
                 // code...
@@ -70,7 +75,7 @@ class AuthenticationModalPage extends Component{
         if (!AuthContents) {
             return null;
         }
-
+       
         return (
             <div>
                 <div className="authentication-dismiss">
@@ -85,7 +90,6 @@ class AuthenticationModalPage extends Component{
         )
     };
 };
-
 
 export default AuthenticationHoc(AuthenticationModalPage);
 

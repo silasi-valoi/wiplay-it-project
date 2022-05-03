@@ -1,7 +1,5 @@
-
  
-import Apis from 'utils/api';
-import Axios from 'utils/axios_instance';
+import Axios, {Apis} from 'api';
 import * as action  from 'actions/actionCreators';
 
 
@@ -347,7 +345,6 @@ export function getCommentList(params:commentParams) {
 
         }else{
             Api.get(apiUrl).then(response => {
-                console.log(response)
                 dispatch(action.getCommentListSuccess(byId, response.data));
 
             }).catch(error => {
@@ -422,6 +419,27 @@ export function getCurrentUser(authenticated:boolean=true):Function {
         }
     };
 	
+};
+
+export const removeUserEmail = (params:object) => {
+    const Api  = _GetApi(true); 
+    let apiUrl = params['apiUrl'];
+    let formName:string = params['formName'];
+    let form = params['form'];
+    
+    return async  dispatch => {
+        dispatch(action.authenticationPending(params));
+
+        Api.post(apiUrl, form).then(response => {
+            console.log(response, params)
+            handleSuccessAuth(formName, response.data, dispatch) 
+            
+        }).catch(error =>{
+            console.log(error)
+            handleErrors(error, {dispatch})
+        });
+    }
+
 };
 
 
@@ -512,8 +530,7 @@ const removeBookmark = (data:object, bookmarkType:string) => {
     return index
 }; 
 
-
-export  function  handleSubmit(params:object) {
+export function handleSubmit(params:object) {
     
     const isPut:boolean = params['isPut'];
     const isPost:boolean = params['isPost'];
@@ -552,7 +569,7 @@ function sendPostRequest(params:object, dispatch:Function){
         isCreating:true,
         byId: params['byId'] || "newObject", 
     };
-        
+        	
     isModal && dispatch(action.ModalSubmitPending(modalName));
     dispatch(action.createActionPending(createProps));
 
@@ -681,7 +698,6 @@ export function authenticate(params:object):Function {
        
     const Api = _GetApi(useToken, {timeout:120000, requestFor:'authentication'});   
    
-
     return async dispatch => {
         let errorOpts:object = {
                 formName, 
@@ -694,20 +710,21 @@ export function authenticate(params:object):Function {
         let online = await checkOnlineStatus();
 
         if(!online){
-            handleErrors({online}, errorOpts)
+            handleErrors({online}, errorOpts);
 
         }else{ 
             dispatch(action.authenticationPending(params));
-        
+                    
             Api.post(apiUrl, form).then(response => {
                 if(isTokenRefresh){
                     return true;
                 }
-
+                
                 let {data}  = response;
                 if (formName === 'phoneNumberConfirmationForm'){
                     data = {...data, isConfirmed:true}
                 }
+                
                 handleSuccessAuth(formName, data, dispatch);
 
             }).catch(error =>{
@@ -766,52 +783,61 @@ const handleErrorResponse = (response:object, options?:object) => {
 
 const handleErrorRequest = (request:object, options?:object) => {
     let _error = 'The server took to long to respond.';
-    dispatchErrorActions(_error, {...options, global:true,})
+    dispatchErrorActions(_error, {...options, global:true,});
 
 }
 
 const dispatchErrorActions = (error:any, options:object) => {
     const dispatch:Function = options['dispatch'];
     const _action:Function = options['action'];
-    const isGlobal:boolean = options['global']
+    const isGlobal:boolean = options['global'];
 
-    if (dispatch && action) {
-        isGlobal && dispatch(action.handleError(error, options));
+    if (dispatch && isGlobal) {
+        dispatch(action.handleError(error, options));
+    }
 
+    if (dispatch && _action) {
         dispatch(_action({error, ...options}));
     }
 };
 
 
-
 const handleSuccessAuth = (formName:string, data:object, dispatch:Function):object => {
+   
     switch(formName){
         case 'loginForm':
         case 'reLoginForm':
         case 'signUpForm':
         case 'logoutForm':
         case 'phoneNumberConfirmationForm':
-            return handleLogin(data, dispatch);
+            return handleLogin(data, dispatch)
+
+        case 'passwordConfirmation':
+            return handlePasswordConfirmation(data, dispatch)
               
         case 'passwordResetForm':
-            return handlePasswordReset(data, dispatch);
+            return handlePasswordReset(data, dispatch)
 
         case 'passwordChangeForm':
         case 'passwordChangeConfirmForm':
-            return handlePasswordChange(data, dispatch);
+            return handlePasswordChange(data, dispatch)
 
         case 'passwordResetSmsCodeForm':
-            return handleSmsCode(data, dispatch);
+            return handleSmsCode(data, dispatch)
 
         case 'emailResendForm':
-            return handleConfirmationResend(data, dispatch);
+            return handleConfirmationResend(data, dispatch)
         
         case 'addPhoneNumberForm':
         case 'addEmailForm':
-            return handlePhoneNumberOrEmailAdd(data, dispatch);
+        case 'removePhoneNumberForm':
+        case 'removeEmailForm':
+        case 'sendConfirmationCodeForm':
+        case 'sendEmailConfirmationForm':
+            return handlePhoneNumberOrEmail(data, dispatch)
 
         default:
-            return  undefined;
+            return  undefined
     }
 }
 
@@ -862,18 +888,28 @@ const handlePasswordReset = (data:object, dispatch:Function):object => {
 
 const handleSmsCode = (data:object, dispatch:Function):object => {
     let smsCodeAuth = {
-            smsCode : data['sms_code'], 
-            smsCodeValidated : true,
+        smsCode : data['sms_code'], 
+        smsCodeValidated : true,
     };
              
     return dispatch(action.authenticationSuccess({smsCodeAuth}));
 };
 
 const handlePasswordChange = (data:object, dispatch:Function):object => {
-    let passwordChangeAuth = {
+    let passwordChangeAuth:object = {
         successMessage : data['detail'],
     }
     return dispatch(action.authenticationSuccess({passwordChangeAuth}));
+};
+
+
+const handlePasswordConfirmation = (data:object, dispatch:Function):object => {
+    let passwordConfirmationAuth:object = {
+        passwordValidated : false,
+        old_password : undefined,
+        
+    }
+    return dispatch(action.authenticationSuccess({passwordConfirmationAuth}));
 };
 
 
@@ -887,15 +923,25 @@ const handleConfirmationResend =(data:object, dispatch:Function): object =>{
 }
 
 
-const handlePhoneNumberOrEmailAdd =(data:object, dispatch:Function):object =>{
+const handlePhoneNumberOrEmail = (data:object, dispatch:Function) : object => {
         
     let phoneNumberOrEmailAuth = {
         ...data,
     }
+        
+    let emailAddress:object[] = data['email_address'];
+    let phoneNumbers:object[] = data['phone_numbers'];
+
+    if (emailAddress){
+        dispatch(action.emailSuccess(emailAddress));
+    }
+
+    if (phoneNumbers){
+        dispatch(action.phoneNumberSuccess(phoneNumbers))
+    }
 
     return dispatch(action.authenticationSuccess({phoneNumberOrEmailAuth}));
 }
-
 
 
 export function getAdmin():Function {

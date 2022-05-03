@@ -1,9 +1,10 @@
 import React from 'react';
 import * as Icon from 'react-feather';
 
+import { Modal } from 'containers/modal/modal-container';
 import { ModalCloseBtn } from "templates/buttons"
 import LinkInput from 'containers/draft-js-editor/input';
-import {Editor, CompositeDecorator} from 'draft-js';
+import { Editor } from 'draft-js';
 import TextareaAutosize from 'react-autosize-textarea';
 
 
@@ -27,8 +28,8 @@ export const ToolBar = props => {
                 buttonProps['onClick'] = props.addBold;
                 buttonProps['boldOnClick']  = props.boldOnClick;
                 buttonProps['className'] = props.boldOnClick?
-                                      "btn-sm active toolbar-button":
-                                      "btn-sm toolbar-button";
+                                      "btn-sm active toolbar-btn":
+                                      "btn-sm toolbar-btn";
                 button = <Button {...buttonProps} key={style}>
                             <Icon.Bold className="toolbar-btn-icon"  size={15}/>
                          </Button>   
@@ -37,12 +38,12 @@ export const ToolBar = props => {
             else if (style === "ITALIC") {
                 buttonProps['onClick'] = props.addItalic;
                 buttonProps['className'] = props.italicOnClick?
-                                      "btn-sm active toolbar-button":
-                                      "btn-sm toolbar-button";
+                                      "btn-sm active toolbar-btn":
+                                      "btn-sm toolbar-btn";
       
                 button = <Button {...buttonProps} key={style}>
-                        <Icon.Italic className="toolbar-btn-icon"  size={15}/>
-                    </Button>   
+                            <Icon.Italic className="toolbar-btn-icon"  size={15}/>
+                        </Button>   
             }
         }
 
@@ -64,16 +65,16 @@ export const ToolBar = props => {
                buttonProps['name']         = 'image';
                buttonProps['accept']       = 'image/*'; 
              
-                button = <ImageButton  key={style} {...buttonProps}>
+                button = <MediaButton  key={style} {...buttonProps}>
                             <Icon.Camera className="toolbar-btn-icon" size={15}/>
-                        </ImageButton> 
+                        </MediaButton> 
             }
             else if (style === "Video"){
                 buttonProps['name']         = 'video'
                 buttonProps['accept']       = 'video/*';
-                button = <ImageButton  key={style} {...buttonProps}>
+                button = <MediaButton  key={style} {...buttonProps}>
                             <Icon.Video className="toolbar-btn-icon" size={15}/>
-                        </ImageButton>
+                        </MediaButton>
             }
 
         }
@@ -82,7 +83,7 @@ export const ToolBar = props => {
             buttonProps['name']         = 'more-options'
             buttonProps['onClick']      = props.moreBtns;
             buttonProps['buttonFormat'] = 'more_horiz'; 
-            buttonProps['className']    = "btn-sm toolbar-button";
+            buttonProps['className']    = "btn-sm toolbar-btn";
 
             button = <Button  key={style} {...buttonProps}>
                         <Icon.MoreHorizontal  className="toolbar-btn-icon"  size={15}/>
@@ -94,10 +95,10 @@ export const ToolBar = props => {
             buttonProps['name']         = 'LINK'
             buttonProps['onClick']      = props.promptLinkIpunt;
             buttonProps['buttonFormat'] = 'insert_link'; 
-            buttonProps['className']    = "btn-sm toolbar-button";
+            buttonProps['className']    = "btn-sm toolbar-btn";
             button = <Button key={style} {...buttonProps}>
                         <Icon.Link2 className="toolbar-btn-icon"  size={15}/>
-                     </Button>  
+                    </Button>  
 
         }
 
@@ -130,22 +131,21 @@ export const ToolBar = props => {
 
 
 
-const ImageButton = props => {
+const MediaButton = props => {
    
-   return (
-      <label  id="fileContainer" className="btn-sm toolbar-button">
-         <input
-            type="file"
-            accept={props.accept} 
-            name={props.name}
-            onChange={props.onChange}
-            className="image-input toolbar-button"
-            value={ props.urlValue }
-         />
-         {props.children}
-      </label>
-     
-   )
+    return (
+        <label  id="fileContainer" className="btn-sm toolbar-btn">
+            <input
+                type="file"
+                accept={props.accept} 
+                name={props.name}
+                onChange={props.onChange}
+                className="image-input toolbar-btn"
+                value={ props.urlValue }
+            />
+            {props.children}
+        </label>
+    )
 }
 
 
@@ -184,7 +184,7 @@ export const MobileModalNavBar = props  => {
 
     let SubmitBtn = ()=>(
             <button type="button" onClick={()=> props.submit()}
-                            className="editor-submit-btn submit-btn">
+                            className="draft-js-submit-btn submit-btn">
                         Submit
             </button>
         )
@@ -259,7 +259,7 @@ export const DesktopModalNavBar = (props) => {
 export const DesktopToolBar = (props) => {
     let {objName, submit} = props;
     return(
-        <div className="editor-navbar-bottom">
+        <div className="draft-js-navbar-bottom">
             <div className="toolbar-box">
                 { objName === "Question"?
                     null
@@ -268,9 +268,9 @@ export const DesktopToolBar = (props) => {
                 }
             </div>
 
-            <div className="editor-submit-btn-box">
+            <div className="draft-js-submit-btn-box">
                 <button type="button" onClick={()=> submit()}
-                        className="editor-submit-btn">
+                        className="draft-js-submit-btn">
                         Submit
                 </button>
             </div>
@@ -299,8 +299,7 @@ export const PostEditor = (props) => {
                  className="editors-box post-textarea-editor-box">
                 <TextAreaEditor   {...props} rows={2}/>
                 
-                <div className="post-draft-editor-box"
-                     onClick={()=> handleFocus()}>
+                <div className="post-draft-editor-box" onClick={()=> handleFocus()}>
                     <DraftEditor {...props}/>
                 </div>
             </div>
@@ -314,19 +313,20 @@ export const QuestionEditor = (props) => {
 
     return(
         <div className="editors-page" id="editors-page">
-        <div className="question-editor-box">
-            <div style={onScroolStyles} id="editors-box" className="editors-box">
-                <div className="question-form-box">
-                    <TextAreaEditor {...props} rows={2}/>
-                </div> 
+            <div className="question-editor-box">
+                <div style={onScroolStyles} id="editors-box" className="editors-box">
+                    <div className="question-form-box">
+                        <TextAreaEditor {...props} rows={2}/>
+                    </div> 
+                </div>
             </div>
-        </div>
         </div>
     );
 
 };
 
 export const DraftEditor = props => {
+    // decorators={CompositeDecorator}
        
 	return (
         <div className="draft-editor">
@@ -336,7 +336,6 @@ export const DraftEditor = props => {
                 handleKeyCommand={props.handleKeyCommand}
                 keyBindingFn={props.keyBindingFn}
                 onChange={props.onChange}
-                decorators={CompositeDecorator}
                 blockStyleFn={props.blockStyleFn}
                 placeholder={props.editorPlaceHolder}
                 ref={input => props.self.editor = input}
@@ -370,17 +369,64 @@ export  function pageMediaBlockRenderer(block) {
 
 
 const Image = (props) => {
-   return <img alt="" src={props.src} style={styles['media']}/>
+    return <img alt="" src={props.src} style={styles['media']}/>
 };
 
 const Video = (props) => {
-   return <video controls src={props.src} style={styles['media']} />;
+    return <video controls src={props.src} style={styles['media']} />;
+};
+
+
+export const DraftjsMediaView = (props) => {
+    return(
+        <div className='draftjs-media-view-modal'>
+            <ModalCloseBtn> 
+               <Icon.X id="feather-x" size={25} color="white"/>
+            </ModalCloseBtn> 
+            <div className='draftjs-media-view-box'>
+                <img src={props.image} ></img>
+            </div>
+        </div>
+
+    )
+}
+
+const _Video = (src:string) => {
+    return(
+        <div style={styles['imageBox']}>
+            <video 
+                controls 
+                onClick={() => {}}
+                src={src} 
+                style={styles['mediaPage']} 
+            />
+        </div>
+    )
+}
+
+const _Image = (src:string) => {
+
+    let imageViewProps =  {
+        modalName : 'draftjsMediaView',
+        image:src,
+    };
+
+    return(
+        <div style={styles['imageBox']}>
+            <img 
+                alt="" 
+                onClick={() => Modal(imageViewProps)}
+                src={src} 
+                style={styles['mediaPage']}
+            />
+        </div>
+    )
 };
 
 
 const Media = (props) => {
     let {contentState, block} = props;
-    let entityKey = props.block.getEntityAt(0);
+    let entityKey = block.getEntityAt(0);
 
     if (!entityKey) return null;
 
@@ -388,37 +434,37 @@ const Media = (props) => {
     const {src} = entity.getData();
     const type = entity.getType();
     
-    let media;
+    let media = null;
     if (type === 'image') {
-      media = <Image src={src} />;
+        media = <Image src={src} />;
     }
     else if (type === 'video') {
-      media = <Video src={src} />;
+        media = <Video src={src} />;
     }
-   return media;
+
+    return media;
+   
 };
 
 const MediaPage = (props) => {
    let {contentState, block} = props;
-   let blockEntity = props.block.getEntityAt(0);
+   let blockEntity = block.getEntityAt(0);
 
     if (!blockEntity) return null;
 
-    const entity = props.contentState.getEntity(blockEntity);
+    const entity = contentState.getEntity(blockEntity);
     const {src}  = entity.getData();
     const type   = entity.getType();
-    let media;
+    let media = null;
+
        
     if (type === 'image') {
-        media = <div style={styles['imageBox']}>
-                 <img alt="" src={src} style={styles['mediaPage']}/>
-             </div>;
+        media = _Image(src);
     }
     else if (type === 'video') {
-        media = <div style={styles['imageBox']}>
-                  <video controls src={src} style={styles['mediaPage']} />;
-                </div>;
+        media = _Video(src);
     }
+    
     return media;
 };
     

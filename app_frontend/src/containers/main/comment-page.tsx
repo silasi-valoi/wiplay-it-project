@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
 import  AjaxLoader from "templates/ajax-loader";
 import  * as action  from 'actions/actionCreators';
-import  {GET_COMMENT_LIST}  from 'actions/types';
 
-import Helper from 'utils/helpers';
 import {  CommentsComponent } from "templates/comment"
-import {Editor, EditorState} from 'draft-js';
-import {pageMediaBlockRenderer} from 'templates/draft-editor';
 import {store} from "store/index";
-import Apis from 'utils/api';
-
-
-const helper   = new Helper();
+import {Apis} from 'api';
 
 
 class CommentsBox extends Component {

@@ -1,16 +1,13 @@
 import React from 'react';
-import { Link, BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
 import * as Icon from 'react-feather';
 
-import {history} from "App" 
-
-
-import Apis from 'utils/api';
-import  * as types  from 'actions/types';
-
+import { ModalCloseBtn } from 'templates/buttons';
+import {Apis} from 'api';
+import  * as types from 'actions/types';
+import { Modal } from 'containers/modal/modal-container';
 import{ QuestionComponent } from "templates/question"
-import GetTimeStamp from 'utils/timeStamp';
 
 import { PostComponent } from "templates/post"
 import { AnswersComponent  } from "templates/answer";
@@ -19,14 +16,12 @@ import { OpenEditorBtn,
          OpenOptionlBtn,
          ChangeImageBtn,
          OpenUsersModalBtn,
-         UnfollowUserBtn, 
          LinkButton,
          FollowUserBtn } from "templates/buttons";
 
 
 export const ProfileComponent = props => {
-    let {entities,
-        currentUser,
+    let {currentUser,
         isAuthenticated,
         userIsConfirmed,
         userProfile,
@@ -34,22 +29,9 @@ export const ProfileComponent = props => {
     
     userProfile = userProfile && userProfile.user;
     if (!userProfile) return null;
-    //console.log(userProfile, currentUser)
-         
+             
     let profile  = userProfile.profile;
-    let apiUrl   = Apis.getQuestionFollowersListApi(userProfile?.id);
-    let linkName = profile.followers > 1 && `${profile.followers} Followers` 
-                                || `${profile?.followers} Follower`;
-
-    let userProfileFollowersProps = {
-            apiUrl,
-            byId      : userProfile && `userProfileFollowers${userProfile.id}`,
-            obj       : userProfile,
-            currentUser,
-            linkName  : linkName,
-           
-        };
-    
+   
 
     let optionsBtnStyles = {
               fontSize   : '8px',
@@ -66,6 +48,7 @@ export const ProfileComponent = props => {
             objName     : 'UserProfile',
             isPut       : true,
             obj         : userProfile, 
+            id          : userProfile.id,
             byId        : profileById,
             isAuthenticated,
             linkName    : 'Edit',
@@ -77,7 +60,7 @@ export const ProfileComponent = props => {
 
     const EditProfileLink = ()=>{
         const pathToEditProfile = userProfile  && 
-                 `/edit/profile/${userProfile.slug}/${userProfile.id}/`;
+                 `/profile/update/${userProfile.slug}/`;
         return(
             <button 
                 className="btn-sm edit-user-profile"
@@ -101,11 +84,7 @@ export const ProfileComponent = props => {
                                             ChangeImageBtn,
                                             '(min-width: 980px)');
 
-    let UserProfileFollowersBtn = profile && profile.followers !== 0 && 
-                                  <OpenUsersModalBtn {...userProfileFollowersProps}/>; 
 
-    let pathToUserFollowers = userProfile &&
-                 `/user/profile/${userProfile.slug}/${userProfile.id}/followers/`;
     
 
     let btnsProps = {
@@ -114,7 +93,6 @@ export const ProfileComponent = props => {
             ...props
         };
     
-    var followers_text = profile && profile.followers > 1? 'Followers' : 'Follower';  
 
     let UnfollowOrFollowUserBtn = <FollowUserBtn {...btnsProps}/>;
    
@@ -123,17 +101,23 @@ export const ProfileComponent = props => {
     const UserItemsComponent = props.userItemsComponent;   
     let  profile_picture = profile && profile.profile_picture || null;
 
-    let authenticationProps = {
-            linkName  : "Edit",
-            authenticationType : 'AccountConfirmation',
-            currentUser,
+    let imageViewProps =  {
+        modalName : 'imageView',
+        image: profile_picture,
     };
 
-    let userCanEdit:boolean = currentUser.id === userProfile.id;
+    let _userCanEdit = () : boolean => {
+        if(currentUser.id === userProfile.id && isAuthenticated) return true;
+        
+        return false;
+    }
+
+    let userCanEdit = _userCanEdit();
         
     return (
+        
         <div className="profile-container">
-            {userProfile?
+            {userProfile &&
             <div className="profile-contents">
             
             <div id="profile-box">
@@ -146,6 +130,7 @@ export const ProfileComponent = props => {
                                      className="profile-img-box">
 
                                     <img alt=""
+                                         onClick={()=> Modal(imageViewProps) }
                                          src={`${profile_picture}`}
                                          className="profile-image"/>
                                     </div>
@@ -175,7 +160,7 @@ export const ProfileComponent = props => {
                                     </li>
 
                                     <li className="user-credential">
-                                        {profile.credential}
+                                        {profile.bio}
                                     </li>
                                 </ul>
 
@@ -219,16 +204,27 @@ export const ProfileComponent = props => {
                             </div>
 
                             <div className="about-user-box">
+                                <span>Bio</span>
+                                {profile.bio &&
+                                    <ul className="user-bio">
+                                        <li>{profile.bio}</li>
+                                    </ul>
+
+                                    ||
+
+                                    <p className='credentials-default'>
+                                    </p>
+                                }
+                            </div> 
+
+                            <div className="about-user-box">
                                 <Icon.MapPin 
                                     id="feather-location" 
                                     size={15}
                                 />
-                                { !profile.country &&
+                                { profile.location &&
                                     <ul className="user-location">
-                                    
-                                        <li>Free State </li>
-                                        <li>/</li>
-                                        <li>South Africa</li>
+                                        <li>{profile.location}</li>
                                     </ul>
 
                                     ||
@@ -240,11 +236,7 @@ export const ProfileComponent = props => {
                                 
                             </div>
                   
-                            <div className="about-user-box">
-                                <p className="user-fav-quote">
-                                    {profile?.favorite_quote }
-                                </p>
-                            </div> 
+                            
                         </div>
                     </div>
         
@@ -266,17 +258,29 @@ export const ProfileComponent = props => {
             </div>
 
         </div>
-        :
-        null
+    
         }
         </div>
     );
 
 };
 
+export const ImageView  = (props) => {
+    
+    return (
+        <div className='image-view-modal'>
+            <ModalCloseBtn> 
+               <Icon.X id="feather-x" size={25} color="white"/>
+            </ModalCloseBtn> 
+            <div className='image-view-box'>
+                <img src={props.image} ></img>
+            </div>
+        </div>
+    )
+}
+
 
 export const UserProfileFollowingList = props => {
-    //console.log(props)
     let {
         entities,
         users,
@@ -286,7 +290,7 @@ export const UserProfileFollowingList = props => {
 
     let usersById = 'filteredUsers';    
     users  = entities?.users[usersById] || users && users[usersById];
-    //console.log(users, entities.users)
+
     let userList = users && users.userList && users.userList.slice(0, 3);
 
     let userProfileFollowersProps = {
@@ -360,9 +364,9 @@ export const PartialUserList = props => {
         let FollowBtn   = MatchMediaHOC(FollowUserBtn, '(min-width: 980px)');
         
         const linkProps:object = {
-                linkPath:`/profile/${user.id}/${user['slug']}/`,
+                linkPath:`/profile/${user['slug']}/`,
                 pushToRouter: props['pushToRouter'],
-                state:{user},
+                state:{id:user['id']},
         };
 
         return (
@@ -409,7 +413,7 @@ export const UserList = props => {
 
     users   = entities?.users[usersById] || users && users[usersById];
     let userList = users?.userList || [];
-
+    
     return (
         <div className="">
             {userList?.map((user, index)  => {
@@ -489,8 +493,6 @@ export const UserAnswers = props =>{
 };
 
 
-
-
 export const UserQuestions = props => {
     let userProfile = props.userProfile;
     userProfile    = userProfile.user;
@@ -518,7 +520,7 @@ export const UserQuestions = props => {
                         }
                     </div> 
      
-                    {questionList?.map((question, index) => {
+                    {questionList?.map((question) => {
                         let questionProps:object = {
                             ...props
                             ,question, 
@@ -584,7 +586,6 @@ export const UserPosts = props => {
 
                 <p className="items-count">No Post yet</p>
             }
-
         </div>
  
    );
@@ -595,34 +596,27 @@ export const UsersComponent = props => {
     let {user,
          index,
          usersById,
-         currentUser,
-         redirectToUserProfile} = props
+         currentUser} = props
 
-    let pathToProfile =  `/profile/${user.id}/${user.slug}/`;
     let profile_picture = user.profile.profile_picture;
-    let profile = user.profile;
         
-    let state    = { userProfile : user}
     
     let editObjProps = {
-            objName    : 'UsersList',
-            isPut      : true,
-            obj        : user, 
-            byId       : usersById,
-            currentUser,
-            index,
-            actionType : types.UPDATE_USER_LIST,
-            apiUrl : Apis.updateProfileApi(user.id),
-            
+        objName    : 'UsersList',
+        isPut      : true,
+        obj        : user, 
+        byId       : usersById,
+        currentUser,
+        index,
+        actionType : types.UPDATE_USER_LIST,
+        apiUrl : Apis.updateProfileApi(user.id),
     }
-
     
     const btnsProps   = {...props, editObjProps};
-    
+
     const linkProps:object = {
-            linkPath:`/profile/${user.id}/${user['slug']}/`,
-            modalIsOpen:props.modalIsOpen || false,
-            state:{user},
+            linkPath:`/profile/${user['slug']}/`,
+            state:{id:user['id']},
     };
 
     return (

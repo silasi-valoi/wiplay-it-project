@@ -1,13 +1,12 @@
 import React from 'react';
 
 import * as Icon from 'react-feather';
-import {history} from "App" 
 import { MatchMediaHOC } from 'react-match-media';
 import { Modal}   from  "containers/modal/modal-container";
-import {closeModals}   from  'containers/modal/helpers';
+import {closeModals}   from  'containers/modal/utils';
 import { store } from "store/index";
-import {showModal, handleError} from 'actions/actionCreators';
-import {IsBookMarked, pushToRouter} from 'utils/helpers';
+import {handleError} from 'actions/actionCreators';
+import {IsBookMarked, pushToRouter} from 'utils';
 
 
  let unfollowedBtnStyles = {
@@ -23,15 +22,14 @@ import {IsBookMarked, pushToRouter} from 'utils/helpers';
     };
 
 export const LinkButton = (props)=>{
-    
     let linkPath = props['linkPath'];
     let styles = props['styles'];
-
+    
     return(
         <a style={styles}
-           href={linkPath}
-           type="button"
-           onClick={(event) => pushToRouter(props, event) }>
+            href={linkPath}
+            type="button"
+            onClick={(event) => pushToRouter(props, event) }>
             {props['children']}
         </a>
     );
@@ -40,7 +38,7 @@ export const LinkButton = (props)=>{
 export const ToggleItemsBtns = (props:object)=>{
         let getItemsList:Function = props['getItemsList'];
         let itemsNum:number = props['items']?.length;
-                
+                        
     return(
         <button type="button"
                 className="btn-sm items-counter-btn"
@@ -51,7 +49,6 @@ export const ToggleItemsBtns = (props:object)=>{
 };
 
 export const FollowUserBtn = props => {
-       
     let {currentUser,
          editObjProps,
          editFollowersOrUpVoters } = props;
@@ -61,8 +58,8 @@ export const FollowUserBtn = props => {
     let btnText        =  obj?.user_is_following && "Following" || "Follow";
     var followers_text =  obj?.profile.followers > 1 && 'Followers' || 'Follower';  
     let styles         =  obj?.user_is_following &&
-                          followedBtnStyles || unfollowedBtnStyles;
-        
+                        followedBtnStyles || unfollowedBtnStyles;
+    
     return(
         <div className="follow-btn-box">
             {obj?.email !== currentUser?.email &&
@@ -85,17 +82,6 @@ export const FollowUserBtn = props => {
         </div>
     );
 };
-
-export const UnfollowUserBtn = props => {
-    
-    return(
-        <button type="button"
-                onClick={() => props.editFollowersOrUpVoters(props.editObjProps)}
-                className="btn-sm unfollow-user">
-            Follow 
-        </button>
-    )
-}                           
 
 
 export const FollowQuestionBtn = props => {
@@ -328,9 +314,12 @@ export const ModalCloseBtn = (props:object) => {
 
     return(
         <button type="button" 
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Close"
               style={styles}
               onClick={()=> closeModals(true)}
-              className="nav-bar-back-bt btn-sm" >
+              className="btn-sm" >
            {props['children']}
         </button>  
     )
@@ -357,7 +346,6 @@ export const OpenEditorBtn = props => {
           isPut, 
           className,
           linkName } = props;
-    let context = objName && objName.toLowerCase();
     
     let getButtonName =()=> {
         let Edit = isPut && "Edit " || "";
@@ -374,7 +362,7 @@ export const OpenEditorBtn = props => {
     );
 };
 
-const OpenModalEditor=(props)=>{
+const OpenModalEditor = (props) => {
     let {isAuthenticated, currentUser} = props;
 
     if(!isAuthenticated) {
@@ -394,7 +382,6 @@ const OpenModalEditor=(props)=>{
     let optionsModal = modal && modal['optionsMenu'];
 
     if (currentUser && !currentUser.is_confirmed) {
-        let error = 'Sorry, you must confirm your account first before you start posting ';
         let modalProps =  {
                 authenticationType : 'accountConfirmation',
                 modalName : 'authenticationForm',
@@ -500,12 +487,8 @@ export const ChangeImageBtn = props => {
     );
 };
 
-
-
-
-
 export const OpenUsersModalBtn = props => {
-    let {linkName, isAuthenticated} = props;
+    let {linkName} = props;
         
     let modalProps = {
             ...props,
@@ -525,7 +508,7 @@ export const OpenUsersModalBtn = props => {
 
 
 export const SmsCodeModalBtn = props => {
-    let {obj, linkName} = props
+    let {linkName} = props
     
     let modalProps = {
             ...props,
@@ -557,7 +540,6 @@ export const AuthenticationBtn = props => {
 };
 
 
-
 export const OpenAuthModalBtn = props => {
     let {linkName, children} = props;
     let modalProps = {...props}
@@ -574,7 +556,7 @@ export const OpenAuthModalBtn = props => {
 
 
 export const PasswordConfirmModalBtn = props => {
-    let {obj, linkName} = props
+    let {linkName} = props
     
     let modalProps = {
             ...props,

@@ -1,30 +1,18 @@
 import React, { Component } from 'react';
-import {  Link,Route } from 'react-router-dom';
 
-import {history} from 'App' 
-
-import {ModalManager} from 'containers/modal/modal-container';
 import { getUserList, getUserProfile }  from 'dispatch/index'
-
-import {PartalNavigationBar,
-        NavigationBarBottom,
-        NavigationBarBigScreen } from'templates/navBar';
-
 import  * as action  from 'actions/actionCreators';
 import {ProfileComponent, UserAnswers, userProfileItemsParams} from 'templates/profile';
 import MainAppHoc from "containers/main/index-hoc";
 import {UnconfirmedUserWarning, PageErrorComponent} from "templates/partials";
-import * as checkType from 'helpers/check-types'; 
 import {store} from "store/index";
-import GetTimeStamp from 'utils/timeStamp';
-import {cacheExpired} from 'utils/helpers';
-import Apis from 'utils/api';
+import {cacheExpired} from 'utils';
+import {Apis} from 'api';
 import  AjaxLoader from "templates/ajax-loader";
 
 
 class UserProfileContainer extends Component {
     private isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
 
@@ -61,12 +49,11 @@ class UserProfileContainer extends Component {
         
         const onStoreChange = () => {
             
-            let {slug, id} = this.props['match'].params;
+            let {id} = this.props['location'].state;
             let storeUpdate  = store.getState();
             let {entities}  = storeUpdate;
             let profileById  = id? `userProfile${id}`:null;
-            let answers      = entities['answers'];
-
+         
             let userProfile:object =  entities['userProfile'];
             
             if (userProfile) {
@@ -88,18 +75,17 @@ class UserProfileContainer extends Component {
         this.unsubscribe = store.subscribe(onStoreChange);
     }
     
-    setErrors =(userProfile:object) => {
+    setErrors = (userProfile:object) => {
        
         let isLoading:boolean  = userProfile['isLoading'];
         let isUpdating:boolean = userProfile['isUpdating'];
         let error:string = userProfile['error'];
-
+        
         if (isUpdating) return
         this.setState({ isReloading : isLoading, error});
         delete userProfile['error']
     }
   
-
     componentWillUnmount() {
         this.isMounted = false;
         this.unsubscribe();
@@ -115,7 +101,7 @@ class UserProfileContainer extends Component {
                        
         }
         
-        let {slug, id} = this.props['match'].params;
+        let {id} = this.props['location'].state;
         let profileById  = `userProfile${id}`;
         let {state}      = this;
         let byId         =  state['profileById']; 
@@ -133,29 +119,32 @@ class UserProfileContainer extends Component {
         this.isMounted = true;
         this.onProfileUpdate();
                                 
-        let entities    = this.props['entities'];
-        let {slug, id}  = this.props['match'].params;
-        let {users, userProfile}  = entities; 
-        let  profileById           = `userProfile${id}`;
-        this.setState({profileById, id})
+        let entities = this.props['entities'];
+        let state:object = this.props['location'].state;
+        if (state) {
+            let id  =  state['id'];
+            let {users} = entities; 
+            let  profileById = `userProfile${id}`;
+            this.setState({profileById, id})
               
-        const userProfileCache = this.getUserProfileCache(profileById);
-        let _cacheExpired:boolean = cacheExpired(userProfileCache);
+            const userProfileCache = this.getUserProfileCache(profileById);
+            let _cacheExpired:boolean = cacheExpired(userProfileCache);
         
-        if (!_cacheExpired) { 
-            this.setState({userProfile : userProfileCache});
+            if (!_cacheExpired) { 
+                this.setState({userProfile : userProfileCache});
           
-            const itemsParams = userProfileItemsParams.answers(userProfileCache['user'])
-            this.showUserItems(itemsParams)
-        } else {
-            store.dispatch<any>(getUserProfile(id));
-        }
+                const itemsParams = userProfileItemsParams.answers(userProfileCache['user'])
+                this.showUserItems(itemsParams)
+            } else {
+                store.dispatch<any>(getUserProfile(id));
+            }
 
-        let userList = users['filteredUsers'];
+            let userList = users['filteredUsers'];
 
-        if (!userList) {
-            this.updateUsersStore();
-        }       
+            if (!userList) {
+                this.updateUsersStore();
+            } 
+        }      
     };
 
     updateUsersStore(){
@@ -187,7 +176,6 @@ class UserProfileContainer extends Component {
 
     updateWithCacheData(params:object){
         let profileById = params['profileById'];
-        let usersById = this.state['usersById'];
      
         const userProfile = this.getUserProfileCache(profileById);
         let _cacheExpired:boolean = cacheExpired(userProfile);
@@ -298,39 +286,37 @@ class UserProfileContainer extends Component {
     
     render() {
         if(!this.isMounted) return null;
-
+    
         let   props = this.getProps();
         const userProfile = props['userProfile'];
 
         if (!userProfile) {
             return null;
         }
-                             
+                
         return (
             <div>
                 <UnconfirmedUserWarning {...props}/>
+                <div>
+                    {userProfile.isLoading &&
+                        <div className="page-spin-loader-box partial-page-loader">
+                            <AjaxLoader/>
+                        </div>
+                    }
 
-                <div className="page-contents" id="page-contents">
-                    <div className="profile-page" id="profile-page">
-                        {userProfile.isLoading &&
-                            <div className="page-spin-loader-box partial-page-loader">
-                                <AjaxLoader/>
-                            </div>
+                    <PageErrorComponent {...props}/>
                 
-                            ||
-                
-                            <div>
+                    {!userProfile.isLoading && userProfile.user &&
+                        <div className="profile-page" id="profile-page">
                                 <ProfileComponent {...props}/> 
-                            </div>
-                        }
-                    </div>
+                        </div>
+                    }
                 </div>
             </div>
+            
         );
     };
 };
-
-
 
 
 export default MainAppHoc(UserProfileContainer);

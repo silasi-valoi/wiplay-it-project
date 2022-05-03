@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import  AjaxLoader from 'templates/ajax-loader';
-import {AuthorAvatar} from 'templates/partials';
-import {Reply, RepliesToggle} from 'templates/replies/reply-templates';
+import {Reply, RepliesToggle} from 'templates/replies';
 import  {getRepliesLindData} from 'actions/actionCreators';
 import {store} from 'store/index';
-import Api from 'utils/api';
-import  {GET_REPLY_LIST}  from 'actions/types';
 
 
 

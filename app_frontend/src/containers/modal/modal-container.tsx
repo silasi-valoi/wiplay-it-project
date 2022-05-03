@@ -1,23 +1,12 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import * as Effects from '../modal/Effects';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useHistory,
-  useLocation,
-  useParams
-} from "react-router-dom";
 
 import { showModal }  from 'actions/actionCreators';
 import {GetModalType} from '../modal/modal-types'
-import { history } from "App" 
 import { store } from "store/index";
 import Assign from 'lodash.assign';
-import {DisablePageScrool,  EnablePageScrool} from 'utils/helpers';
+import {DisablePageScrool,  EnablePageScrool} from 'utils';
 
 const prefix = require('react-prefixr');
 
@@ -41,7 +30,7 @@ const defaultStyles = {
 
   content: {
     position                : 'relative',
-    margin                  : '15% auto',
+    //margin                  : '15% auto',
     width                   : '100%',
     background              : '#F6F6F6',
     overflow                : 'auto',

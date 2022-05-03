@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 CORS_ORIGIN_ALLOW_ALL = False
-
+WERKZEUG_DEBUG_PIN = False
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -53,23 +53,30 @@ CORS_ALLOW_HEADERS = (
 )
 
 
-AUTH_USER_MODEL = 'app_backend.User'
+AUTH_USER_MODEL = 'auth_app.User'
 
 GUARDIAN_MONKEY_PATH = False
 ANONYMOUS_USER_NAME = "Anonymous"
-GUARDIAN_GET_INIT_ANONYMOUS_USER = 'app_backend.registrations.models.get_anonymous_user_instance'
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'auth_app.models.get_anonymous_user_instance'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django_ses.SESBackend' #'django.core.mail.backends.smtp.EmailBackend'
 
+AWS_SES_REGION_NAME =  os.getenv('AWS_SES_REGION')
+
+AWS_SES_REGION_ENDPOINT = 'email.af-south-1.amazonaws.com'
+
+AWS_SES_ACCESS_KEY_ID = os.getenv('AWS_SES_ACCESS_KEY_ID')
+
+AWS_SES_SECRET_ACCESS_KEY = os.getenv('AWS_SES_SECRET_ACCESS_KEY')
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-ACCOUNT_ADAPTER = 'app_backend.registrations.adapter.CustomAccountAdapter'
+ACCOUNT_ADAPTER = 'auth_app.adapter.CustomAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = True
-SOCIALACCOUNT_ADAPTER = 'app_backend.registrations.adapter.CustomSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'auth_app.adapter.CustomSocialAccountAdapter'
 SOCIALACCOUNT_QUERY_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
@@ -126,14 +133,13 @@ SOCIALACCOUNT_PROVIDERS = {
 APPEND_SLASH = True
 
 AUTHENTICATION_BACKENDS = (
-
-        'django.contrib.auth.backends.ModelBackend',
-        'guardian.backends.ObjectPermissionBackend',
-        'allauth.account.auth_backends.AuthenticationBackend',
-        )
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    )
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'app_backend.helpers.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'main_app.utils.custom_exception_handler',
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
@@ -151,10 +157,10 @@ REST_FRAMEWORK = {
 
 
 REST_AUTH_SERIALIZERS = {
-   'USER_DETAILS_SERIALIZER'   : 'app_backend.registrations.serializers.BaseUserSerializer',
-   'TOKEN_SERIALIZER'          : 'app_backend.registrations.serializers.TokenSerializer',
-   'PASSWORD_RESET_SERIALIZER' : 'app_backend.registrations.serializers.CustomPasswordResetSerializer',
-   'PASSWORD_RESET_CONFIRM_SERIALIZER': 'app_backend.registrations.serializers.CustomPasswordResetConfirmSerializer',
+   'USER_DETAILS_SERIALIZER'   : 'auth_app.serializers.BaseUserSerializer',
+   'TOKEN_SERIALIZER'          : 'auth_app.serializers.TokenSerializer',
+   'PASSWORD_RESET_SERIALIZER' : 'auth_app.serializers.CustomPasswordResetSerializer',
+   'PASSWORD_RESET_CONFIRM_SERIALIZER': 'auth_app.serializers.CustomPasswordResetConfirmSerializer',
 
 }
 
@@ -172,7 +178,7 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=365),
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=365),
 
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'app_backend.registrations.views.jwt_response_payload_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'auth_app.views.jwt_response_payload_handler',
     
 }
 
@@ -188,7 +194,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app_backend',
+    'auth_app',
+    'main_app',
     'rest_framework',
     'storages', 
     'rest_auth',
@@ -280,6 +287,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if os.getenv('USE_S3') == 'True':
     # aws settings
+    
     AWS_ACCESS_KEY_ID = os.getenv('S3_BUCKET_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('S3_BUCKET_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
@@ -322,7 +330,7 @@ STATICFILES_FINDERS = "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 
 WEBPACK_LOADER = {
     'DEFAULT': {
-            'BUNDLE_DIR_NAME': 'app_frontend/',
+            'BUNDLE_DIR_NAME': 'main_app/',
             'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     
     }

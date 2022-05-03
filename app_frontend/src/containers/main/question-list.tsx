@@ -7,9 +7,7 @@ import {store} from 'store/index';
 import  MainAppHoc from "containers/main/index-hoc";
 import {OpenEditorBtn}  from "templates/buttons";
 import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
-import { MatchMediaHOC } from 'react-match-media';
-import {CREATE_QUESTION} from 'actions/types';
-import {createQuestionProps} from 'templates/navBar';
+import {createQuestionProps} from 'templates/navigations/utils';
 import  AjaxLoader from 'templates/ajax-loader';
  
 

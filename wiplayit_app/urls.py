@@ -16,17 +16,17 @@ Including another URLconf
 from django.contrib import admin
 
 from django.urls import path, include, re_path
-from app_backend.api_views.api_detail_views import index
+from main_app.api_views.api_detail_views import index
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('app_backend.urls.create_urls')),
-    path('', include('app_backend.urls.update_urls')),
-    path('', include('app_backend.urls.retrieve_urls')),
-    path('', include('app_backend.admin_api.urls')),
-    path('', include('app_backend.registrations.urls')),
+    path('', include('main_app.urls.create_urls')),
+    path('', include('main_app.urls.update_urls')),
+    path('', include('main_app.urls.retrieve_urls')),
+    path('', include('main_app.admin_api.urls')),
+    path('', include('auth_app.urls')),
     path('auth-admin/', include('django.contrib.auth.urls')),
     path('accounts/', include('allauth.urls')),
     path('rest-auth/', include('rest_auth.urls')),

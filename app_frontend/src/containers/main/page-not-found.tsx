@@ -1,6 +1,5 @@
-
 import React, { Component } from 'react';
-import {PartalNavigationBar,NavigationBarBigScreen } from 'templates/navBar';
+
 import  MainAppHoc from 'containers/main/index-hoc';
 import {history} from 'App';
 import {LinkButton} from 'templates/buttons';
@@ -9,9 +8,10 @@ class  NotFoundPage extends Component  {
    
     constructor(props) {
         super(props);
-        this.state = { 
-            pageName : "Not Found", 
-        };       
+    }
+
+    static pageName(){
+        return 'Not Found';
     }
     
 
@@ -28,8 +28,6 @@ class  NotFoundPage extends Component  {
 
         return(
          <div style={{paddingTop:'65px'}} className="page-not-found-page">
-            <PartalNavigationBar {...props}/>
-            <NavigationBarBigScreen {...props} />
             <div className="page-not-found-box">
                 <NotFoundComponent {...props}/>
             </div>

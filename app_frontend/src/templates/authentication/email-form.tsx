@@ -10,31 +10,22 @@ import { RegistrationSubmitBtn,
 
 
 const EmailForm = props => {
-    const {handleFormChange, validateForm, children} = props;
+    const {authForm} = props;
 
     let {submitting,
         onSignUpForm,
         onPasswordResetForm,
         onEmailResendForm,
-        passwordRestAuth,
         form, 
         successMessage,
-        formIsValid,
         formName,
-        isSocialAuth } = props.authForm;
+        isSocialAuth } = authForm;
 
-    form = form && form[formName]? 
-                           form[formName]:null;
+    form = form && form[formName]? form[formName]:null;
     if (!form) return null;
 
     let error = form.error; 
-
-    formIsValid =  onPasswordResetForm || onEmailResendForm?
-                             validateForm(form, formName):false;
-    
-        
-    let onSubmitStyles = props['onSubmitStyles'];
-    
+           
     let formTitle   = onEmailResendForm && 'Confirmation Resend' ||
                       onPasswordResetForm && 'Password Reset';
 
@@ -148,13 +139,10 @@ export const SmsCodeForm = props => {
         onSignUpForm,
         onPasswordResetForm,
         successMessage,
-        onEmailResendForm,
         form, 
-        formName, 
-        defaultFormName,
         isSocialAuth } = props.authForm;
 
-    const {handleFormChange, formTitle, validateForm} = props
+    const {handleFormChange, formTitle} = props
    
     const phoneNumberConfirmationForm = form?.phoneNumberConfirmationForm;
     

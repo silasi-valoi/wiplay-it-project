@@ -2,13 +2,13 @@ import React from 'react';
 import { MatchMediaHOC } from 'react-match-media';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
-import  LoginForm from "templates/authentication/login";
-import  SignUpForm  from "templates/authentication/signup";
-import  EmailForm  from "templates/authentication/email-form";
-import {LinkButton} from 'templates/buttons';
+import LoginForm from 'templates/authentication/login';
+import SignUpForm  from 'templates/authentication/signup';
+import EmailForm  from 'templates/authentication/email-form';
+import { LinkButton } from 'templates/buttons';
 import {NonFieldErrors} from 'templates/authentication/errors';
-
 import {SpinLoader, ToogleAuthFormBtn} from  'templates/authentication/utils'
+
 
 let toggleEmailFormProps = {
         toggleBtnName:'Cancel',
@@ -36,11 +36,16 @@ let toggleSignUpFormProps = {
     }
 
 const Registration = props => {
-  
+       
+    let submitting =  props.authForm['submitting']
+    let disablingStyles:object = submitting? {opacity:'0.60'}: {};
+    
     return(
         <React.Fragment>
-           <RegistrationBigScreen {...props}/>
-           <RegistrationSmallScreen {...props}/>
+            <fieldset disabled={submitting} style={disablingStyles}>
+                <RegistrationBigScreen {...props}/>
+                <RegistrationSmallScreen {...props}/>
+            </fieldset>
         </React.Fragment> 
    );
 }
@@ -52,9 +57,9 @@ export default Registration;
 const RegistrationSmall = props => {
     let {authForm} = props;
     if(!authForm) return null;
-
-    let {onLoginForm, onSignUpForm, onPasswordResetForm} = authForm;
-        
+    
+    let {onLoginForm, onSignUpForm, onSocialAuth, onPasswordResetForm} = authForm;
+            
     const AuthForm = ()=>{
 
         if(onSignUpForm){
@@ -69,7 +74,7 @@ const RegistrationSmall = props => {
                         </EmailForm>
                     </div>
             
-        }else if(onLoginForm){
+        }else if(!onSocialAuth && onLoginForm){
             return <LoginForm {...props}/>
         }
 
@@ -78,7 +83,9 @@ const RegistrationSmall = props => {
     
     return(
         <div className="" >
-            { AuthForm()}
+            <div className=''>
+                { AuthForm()}
+            </div>
             <DefaultSmallScreen {...props}/>
         </div>
     );
@@ -190,7 +197,7 @@ const TermsAndContionTextComponent = props => {
     )
 };
 
-const WelcomeTextComponent = props => {
+const WelcomeTextComponent = (props)=> {
     let linkProps:object = {
         linkPath:"/about/"
     }
@@ -207,68 +214,79 @@ const WelcomeTextComponent = props => {
 }
 
 
-
 const SocialLogin = props =>  {
-    let {isSocialAuth, form} = props.authForm
+    
+    let { isSocialAuth, form, facebookLoginId, googleLoginId } = props.authForm;
+    
     form = form && form.loginForm;
     let error = form && form.error; 
-
+  
     return(
         <div className="social-login-container">
             {isSocialAuth && 
                 <SpinLoader {...props}/>
             }
 
-            { error && !isSocialAuth &&
-                <NonFieldErrors {...error}/>
+            {error && isSocialAuth &&
+                <div className="social-login-errors">
+                    <NonFieldErrors {...error}/>
+                </div>
             }
     
             <div className="social-login">
                 <div className="google-login-box">
-                <GoogleLogin
-                    clientId="499495811255-0v3hjt4lena190or9euvdla2qi5f8qrk.apps.googleusercontent.com"
-                    
-                    onSuccess={props.responseGoogle}
-                    onFailure={props.responseGoogle}
-                    render={renderProps => (
-                        <button
-                        className='btn-sm social-login-btn google-login'
-                        onClick={renderProps.onClick} 
-                        disabled={renderProps.disabled}>
-                        <span className="google-login-icon fa fa-google">
-                        </span>   
-                        Login with Google 
-                    </button>
-               )}
-         
-            />
-        </div>
+                    <GoogleLogin
+                        clientId={googleLoginId}
+                        onSuccess={props.responseGoogle}
+                        onFailure={props.responseGoogle}
+                        render={renderProps => <GoogleLoginBtn {...renderProps}/>}
+                    />
+                </div>
  
-        <div className="facebook-login-box">
-          <FacebookLogin
-            appId = "2482459181845798"
-            callback={props.responseFacebook}
-            render={renderProps => (
-                <button 
-                    className='btn-sm facebook-login social-login-btn' 
-                    onClick={renderProps.onClick}>
-                    <span className="facebook-login-icon fa fa-facebook">
-                    </span> 
-                    Login with Facebook
-                </button>
-            )} 
-          />
-
+                <div className="facebook-login-box">
+                    <FacebookLogin
+                        appId={facebookLoginId}
+                        callback={props.responseFacebook}
+                        render={renderProps => <FaceBookLoginBtn {...renderProps}/> }
+                    />
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  ); 
+    ) 
+};
 
- }
+const GoogleLoginBtn  = (props:object) => {
+    return(
+        <button
+            className='btn-sm social-login-btn google-login'
+            onClick={props['onClick']} 
+            disabled={props['disabled']}>
+            <span className="google-login-icon fa fa-google">
+            </span>   
+            Login with Google 
+        </button>
+    )
+
+} 
 
 
 
-export const  NavBar   = props => {
+const FaceBookLoginBtn  = (props:object) => {
+    return(
+        <button 
+            className='btn-sm facebook-login social-login-btn' 
+            disabled={props['isDisabled']}
+            onClick={props['onClick']}>
+            <span className="facebook-login-icon fa fa-facebook">
+            </span> 
+            Login with Facebook
+        </button>
+    )
+
+}
+
+
+export const  NavBar = props => {
    
     return (
         <div className="navigation-bar fixed-top">

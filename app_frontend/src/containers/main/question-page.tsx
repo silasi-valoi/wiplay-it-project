@@ -5,7 +5,7 @@ import  AjaxLoader from 'templates/ajax-loader';
 import { QuestionComponent} from 'templates/question';
 import {store} from "store/index";
 import { AnswersBox } from 'containers/main/answer-page';
-import {cacheExpired} from 'utils/helpers';
+import {cacheExpired} from 'utils';
 import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 import  MainAppHoc from "containers/main/index-hoc";
 
@@ -13,7 +13,6 @@ import  MainAppHoc from "containers/main/index-hoc";
 
 class  QuestionPage extends Component {
     private isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -89,27 +88,30 @@ class  QuestionPage extends Component {
     componentDidMount() {
         this.isMounted = true;
         this.onQuestionUpdate();
-        let {slug, id}  =  this.props['match'].params;
-        let questionById = `question${id}`;
-        this.setState({questionById, id})
+        let state:object = this.props['location'].state;
+        if (state) {
+            let id  =  state['id'];
+            let questionById = `question${id}`;
+            this.setState({questionById, id})
                         
-        let questionData = this.getQuestionFromStore(questionById)
-        let _cacheExpired:boolean = cacheExpired(questionData);
+            let questionData = this.getQuestionFromStore(questionById)
+            let _cacheExpired:boolean = cacheExpired(questionData);
 
-        if(!_cacheExpired){
-            return this.setState({questionData});
-        }
+            if(!_cacheExpired){
+                return this.setState({questionData});
+            }
 
-        let questionStore:object = this.props['entities'].question;
-        questionData = questionStore && questionStore[questionById];
+            let questionStore:object = this.props['entities'].question;
+            questionData = questionStore && questionStore[questionById];
 
-        if (questionData && questionData['question']) {
-            return this.setState({questionData})
-        }
+            if (questionData && questionData['question']) {
+                return this.setState({questionData})
+            }
         
-        // Data might have expired or doesn't exist in store,
-        // So we fech it from api. 
-        store.dispatch<any>(getQuestion(id));
+            // Data might have expired or doesn't exist in store,
+            // So we fech it from api. 
+            store.dispatch<any>(getQuestion(id));
+        }
       
     };
        

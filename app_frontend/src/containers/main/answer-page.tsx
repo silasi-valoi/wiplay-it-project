@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
 import { AnswersComponent } from 'templates/answer';
 import CommentsBox from "containers/main/comment-page";
 import  MainAppHoc from "containers/main/index-hoc";
-import { LinkButton } from "templates/buttons"; 
 
 import {store} from "store/index";
 import  * as action  from 'actions/actionCreators';
@@ -21,6 +19,10 @@ class AnswerContainer extends Component {
             question    : undefined,
         };
     };
+
+    static pageName(){
+        return "Answer"
+    }
 
     public get isMounted() {
         return this.isFullyMounted;
@@ -100,6 +102,10 @@ export class AnswersBox extends Component {
         };
     };
 
+    //static pageName = () => {
+    //    return "Answer"
+    //};
+
     public get isMounted() {
         return this.isFullyMounted;
     }; 
@@ -159,9 +165,7 @@ export class AnswersBox extends Component {
         currentAnswers        = currentAnswers && currentAnswers.answerList;
         let newAnswersNum     = newAnswers     && newAnswers.length;
         let currentAnswersNum = currentAnswers && currentAnswers.length;
-
-        let numberOfAnswers;
-       
+          
         if (newAnswersNum) {
             currentAnswersNum = currentAnswersNum  + newAnswersNum;
         }

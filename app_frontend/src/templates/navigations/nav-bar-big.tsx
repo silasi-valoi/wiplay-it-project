@@ -3,64 +3,8 @@ import React from 'react';
 import { MatchMediaHOC } from 'react-match-media';
 import { NavBarDropDown, NavigationMenu } from './menu';
 import { OpenAuthModalBtn, OpenEditorBtn  } from "templates/buttons";
+import { createQuestionProps, createPostProps, authenticationProps} from './utils';
 
-import Apis from 'utils/api';
-
-import {CREATE_QUESTION, CREATE_POST} from 'actions/types';
-
-
-let editorLinkMobileStyles = {
-        background : '#A33F0B !important',
-        color      : '#fefefe', 
-        border     : '1px solid blue',
-        marginTop  : '7px',  
-        fontWeight : 'bold',
-        fontSize   : '12px',
-        display    : 'flex',
-        maxWidth   : '100%',
-        width      : '100px', 
-        
-    }
-
-let editorLinkDesktopStyles = {
-       background  : '#A33F0B',
-       color       : '#fefefe',
-       height      : '30px',
-       margin      : '15px 7px 0',
-       fontWeight  : 'bold',
-    }
-
-export const createPostProps = {
-        objName     : 'Post',
-        linkName    : 'Add Post',
-        isPost      : true,
-        withTextArea: true,
-        editorPlaceHolder : `Add Post...`,
-        className   : "create-post-btn btn",
-        editorLinkDesktopStyles,
-        editorLinkMobileStyles,
-        apiUrl : Apis.createPostApi(),
-        actionType: CREATE_POST,
-    };
-
-export const createQuestionProps = {
-        objName      : 'Question',
-        isPost       : true,
-        withTextArea :true,
-        linkName     : "Ask Question",
-        editorPlaceHolder : `Add Question...`,
-        className    : "create-question-btn btn",
-        editorLinkMobileStyles,
-        editorLinkDesktopStyles,
-        actionType :  CREATE_QUESTION,
-        apiUrl  : Apis.createQuestionApi()
-    };
-
-let authenticationProps = {
-        authenticationType : 'Login',
-        linkName  : "Login/Register",
-        modalName : 'authenticationForm',
-};
 
 
 export const NavBar = props => {
@@ -78,7 +22,7 @@ export const NavBar = props => {
         isAuthenticated,
     };
       
-    authenticationProps = {...authenticationProps, ...props};
+    const _authenticationProps = {...authenticationProps};
 
     return(
 			
@@ -121,7 +65,7 @@ export const NavBar = props => {
             <ul className="navbar-login-link">
                 <li className="">
                     { !isAuthenticated &&
-                        <OpenAuthModalBtn {...authenticationProps}/>
+                        <OpenAuthModalBtn {..._authenticationProps}/>
                     }
                 </li> 
 

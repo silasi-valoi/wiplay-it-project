@@ -1,6 +1,6 @@
-
 import React, { Component } from 'react';
-import {HelpPageNavBar} from "templates/navBar";
+
+import {HelpPageNavBar} from 'templates/navigations//nav-bar-partial';
 
 
 class  PrivacyContainer extends Component  {

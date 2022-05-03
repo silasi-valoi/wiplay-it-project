@@ -6,9 +6,7 @@ import {AtomicBlockUtils,
 
 import  {ModalSubmitPending}  from 'actions/actionCreators';
 
-import {List, Repeat} from 'immutable';
-
-import  Helper, {GetLoggedInUser} from 'utils/helpers';
+import {validateForm, convertFromRaw, createFormData} from 'utils';
 import {DraftEditor,
         QuestionEditor,
         PostEditor,
@@ -20,12 +18,11 @@ import {AlertComponent} from 'templates/partials';
 
 import {store} from 'store/index';
 
-import Apis from 'utils/api';
+import {Apis} from 'api';
 import {handleSubmit, _GetApi }  from "dispatch/index"
 import  * as action  from "actions/actionCreators";
   
 
-const helper   = new Helper();  
 
 export default  class AppEditor extends Component{
     private isFullyMounted:boolean = false;
@@ -86,14 +83,12 @@ export default  class AppEditor extends Component{
 
     handleKeyCommand(command, editorState) {
         const newState = RichUtils.handleKeyCommand(editorState, command);
-        console.log(newState)
+        
         if (newState) {
-            console.log(newState)
             this.onChange(newState);
             return 'handled';
         }
-
-        console.log(newState)
+        
         return 'not-handled';
     }
 
@@ -103,7 +98,7 @@ export default  class AppEditor extends Component{
         this.setState({ editorState, });
 
         const contentState = editorState.getCurrentContent();
-        let validatedForm = helper.validateForm({editorContents : contentState})
+        let validatedForm = validateForm({editorContents : contentState})
 
         if (validatedForm['formIsValid']) {
             this.setState({contentIsEmpty : false,})
@@ -120,7 +115,7 @@ export default  class AppEditor extends Component{
         form[event.target.name] = event.target.value;
         this.setState({form});
 
-        let validatedForm = helper.validateForm({form : this.state['form']})
+        let validatedForm = validateForm({form : this.state['form']})
         if (validatedForm['formIsValid']) {
             this.setState({contentIsEmpty : false,})
         }else {
@@ -207,8 +202,7 @@ export default  class AppEditor extends Component{
         this.isMounted = true;
         this.onEditorUpdate();
         this.addEventListeners();
-        console.log(this.props)
-        
+                
         let isPut:boolean = this.props['isPut'];
         let objName:string = this.props['objName'];
         let data:object = this.props['obj'];
@@ -246,7 +240,7 @@ export default  class AppEditor extends Component{
     };
 
     updateDraftEditor(editorContents:string){
-        const editorState = helper.convertFromRaw(editorContents);
+        const editorState = convertFromRaw(editorContents);
 
         setTimeout(()=> {
             this.setState({editorState});
@@ -286,7 +280,7 @@ export default  class AppEditor extends Component{
     saveFile(name, file){
         let apiUrl   = Apis.createDraftEditorContentsApi();
         let form     = {'draft_editor_file': file}
-        let fileForm = helper.createFormData(form);
+        let fileForm = createFormData(form);
 
         let useToken=true
         const Api = _GetApi(useToken);   
@@ -318,6 +312,7 @@ export default  class AppEditor extends Component{
    
     addBold(e){
         e.preventDefault();
+
         if (!this.state['editorIsFocused']) return;
 
         if (this.state['boldOnClick']) {
@@ -355,20 +350,18 @@ export default  class AppEditor extends Component{
         let newEditorState;
 
         if (linkUrl) {
-            
             let urlValue = linkUrl;
             let protocol = urlValue && urlValue.slice(0, 4)
-            
-            let https = 'https://';
+                       
             let http  = 'http://';
-
+            
             if (protocol !== http.slice(0, 4)) {
                 urlValue = `${http}${urlValue}`
 
             }
 
             newEditorState = insertLink(editorState, { url: urlValue }, linkUrl)
-            console.log(newEditorState)
+            
         }
 
         newEditorState = newEditorState || editorState;
@@ -381,20 +374,20 @@ export default  class AppEditor extends Component{
 
     getFormData = () =>{
         let objName = this.props['objName'];
-        let form    =  this.state['form'];
+        let form =  this.state['form'];
         const editorState = this.state['editorState'];
 
         let editorContents = editorState.getCurrentContent();
-        let validatedForm  = helper.validateForm({editorContents});
-        let validForm      = {};
+        let validatedForm  = validateForm({editorContents});
+        let validForm = {};
 
         if (objName === "Question") {
             
-            validatedForm =  helper.validateForm({form});
-            validForm     =  {question: validatedForm['data']}; 
+            validatedForm =  validateForm({form});
+            validForm =  {question: validatedForm['data']}; 
         }
         else if (objName === "Post") {
-            let title =  helper.validateForm({form});
+            let title = validateForm({form});
         
             validForm = {
                 post  : validatedForm['data'],
@@ -414,15 +407,14 @@ export default  class AppEditor extends Component{
 
         }
         else if(objName === "About"){
-            let about_title =  helper.validateForm({form});
+            let about_title =  validateForm({form});
             validForm = {
                 about_text  : validatedForm['data'],
                 about_title : about_title['data'],
             }; 
-
         }
 
-        return helper.createFormData(validForm);
+        return createFormData(validForm);
     };
 
     getSubmitProps = () =>{
@@ -454,13 +446,13 @@ export default  class AppEditor extends Component{
     }
 
     handleFocus =()=> {
-        if (!this.matchSmallScreenMedia()) return;
+        
         this.setState({editorIsFocused : true, onFocus:true});
         this['editor'].focus();
     }
 
     handleBlur =()=> {
-        if (!this.matchSmallScreenMedia()) return;
+        //if (!this.matchSmallScreenMedia()) return;
         this.setState({editorIsFocused : false});
     }
 
@@ -623,11 +615,8 @@ export const MobileEditorComponent =(props)=>{
 
 
 export const DesktopEditorComponent =(props)=>{
-    let {currentUser, objName} = props;
+    let {currentUser} = props;
 
-    if (!currentUser) {
-        currentUser = GetLoggedInUser();
-    }
   
     return(
         <div className="desktop-editor">

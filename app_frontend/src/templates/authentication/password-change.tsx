@@ -1,17 +1,9 @@
 import React from 'react';
-import  AjaxLoader from 'templates/ajax-loader';
-import {history} from 'App';
-import {X} from 'react-feather';
-import {ModalCloseBtn, AuthenticationBtn, OpenAuthModalBtn} from 'templates/buttons';
+import {ModalCloseBtn, OpenAuthModalBtn} from 'templates/buttons';
 import { NonFieldErrors,
-         PasswordErrors,
-         SmsCodeErrors } from 'templates/authentication/errors'
+         PasswordErrors } from 'templates/authentication/errors'
 
-import { RegistrationSubmitBtn,
-      ToogleAuthFormBtn, SpinLoader } from  'templates/authentication/utils'
-
-
-
+import { RegistrationSubmitBtn } from  'templates/authentication/utils'
 
 
 export const PasswordChangeForm = props => {
@@ -32,23 +24,18 @@ export default PasswordChangeForm;
 
 
 export const PasswordForm =(props)=>{
-    const {handleFormChange, validateForm, formDescription, children} = props;
+    const {handleFormChange, formDescription, authForm, children} = props;
 
-    let {submitting,
-         form,
-         formName,
-         onSignUpForm} = props.authForm;
-        
-
+    let {submitting, form, formName, onSignUpForm} = authForm;
+ 
     if (formName !== 'passwordChangeForm' && 
         formName !== 'passwordChangeConfirmForm'){
         return null;
     }
    
-
-    let passwordChangeForm:object   = form?.passwordChangeForm;
+    let passwordChangeForm:object = form?.passwordChangeForm;
     
-    let passwordChangeConfirmForm:object =  form?.passwordChangeConfirmForm;
+    let passwordChangeConfirmForm:object = form?.passwordChangeConfirmForm;
 
     form = passwordChangeForm || passwordChangeConfirmForm;
 
@@ -80,13 +67,13 @@ export const PasswordForm =(props)=>{
                 <div>
                     <div className="change-password-box auth-input-field">
                         <input
+                            autoComplete='true'
                             className="password"
                             placeholder=""
                             type="password"
                             name="new_password1"
                             value={form.new_password1}
-                            onChange={(event)=> 
-                                      handleFormChange(event, 'passwordChangeForm')}
+                            onChange={(event) => handleFormChange(event, 'passwordChangeForm')}
                             required
                         />
                         <span className="floating-label">
@@ -95,13 +82,13 @@ export const PasswordForm =(props)=>{
                     </div>
                     <div className="change-password-box auth-input-field">
                         <input
+                            autoComplete='true'
                             className="password"
                             placeholder=""
                             type="password"
                             name="new_password2"
                             value={form.new_password2}
-                            onChange={(event)=>
-                                        handleFormChange(event, 'passwordChangeForm')}
+                            onChange={(event) => handleFormChange(event, 'passwordChangeForm')}
                             required
                         />
                         <span className="floating-label">
@@ -142,20 +129,15 @@ export const PasswordConfirmForm =(props)=>{
 };
 
 export const _PasswordConfirmForm =(props)=>{
-    const {handleFormChange, validateForm, formDescription, children} = props;
+    const {handleFormChange, authForm} = props;
 
-    let {submitting,
-         form,
-         formName,
-         successMessage} = props.authForm;
+    let { submitting, form, successMessage } = authForm;
     
     form = form && form.loginForm;
        
     if (!form) return null;
 
     let error = form && form.error; 
-    let disabledStyle = submitting? {opacity:'0.60'} : {};
-    let submitButtonStyles = submitting?{opacity:'0.60'}:{};
     
     let fieldSetStyles = submitting? {opacity:'0.60'}:{};
     
@@ -194,6 +176,7 @@ export const _PasswordConfirmForm =(props)=>{
                     <div className="confirm-password-box auth-input-field">
                         <div className="confirm-password-input auth-input-field">
                             <input
+                                autoComplete='true'
                                 className="password"
                                 placeholder=""
                                 type="password"
@@ -230,7 +213,7 @@ export const _PasswordConfirmForm =(props)=>{
     )
 };
 
-export const SuccessPasswordChange =(props:object)=>{
+export const SuccessPasswordChange =()=>{
 
     let authenticationProps = {
         linkName  : 'Login',

@@ -7,16 +7,13 @@ import  MainAppHoc from "containers/main/index-hoc";
 
 import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 
-import  * as action  from 'actions/actionCreators';
 import { getPost } from 'dispatch/index';
 import {store} from "store/index";
-import GetTimeStamp from 'utils/timeStamp';
-import {cacheExpired} from 'utils/helpers';
+import {cacheExpired} from 'utils';
 
 
 class  PostPage extends Component  {
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -88,28 +85,30 @@ class  PostPage extends Component  {
     componentDidMount() {
         this.isMounted = true;
         this.onPostUpdate()
-        let entities = this.props['entities'];
-        let {slug, id} =  this.props['match'].params;
-        let postById      = `post${id}`;
-        this.setState({postById, id})
+        let state:object = this.props['location'].state;
+        if (state) {
+            let id  =  state['id'];
+            let postById      = `post${id}`;
+            this.setState({postById, id})
 
-        let postData = this.getPostFromCache(postById)
-        let _cacheExpired:boolean = cacheExpired(postData);
+            let postData = this.getPostFromCache(postById)
+            let _cacheExpired:boolean = cacheExpired(postData);
 
-        if(!_cacheExpired){
-            return this.setState({postData});
-        }
+            if(!_cacheExpired){
+                return this.setState({postData});
+            }
 
-        let postStore:object = this.props['entities'].post;
-        postData = postStore[postById];
+            let postStore:object = this.props['entities'].post;
+            postData = postStore[postById];
 
-        if (postData && postData['question']) {
-            return this.setState({postData})
-        }
+            if (postData && postData['question']) {
+                return this.setState({postData})
+            }
         
-        // Data might have expired or doesn't exist in store,
-        // So we fech it from api. 
-        store.dispatch<any>(getPost(id));
+            // Data might have expired or doesn't exist in store,
+            // So we fech it from api. 
+            store.dispatch<any>(getPost(id));
+        }
     };
    
     reLoader =()=>{
@@ -134,10 +133,11 @@ class  PostPage extends Component  {
 
         let props = this.getProps();
         const post = props['postData'];
+       
         if (!post) {
             return null;
         }
-                             
+                                  
         return (
             <div className="">
                 <UnconfirmedUserWarning {...props}/>
@@ -170,6 +170,7 @@ export default MainAppHoc(PostPage);
 
 
 export const Post = props => {
+   
     const postData = props['postData'];
     let post = postData.post;
     var postProps = {
@@ -177,7 +178,7 @@ export const Post = props => {
             post
         }
 
-	return(
+    return(
         <div className="post-page" id="post-page">
             <div className="post-container">
                 <div className="post-contents"> 
@@ -187,7 +188,7 @@ export const Post = props => {
                 
             </div>
         </div>
-    );
+    )
 };
 
 

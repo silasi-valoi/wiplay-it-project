@@ -5,11 +5,7 @@ import { Router}  from "react-router-dom";
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'css/page-not-found.css';
-import 'css/admin/admin.css';
-import 'css/admin/about-admin.css';
-import 'draft-js/dist/Draft.css';
-import 'css/draft-editor/app-editor.css';
+
 import 'css/App.css';
 import 'css/index.css';
 import 'css/home.css';
@@ -20,6 +16,15 @@ import "css/mobile-question-page.css";
 import "css/desktop-question-page.css";
 
 import "css/main-sm-screen.css";
+import 'css/page-not-found.css';
+import 'css/admin/admin.css';
+import 'css/admin/about-admin.css';
+
+import 'draft-js/dist/Draft.css';
+import 'css/draft-js/draft-js-index.css';
+import 'css/draft-js/draft-js-desktop.css';
+import 'css/draft-js/draft-js-mobile.css';
+
 import "css/profile/profile-edit.css";
 import "css/profile/user-list.css";
 import "css/profile/index-user-list.css";
@@ -37,7 +42,7 @@ import 'css/authentication/index.css';
 import 'css/authentication/registration-mobile.css';
 import 'css/authentication/registration-desktop.css';
 
-import * as serviceWorker from 'utils/serviceWorker';
+import * as serviceWorker from './serviceWorker';
 import App, {history} from './App';
 import {store} from "store/index";
 

@@ -1,11 +1,13 @@
 
 import React from 'react';
 
+import { ImageView } from 'templates/profile';
+import { DraftjsMediaView} from 'templates/draft-editor'
 import AuthenticationModalPage from 'containers/authentication/auth-modal';
 import { ModalOptionsMenu } from "templates/buttons";
 import {EditProfile, DropImage} from "../main/edit-profile";
 import UserListBox from "containers/users/modal-user-list"; 
-import {NavBarMenuModalItems} from "templates/navBar";
+import { ModalMenu } from 'templates/navigations/menu';
 import AppEditor  from 'containers/draft-js-editor/editor';
 import {ModalOpener} from 'containers/modal/modal-conf'
 
@@ -31,12 +33,20 @@ export const GetModalType = (props) =>{
             return ModalOpener.optionsMenuModal(modalName, modalProps);
 
         case 'navigationMenu':
-            modalProps['modalContents'] = <NavBarMenuModalItems {...modalProps}/>
+            modalProps['modalContents'] = <ModalMenu {...modalProps}/>
             return ModalOpener.navBarMenuModal(modalName, modalProps);
 
         case 'dropImage':
             modalProps['modalContents'] = <DropImage {...modalProps}/>
             return ModalOpener.dropImageModal(modalName, modalProps);
+
+        case 'imageView':
+            modalProps['modalContents'] = <ImageView {...modalProps}/>
+            return ModalOpener.imageViewModal(modalName, modalProps)
+
+        case 'draftjsMediaView':
+            modalProps['modalContents'] = <DraftjsMediaView {...modalProps}/>
+            return ModalOpener.draftjsMediaViewModal(modalName, modalProps)
 
         case 'userList':
             modalProps['modalContents'] = <UserListBox {...modalProps}/>

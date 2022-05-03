@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import  * as action  from "actions/actionCreators";
-import { Link } from "react-router-dom";
 
 import {store } from "store/index";
 import {FollowUserBtn, LinkButton} from "templates/buttons"; 
@@ -8,22 +7,18 @@ import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
 
 import  {getIndex} from 'dispatch/index';
 import {UPDATE_USER_LIST} from 'actions/types';
-import Apis from 'utils/api';
-import {cacheExpired} from 'utils/helpers';
+import {Apis} from 'api';
+import {cacheExpired} from 'utils';
 import {QuestionComponent} from "templates/question"
 import {PostComponent} from "templates/post"
 import CommentsBox from "containers/main/comment-page";
-import {AnswersBox} from "containers/main/answer-page";
 import  AjaxLoader from "templates/ajax-loader";
 import {AnswersComponent } from "templates/answer";
-import GetTimeStamp from 'utils/timeStamp';
-import {history} from 'App'
 import  MainAppHoc from "containers/main/index-hoc";
 
 
 class HomePage extends Component<any, any> {
     public isFullyMounted = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -95,9 +90,8 @@ class HomePage extends Component<any, any> {
         let questionListById = this.state['questionListById'];
         let answerListById   = this.state['answerListById']; 
         let postListById     = this.state['postListById'];
-        let userListById     = this.state['userListById'];
 
-        let {questions, posts, answers, users} =  entities;
+        let {questions, posts, answers} =  entities;
 
         if(!questions[questionListById])return false;
         if(!answers[answerListById])return false;
@@ -372,7 +366,7 @@ export const Answers = props => {
 
 
 export const Users = props => {
-    let {userListById, entities, currentUser} = props;
+    let {userListById, entities} = props;
     let users:object  =  entities && entities.users 
     users =  users && users[userListById]; 
 
@@ -409,8 +403,8 @@ const _UserList = (props:object, userList:object[]) =>{
                 let profile_picture = profile['profile_picture'];
 
                 const linkProps:object = {
-                    linkPath:`/profile/${user['id']}/${user['slug']}/`,
-                    state:{user},
+                    linkPath : `/profile/${user['slug']}/`,
+                    state : {id : user['id']},
                 };
 
                 let editObjProps = {

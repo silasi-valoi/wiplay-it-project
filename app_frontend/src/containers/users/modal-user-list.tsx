@@ -1,21 +1,18 @@
 import React,{Component} from 'react';
-import { withRouter } from "react-router";
 import {handleSubmit, getUserList }  from "dispatch/index"
 import { UserList } from "templates/profile";
 import  AjaxLoader from "templates/ajax-loader";
 import {store } from "store/index";
 import {MobileModalNavBar, DesktopModalNavBar} from  "templates/draft-editor";
 import { PageErrorComponent } from "templates/partials";
-import Helper from 'utils/helpers';
-import {handleModalScroll} from 'containers/modal/helpers';
+import { handleModalScroll } from 'containers/modal/utils';
+import { createFormData } from 'utils';
 import {history} from "App";
-import Apis from 'utils/api';
+import {Apis} from 'api';
 
-const helper   = new Helper();
 
 class UserListBox extends Component {
     public isFullyMounted:boolean = false;
-    private subscribe;
     private unsubscribe;
 
     constructor(props) {
@@ -83,10 +80,10 @@ class UserListBox extends Component {
     }
 
     editfollowersOrUpVoters = (params) =>{
-        let { objName, obj } = params;
+        let { obj } = params;
 
         var followers      = obj.followers || obj.profile && obj.profile.followers;
-        params['formData'] = helper.createFormData({ followers });
+        params['formData'] = createFormData({ followers });
         store.dispatch<any>(handleSubmit(params)); 
     }
 
@@ -149,7 +146,7 @@ class UserListBox extends Component {
             ...this.state,
             reLoader : this.reLoader.bind(this),
             redirectToUserProfile: this.redirectToUserProfile.bind(this),
-            editfollowersOrUpVoters : this.editfollowersOrUpVoters.bind(this),
+            editFollowersOrUpVoters : this.editfollowersOrUpVoters.bind(this),
             handleScroll: this.handleScroll.bind(this),
         }
     };

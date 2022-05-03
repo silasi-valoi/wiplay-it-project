@@ -1,6 +1,4 @@
 import React from 'react';
-import { BrowserRouter, Link } from "react-router-dom";
-import { MatchMediaHOC } from 'react-match-media';
 import { Editor } from "draft-js";
 
 import {
@@ -8,18 +6,15 @@ import {
          DownVoteCommentBtn,
          OpenEditorBtn,
          OpenOptionlBtn,
-         ChangeImageBtn,
          OpenUsersModalBtn, } from 'templates/buttons';
 
 import {ButtonsBox, AuthorAvatar, AuthorDetails} from "templates/partials";
-import Apis from 'utils/api';
+import {Apis} from 'api';
+import { convertFromRaw } from 'utils';
 import  * as types  from 'actions/types';
-import Helper from 'utils/helpers';
 import RepliesConatiner from "containers/main/replies";
 import {pageMediaBlockRenderer} from 'templates/draft-editor';
 
-
-const helper   = new Helper();
 
 export const CommentsComponent = props => {
     
@@ -51,7 +46,7 @@ export const CommentsComponent = props => {
 
     let editorState;
     if (comment.comment) {
-        editorState = helper.convertFromRaw(comment.comment)  
+        editorState = convertFromRaw(comment.comment)  
     
     }
    
@@ -160,6 +155,7 @@ export const CommentsComponent = props => {
                         <div className="comment-body">
                             { editorState &&
                                 <Editor
+                                    onChange={()=> void {}}
                                     blockRendererFn={pageMediaBlockRenderer}
                                     editorState={editorState} 
                                     readOnly={true}

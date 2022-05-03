@@ -2,30 +2,28 @@ import React from "react";
 import {
     Modifier,
     SelectionState,
-    RichUtils,
-    KeyBindingUtil,
     EditorState,
     CompositeDecorator
 } from "draft-js";
 
 
 export const linkStrategy = (contentBlock, callback, contentState) => {
+
     contentBlock.findEntityRanges(character => {
         const entityKey = character.getEntity();
 
         return (
-            entityKey !== null &&
-            contentState.getEntity(entityKey).getType() === "LINK"
+            entityKey !== null && contentState.getEntity(entityKey).getType() === "LINK"
         );
     }, callback);
 };
 
 export const RenderLink = props => {
-    const { contentState, entityKey } = props;
+    const {contentState, entityKey } = props;
     const { url } = contentState.getEntity(entityKey).getData();
     return (
         <a
-            className="link"
+            className="draft-js-link"
             href={url}
             rel="noopener noreferrer"
             target="_blank"
@@ -39,24 +37,24 @@ export const RenderLink = props => {
 
 
 export const decorator = new CompositeDecorator([
-            {
-                strategy: linkStrategy,
-                component: RenderLink,
-            },
-        ]);
+        {
+            strategy: linkStrategy,
+            component: RenderLink,
+        },
+]);
 
 
 export const insertLink = (editorState, data, text='link') => {
-    //const editorState = this.state.editorState;
+    
     const contentState = editorState.getCurrentContent();
     const selection = editorState.getSelection();
     const textWithSpace = text.concat(' ');
-    console.log(textWithSpace)
+    
     // create new content with text
     const newContent = Modifier.insertText(
-      contentState,
-      selection,
-      textWithSpace,
+      	contentState,
+      	selection,
+      	textWithSpace,
     );
     
     // create new link entity
@@ -64,7 +62,7 @@ export const insertLink = (editorState, data, text='link') => {
                                                 'LINK',
                                                 'MUTABLE',
                                                 data,
-                                                false
+                                        
                                             );
       
     const entityKey = newContentWithEntity.getLastCreatedEntityKey();
@@ -72,10 +70,10 @@ export const insertLink = (editorState, data, text='link') => {
     const anchorOffset = selection.getAnchorOffset();
 
     const newSelection = new SelectionState({
-      anchorKey: selection.getAnchorKey(),
-      anchorOffset,
-      focusKey: selection.getAnchorKey(),
-      focusOffset: anchorOffset + text.length,
+      	anchorKey: selection.getAnchorKey(),
+      	anchorOffset,
+      	focusKey: selection.getAnchorKey(),
+      	focusOffset: anchorOffset + text.length,
     });
 
     // and aply link entity to the inserted text
@@ -87,18 +85,16 @@ export const insertLink = (editorState, data, text='link') => {
 
     // create new state with link text
     const withLinkText = EditorState.push(
-      editorState,
-      newContentWithLink,
-      'insert-characters',
+      	editorState,
+      	newContentWithLink,
+      	'insert-characters',
     );
 
     // now lets add cursor right after the inserted link
     const withProperCursor = EditorState.forceSelection(
-      withLinkText,
-      newContent.getSelectionAfter(),
+      	withLinkText,
+      	newContent.getSelectionAfter(),
     );
-    // update the editor with all changes
-    //this.setState({editorState: withProperCursor });
 
     return withProperCursor;
   };

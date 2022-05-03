@@ -6,7 +6,7 @@ import {AnswersComponent} from 'templates/answer';
 import {PostComponent} from 'templates/post';
 import  * as action  from 'actions/actionCreators';
 import {store} from "store/index";
-import {displaySuccessMessage} from 'utils/helpers';
+import {displaySuccessMessage} from 'utils';
 
 
 class  BookmarkContainer extends Component  {
@@ -24,6 +24,10 @@ class  BookmarkContainer extends Component  {
             answerListById: '',
             postListById:'',
         };       
+    }
+
+    static pageName(){
+        return "Bookmarks"
     }
 
     public get isMounted() {
