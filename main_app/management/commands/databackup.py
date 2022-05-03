@@ -173,7 +173,7 @@ class Command(BaseCommand):
         cursor.execute(socialaccounts)
         columns = cursor.description
         results = cursor.fetchall()
-
+        
         for k, row in enumerate(results):
             dict_results = dict()
 
@@ -185,20 +185,16 @@ class Command(BaseCommand):
             user_id = dict_results['id'] 
             extra_data = dict_results['extra_data']
             extra_data = json.loads(extra_data)
-            socialaccount = SocialAccount.objects.filter(id=user_id)
-
-            i=0
-            while i < len(socialaccount):
-                socialaccount = socialaccount[0]
+            socialaccounts = SocialAccount.objects.filter(id=user_id)
+        
+            for socialaccount in socialaccounts:
                 if socialaccount:
-                    
                     socialaccount.extra_data = extra_data
                     socialaccount.save()
 
                 else:
                     dict_results.extra_data = extra_data
                     socialaccount = self.save(SocialAccount, dict_results)
-                    
 
                 avatar_url = socialaccount.get_avatar_url()
                 avatar = download_file_from_url(avatar_url)
@@ -206,9 +202,9 @@ class Command(BaseCommand):
                 profile = user.profile
                 profile.profile_picture = avatar
                 profile.save()
-
+                
                 i += 1
-           
+                   
     def extract_socialapps(self, cursor):
         socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
         cursor.execute(socialaccount_apps)
