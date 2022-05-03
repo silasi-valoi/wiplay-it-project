@@ -5,16 +5,18 @@ certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.10
 coverage==6.2
-cryptography==36.0.1
+cryptography==36.0.2
 defusedxml==0.7.1
 Django==3.2.11
 django-allauth==0.47.0
 django-cors-headers==3.11.0
+django-extensions==3.1.5
 django-guardian==2.4.0
 django-js-asset==1.2.2
 django-mptt==0.13.4
 django-phonenumber-field==6.0.0
 django-rest-auth==0.9.5
+django-ses==3.0.1
 django-storages==1.12.3
 django-twilio==0.13.2
 django-webpack-loader==1.4.1
@@ -28,6 +30,7 @@ phonenumbers==8.12.41
 Pillow==9.0.0
 pycparser==2.21
 PyJWT==1.7.1
+pyOpenSSL==22.0.0
 python-dateutil==2.8.2
 python-dotenv==0.19.2
 python3-openid==3.2.0
@@ -39,3 +42,4 @@ six==1.16.0
 sqlparse==0.4.2
 twilio==6.63.2
 urllib3==1.26.8
+Werkzeug==2.1.1
