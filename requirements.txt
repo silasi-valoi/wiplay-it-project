@@ -27,7 +27,7 @@ jmespath==0.10.0
 mysqlclient==2.1.0
 oauthlib==3.1.1
 phonenumbers==8.12.41
-Pillow==9.0.0
+Pillow==9.0.1
 pycparser==2.21
 PyJWT==1.7.1
 pyOpenSSL==22.0.0
