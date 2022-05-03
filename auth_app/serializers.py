@@ -31,7 +31,6 @@ from main_app.models import Question, Post, Answer
 from .models import  (
 					User,
 					Profile,
-					Country,
 					PhoneNumber,
 					PhoneNumberConfirmation,
 					PhoneNumberPasswordChange)

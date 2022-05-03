@@ -31,13 +31,6 @@ class PhoneNumberAdmin(admin.ModelAdmin):
 admin.site.register(PhoneNumber, PhoneNumberAdmin)
 
 
-class CountryAdmin(admin.ModelAdmin):
-	fields = ['user', 'short_name', 'long_name']
-
-admin.site.register(Country, CountryAdmin)
-
-
-
 class PhoneNumberPasswordChangeAdmin(admin.ModelAdmin):
 	fields = ['phone_number', 'sent', 'created', 'sms_code', 'password_changed']
 
