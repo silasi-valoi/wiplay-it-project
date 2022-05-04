@@ -307,7 +307,10 @@ class Command(BaseCommand):
         data_query = model.objects.filter(id=data['id'])
         
         if len(data_query) == 0:
-            return model.objects.get_or_create(**data)
+            data, created = model.objects.get_or_create(**data)
+            if created:
+                return data
+            return None
         else:
             return data_query[0]
             
