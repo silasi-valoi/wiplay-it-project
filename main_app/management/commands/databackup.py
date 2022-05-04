@@ -212,6 +212,8 @@ class Command(BaseCommand):
 
             socialaccounts = SocialAccount.objects.filter(user=user, uid=uid, provider=provider)
             socialaccount = None
+            print('')
+            print(socialaccounts)
 
             if socialaccounts:
                 socialaccount = socialaccounts[0]
