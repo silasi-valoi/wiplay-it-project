@@ -53,10 +53,10 @@ class Command(BaseCommand):
             
             self.extract_questions(cursor)
             self.extract_answers(cursor)
-            self.extract_comments(cursor, 'answer_comments')
-            self.extract_replies(cursor, 'post_replies')
-            self.extract_comments(cursor, 'post_comments')
-            self.extract_replies(cursor, 'answer_replies')
+            #self.extract_comments(cursor, 'comments')
+            #self.extract_replies(cursor, 'replies')
+            #self.extract_comments(cursor, 'post_comments')
+            #self.extract_replies(cursor, 'answer_replies')
       
             cursor.connection.close()
                   
@@ -142,7 +142,7 @@ class Command(BaseCommand):
     def extract_replies(self, cursor, table_name=None):
         if table_name == None:
             table_name = 'replies'
-            
+
         replies = "SELECT * FROM {0}".format(table_name)
         cursor.execute(replies)
         columns = cursor.description
