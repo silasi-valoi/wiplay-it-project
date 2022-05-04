@@ -208,6 +208,7 @@ class Command(BaseCommand):
             user=dict_results.get('user_id', None)
             uid=dict_results.get('uid', None)
             provider=dict_results.get('provider', None)
+            print(dict_results)
 
             socialaccounts = SocialAccount.objects.filter(user=user, uid=uid, provider=provider)
             socialaccount = None
