@@ -208,10 +208,12 @@ class Command(BaseCommand):
                 avatar = download_file_from_url(avatar_url)
                 print(avatar)
                 user = socialaccount.user
+                print(user)
                 profile = user.profile
                 profile.profile_picture = avatar
-                print(profile.profile_picture)
+               
                 profile.save()
+                print(profile.profile_picture)
                 
                 i += 1
                    
