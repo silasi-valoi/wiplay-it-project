@@ -220,7 +220,7 @@ class Command(BaseCommand):
             elif dict_results:
                 socialaccount = self.save(SocialAccount, dict_results)  
 
-            print(socialaccounts)
+            print(socialaccount)
             upload_social_account_avatar(socialaccount)          
                   
     def extract_socialapps(self, cursor):
