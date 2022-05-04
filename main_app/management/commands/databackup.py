@@ -53,8 +53,10 @@ class Command(BaseCommand):
             
             self.extract_questions(cursor)
             self.extract_answers(cursor)
-            self.extract_comments(cursor)
-            self.extract_replies(cursor)
+            self.extract_comments(cursor, 'answer_comments')
+            self.extract_replies(cursor, 'post_replies')
+            self.extract_comments(cursor, 'post_comments')
+            self.extract_replies(cursor, 'answer_replies')
       
             cursor.connection.close()
                   
@@ -119,8 +121,11 @@ class Command(BaseCommand):
             self.save(Answer, dict_results)
             
 
-    def extract_comments(self, cursor):
-        comments = "SELECT * FROM comments"
+    def extract_comments(self, cursor, table_name=None):
+        if table_name == None:
+            table_name = 'comments'
+        
+        comments = "SELECT * FROM {0}".format(table_name)
         cursor.execute(comments)
         columns = cursor.description
         results = cursor.fetchall()
@@ -134,8 +139,11 @@ class Command(BaseCommand):
             self.save(Comment, dict_results)
 
         
-    def extract_replies(self, cursor):
-        replies = "SELECT * FROM replies"
+    def extract_replies(self, cursor, table_name=None):
+        if table_name == None:
+            table_name = 'replies'
+            
+        replies = "SELECT * FROM {0}".format(table_name)
         cursor.execute(replies)
         columns = cursor.description
         results = cursor.fetchall()
