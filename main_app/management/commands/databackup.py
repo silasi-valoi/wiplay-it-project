@@ -218,8 +218,6 @@ class Command(BaseCommand):
                 socialaccount.save()
 
             elif dict_results:
-                print(dict_results)
-                dict_results.extra_data = extra_data
                 socialaccount = self.save(SocialAccount, dict_results)  
 
             print(socialaccounts)
