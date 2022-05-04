@@ -311,7 +311,8 @@ class Command(BaseCommand):
           
 
     def save(self, model, data):
-        data_query = model.objects.filter(id=data['id'])
+        data.pop('id', False)
+        data_query = model.objects.filter(**data)
         
         if len(data_query) == 0:
             data, created = model.objects.get_or_create(**data)
