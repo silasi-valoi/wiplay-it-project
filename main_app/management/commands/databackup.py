@@ -10,6 +10,19 @@ from main_app.models import *
 from auth_app.models import User, PhoneNumber
 from auth_app.adapter import download_file_from_url
 
+def upload_social_account_avatar(socialaccount=None):
+    if not socialaccount:
+        return
+
+    avatar_url = socialaccount.get_avatar_url()
+    avatar = download_file_from_url(avatar_url)
+
+    user = socialaccount.user
+
+    profile = user.profile
+    profile.profile_picture = avatar
+    profile.save()
+
 
 class Command(BaseCommand):
     help = 'Backup data from another database to another'
@@ -176,57 +189,41 @@ class Command(BaseCommand):
 
            
     def extract_socialaccounts(self, cursor):
-        socialaccounts = "SELECT * FROM socialaccount_socialaccount"
+        query = "SELECT * FROM socialaccount_socialaccount"
 
-        cursor.execute(socialaccounts)
+        cursor.execute(query)
         columns = cursor.description
         results = cursor.fetchall()
-        print(results)
-        print(len(results))
-        #i=0
-        #while i < len(results):
-        #    print()
-        print('')
-        
+               
         for k, row in enumerate(results):
             dict_results = dict()
-            print("Key: ",k)
-            print('Row: ', row)
-
+            
             for i, value in enumerate(row):
                 key = columns[i][0]
                 dict_results[key] = value 
-                        
+                                    
             extra_data = dict_results['extra_data']
             extra_data = json.loads(extra_data)
-            socialaccounts = SocialAccount.objects.filter(id=dict_results.get('id', None))
 
-            for socialaccount in socialaccounts:
-                if socialaccount:
-                    socialaccount.extra_data = extra_data
-                    socialaccount.save()
+            user=dict_results.get('user_id', None)
+            uid=dict_results.get('uid', None)
+            provider=dict_results.get('provider', None)
 
-                else:
-                    dict_results.extra_data = extra_data
-                    socialaccount = self.save(SocialAccount, dict_results)
-        
+            socialaccounts = SocialAccount.objects.filter(user=user, uid=uid, provider=provider)
+            socialaccount = None
 
-            avatar_url = socialaccount.get_avatar_url()
+            if socialaccounts:
+                socialaccount = socialaccounts[0]
+                socialaccount.extra_data = extra_data
+                socialaccount.save()
 
-            avatar = download_file_from_url(avatar_url)
+            elif dict_results:
+                dict_results.extra_data = extra_data
+                socialaccount = self.save(SocialAccount, dict_results)  
 
-            print(avatar)
-            user = socialaccount.user
-            print(user)
-            profile = user.profile
-            profile.profile_picture = avatar
-            profile.save()
-            print(profile.profile_picture)
-
-
-
-           
-                   
+            print(socialaccounts)
+            upload_social_account_avatar(socialaccount)          
+                  
     def extract_socialapps(self, cursor):
         socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
         cursor.execute(socialaccount_apps)
