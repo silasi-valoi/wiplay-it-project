@@ -181,21 +181,26 @@ class Command(BaseCommand):
         cursor.execute(socialaccounts)
         columns = cursor.description
         results = cursor.fetchall()
+        print(results)
+        print(len(results))
+        #i=0
+        #while i < len(results):
+        #    print()
+        print('')
         
         for k, row in enumerate(results):
             dict_results = dict()
+            print("Key: ",k)
+            print('Row: ', row)
 
             for i, value in enumerate(row):
                 key = columns[i][0]
                 dict_results[key] = value 
-
-            
-            user_id = dict_results['id'] 
+                        
             extra_data = dict_results['extra_data']
             extra_data = json.loads(extra_data)
-            socialaccounts = SocialAccount.objects.filter(id=user_id)
-            print(dict_results)
-        
+            socialaccounts = SocialAccount.objects.filter(id=dict_results.get('id', None))
+
             for socialaccount in socialaccounts:
                 if socialaccount:
                     socialaccount.extra_data = extra_data
@@ -204,19 +209,23 @@ class Command(BaseCommand):
                 else:
                     dict_results.extra_data = extra_data
                     socialaccount = self.save(SocialAccount, dict_results)
+        
 
-                avatar_url = socialaccount.get_avatar_url()
-                avatar = download_file_from_url(avatar_url)
-                print(avatar)
-                user = socialaccount.user
-                print(user)
-                profile = user.profile
-                profile.profile_picture = avatar
-               
-                profile.save()
-                print(profile.profile_picture)
-                
-                i += 1
+            avatar_url = socialaccount.get_avatar_url()
+
+            avatar = download_file_from_url(avatar_url)
+
+            print(avatar)
+            user = socialaccount.user
+            print(user)
+            profile = user.profile
+            profile.profile_picture = avatar
+            profile.save()
+            print(profile.profile_picture)
+
+
+
+           
                    
     def extract_socialapps(self, cursor):
         socialaccount_apps = "SELECT * FROM socialaccount_socialapp"
@@ -303,8 +312,9 @@ class Command(BaseCommand):
         
         if len(data_query) == 0:
             return model.objects.get_or_create(**data)
+        else:
+            return data_query[0]
             
-       
-       
+              
 
        
