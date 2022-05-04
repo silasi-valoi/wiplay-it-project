@@ -36,9 +36,7 @@ class AuthenticationModalPage extends Component{
 
     componentDidMount() {
         this.isMounted = true;
-        console.log(this.props)
-  
-    }
+    };
 
     getAuthContents(authenticationType:string) {
         
@@ -63,9 +61,7 @@ class AuthenticationModalPage extends Component{
                 // code...
                 return null;
         }
-        
-
-    }
+    };
    
     render(){
         let props = {...this.props, ...this.state}

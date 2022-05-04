@@ -206,9 +206,11 @@ class Command(BaseCommand):
 
                 avatar_url = socialaccount.get_avatar_url()
                 avatar = download_file_from_url(avatar_url)
+                print(avatar)
                 user = socialaccount.user
                 profile = user.profile
                 profile.profile_picture = avatar
+                print(profile.profile_picture)
                 profile.save()
                 
                 i += 1
