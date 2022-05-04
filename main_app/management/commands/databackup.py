@@ -194,6 +194,7 @@ class Command(BaseCommand):
             extra_data = dict_results['extra_data']
             extra_data = json.loads(extra_data)
             socialaccounts = SocialAccount.objects.filter(id=user_id)
+            print(dict_results)
         
             for socialaccount in socialaccounts:
                 if socialaccount:
