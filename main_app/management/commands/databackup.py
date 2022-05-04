@@ -210,21 +210,24 @@ class Command(BaseCommand):
             provider=dict_results.get('provider', None)
             print(dict_results)
 
-            socialaccounts = SocialAccount.objects.filter(user=user, uid=uid, provider=provider)
+            socialaccounts = SocialAccount.objects.filter(user=user, uid=uid)
             socialaccount = None
-            print('')
+           
             print(socialaccounts)
 
             if socialaccounts:
+                print('Updating existing socia user')
                 socialaccount = socialaccounts[0]
                 socialaccount.extra_data = extra_data
                 socialaccount.save()
 
             elif dict_results:
+                print('Creating new social user')
                 dict_results['extra_data'] = extra_data
                 socialaccount = self.save(SocialAccount, dict_results)  
 
             print(socialaccount)
+            print('')
             upload_social_account_avatar(socialaccount)          
                   
     def extract_socialapps(self, cursor):
