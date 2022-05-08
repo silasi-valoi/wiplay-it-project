@@ -148,6 +148,8 @@ class Command(BaseCommand):
         user = None
 
         for u in users:
+            print(u)
+            print(u)
             if u and u['id'] == id:
                 search_data = {
                     "email":u['email'],
