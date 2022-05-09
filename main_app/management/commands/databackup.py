@@ -130,6 +130,9 @@ class Command(BaseCommand):
                 elif key == 'add_question':
                     key = 'question'
 
+                elif key == 'add_answer':
+                    key = 'answer'
+
                 elif key == 'primary_number':
                     key = 'phone_number'
 
