@@ -210,6 +210,7 @@ class Command(BaseCommand):
 
         for answer in answers:
             user = self.get_user(answer['author_id'])
+            print(answer)
             if user:
                 answer['author_id'] = user.id
             
@@ -332,13 +333,10 @@ class Command(BaseCommand):
         query = "SELECT * FROM socialaccount_socialtoken"
         self.database_table = 'socialaccount_socialtoken'
         social_tokens = self.serialize_data_query(cursor, query)
-        print(social_tokens)
         accounts = self.social_accounts
-        print(accounts)
-
+        
         for token in social_tokens:
-            accounts = self.social_accounts
-            
+                        
             search_data = {
                 "app":token['app_id'],
                 "account":token['account_id'],
