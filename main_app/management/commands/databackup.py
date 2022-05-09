@@ -31,7 +31,7 @@ class Command(BaseCommand):
     help = 'Backup data from another database to another'
     database_name = None
     database_table = None
-    current_users = None
+    social_accounts = None
     previous_users = None
 
 
@@ -148,19 +148,17 @@ class Command(BaseCommand):
         user = None
 
         for u in users:
-            print(u)
-            print(u)
-            if u and u['id'] == id:
+            if isinstance(u, dict) and u['id'] == id:
                 search_data = {
                     "email":u['email'],
-                    "first_name":u['first_name'],
+                   "first_name":u['first_name'],
                     "last_name":u['last_name'],
-                    
-                    }
+                }
                 
                 if  self.data_exist(User, search_data):
                     user = User.objects.get(**search_data)
                     return user
+
         return user
 
 
@@ -285,9 +283,9 @@ class Command(BaseCommand):
     def extract_socialaccounts(self, cursor):
         query = "SELECT * FROM socialaccount_socialaccount"
         self.database_table = 'users'
-        social_accounts = self.serialize_data_query(cursor, query)
+        self.social_accounts = self.serialize_data_query(cursor, query)
         
-        for account in social_accounts:
+        for account in self.social_accounts:
 
             extra_data = account['extra_data']
             extra_data = json.loads(extra_data)
@@ -317,6 +315,7 @@ class Command(BaseCommand):
         social_apps = self.serialize_data_query(cursor, query)
 
         for app in social_apps:
+           
             search_data = {
                 "provider":app['provider'],
                 "name":app['name'],
@@ -333,11 +332,16 @@ class Command(BaseCommand):
         query = "SELECT * FROM socialaccount_socialtoken"
         self.database_table = 'socialaccount_socialtoken'
         social_tokens = self.serialize_data_query(cursor, query)
+        print(social_tokens)
+        accounts = self.social_accounts
+        print(accounts)
 
         for token in social_tokens:
+            accounts = self.social_accounts
+            
             search_data = {
-                "app":token['app'],
-                "account":token['account'],
+                "app":token['app_id'],
+                "account":token['account_id'],
                 "token":token['token'],
                 "token_secret":token['token_secret']
 
