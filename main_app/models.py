@@ -279,6 +279,9 @@ class AboutCompany(models.Model):
     def __str__(self):
         return self.about_title
 
+    class Meta:
+        db_table = "about_company" 
+
 
 class TermsAndService(models.Model):
     terms    = models.TextField( blank=True)
@@ -286,6 +289,9 @@ class TermsAndService(models.Model):
 
     def __str__(self):
         return self.terms
+
+    class Meta:
+        db_table = "terms_and_service" 
 
 
     
@@ -327,42 +333,6 @@ class FeedBack(AdminMessage):
     class Meta:
         db_table = "feedbacks"
            
-
-class FootballClubs(models.Model):
-    name    = models.CharField(max_length=50, blank=True)
-    badge   = models.ImageField(upload_to='badge_image/',blank=True)
-    followers = models.IntegerField(default=0)
-
-
-    PSL_FOOTBALL_CLUBS = (
-            ('ACT','Ajax Cape town'),
-            ('AMU','Amazulu'),
-            ('BAR','Baroka'),
-            ('BW','Bidvest Wits'),
-            ('BFC', 'Bloemfontein Celtic'),
-            ('CTC', 'Cape Town city'),
-            ('CHU', 'Chippa United'),
-            ('FS', 'Free State stars'),
-            ('GD', 'Golden Arrows'),
-            ('KC', 'Kaizer Chiefs'),
-            ('MU', 'Maritzburg United'),
-            ('MS', 'Mamelodi Sundowns'),
-            ('OP', 'Orlando Pirates'),
-            ('PS', 'Platnum Stars'),
-            ('PC', 'Polokwane City'),
-            ('SU', 'SuperSport United'),
-            )
-
-    def __str__(self):
-        return self.name
-
-
-    class Meta:
-         permissions = (
-
-                ('change_followers', 'Can Change Followers'),
-                )
-
  
 
 class DraftEditorMediaContent(models.Model):
@@ -395,3 +365,7 @@ class DefaultProfilePicture(models.Model):
                         blank=True,
                         default="default-profiles/user-image-placeholder.png"
                       )
+
+    class Meta:
+        db_table = "default_profile_picture" 
+        

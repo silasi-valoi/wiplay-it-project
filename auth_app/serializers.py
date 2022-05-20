@@ -131,14 +131,11 @@ class PhoneNumberSerializer(serializers.Serializer):
 	def save(self, request):
 		self.request = request
 		phone_number = self.validated_data.get('phone_number')
-		print(phone_number)
-		print(request.user.is_authenticated)
-					
+						
 		if phone_number_exists(phone_number) and request.user.is_authenticated:
 			phone_numbers = get_phone_numbers(phone_number, request)
 			phone_numbers = get_for_user(phone_numbers, request.user)
-			print(phone_numbers)
-			
+				
 			return phone_numbers[0] if phone_numbers else None
 							
 		return None

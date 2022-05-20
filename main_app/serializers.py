@@ -372,6 +372,8 @@ class IndexSerializer(BaseSerializer):
 		post_bookmarks = Post.objects.filter(
 								posts__author=self.current_user()
 							)
+		print(answer_bookmarks)
+		print(post_bookmarks)
 		answer_bookmarks_serialiser = AnswerReadSerializer(
 											answer_bookmarks, 
 											context=self.context,
