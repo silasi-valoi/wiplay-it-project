@@ -214,3 +214,5 @@ export const UnconfirmedUserWarning =(props)=> {
     );
 };
 
+//We just sent an email to the address: silassibaloy@gmail.com
+//#Please check your email and click on the link provided to verify your address.

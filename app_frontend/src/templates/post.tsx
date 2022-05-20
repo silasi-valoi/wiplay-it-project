@@ -84,7 +84,7 @@ export const PostComponent = props => {
         currentUser,  
         isAuthenticated,
         actionType : types.CREATE_BOOKMARK,
-        apiUrl : Apis.addPostBookMarkApi(post.id)
+        apiUrl : Apis.addPostBookmarkApi(post.id)
     };
 
     let EditorModalBtn     = <OpenEditorBtn {...createObjProps}/>; 

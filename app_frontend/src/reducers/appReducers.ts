@@ -84,6 +84,7 @@ export function entities(state:object=InitialState(), action:object):object {
    
     switch (action['type']){
         case 'SERVER_ERROR':
+            console.log(action)
             return updateStateEntyties('errors', action, state);
 
         case 'ALERT_MESSAGE':
@@ -114,6 +115,7 @@ export function entities(state:object=InitialState(), action:object):object {
             return updateStateEntyties('modal', action, state);
 
         case 'AUTH_FORM':
+            
             return updateStateEntyties('authForm', action, state)
 
         case 'EMAIL_ADDRESS_REMOVE':
@@ -433,34 +435,17 @@ export function entities(state:object=InitialState(), action:object):object {
                 bookmarksType = 'posts'
             }
 
-            let cache:object = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
-            let indexData:object = cache['index'];
+            let indexData:object = getDataFromCache('index');
             
             let bookmarks:object = indexData && indexData['bookmarks'];
-            let bookmarksCache:object[] = bookmarks && bookmarks[bookmarksType];
+                   
+            bookmarks[bookmarksType] = payLoad[bookmarksType];
+            payLoad['bookmarks'] = bookmarks;
 
-            let newBookmarks = payLoad[bookmarksType].bookmarks;
-                                   
-            for (var i = 0; i < bookmarksCache.length; i++) {
-                let bookmark:object = bookmarksCache[i];
-                let _newBookmark = newBookmarks[i];
-                
-                if (_newBookmark && bookmark['id'] ===  _newBookmark['id']) {
-                    newBookmarks = []
-                    break
-                }
-            }
-
-            bookmarksCache = [...bookmarksCache, ...newBookmarks];
-            
-            delete action['payLoad'][bookmarksType]
+            delete payLoad[bookmarksType]
             delete action['byId']
-
-            bookmarks[bookmarksType] = bookmarksCache
-                  
-            indexData['bookmarks'] = bookmarks
-            action['payLoad'] = {...indexData};
-            
+       
+                        
             updateStateEntyties('index', action, state);
 
             let message = getBookmarkSuccessMsg(bookmarksType);

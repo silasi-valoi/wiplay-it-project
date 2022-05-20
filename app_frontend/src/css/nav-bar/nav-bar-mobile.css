@@ -19,44 +19,49 @@
         width : 100%;
     }
 
-    .mobile-navbar-bottom-contents {
-        display :  flex;
-        width  : 100%;
+    .navbar-contents-top {
+        border: px solid blue;
     }
 
-    .add-question-box, .add-post-box {
-        width : 100%;
+    .navbar-contents-top ul {
+        border: px solid blue;
+        width: 100%;
+        display: flex;
     }
 
-    .add-question-box li, .add-post-box li {
-        border-bottom : 1px solid #D5D7D5;
-        margin : 7px 13px 7px; 
+    .nav-bar-search {
+        justify-content: left;
+        border: px solid blue;
+    }
 
+    .search-btn {
+        border: px solid red;
+        height: 30px;
+        margin-left : 5px;
+        margin-top: 5px;
+        color: #fefefe;
+    }
+
+    .add-question-box {
+        justify-content: right;
+        border: px solid black;
     }
 
     .create-question-btn, .create-post-btn {
-        color       : #A33F0B;
-        font-size   : 9px !important; 
+        color : #ffff;
+        font-size : 12px; 
+        height: 30px;
         font-family : 'Oswald'; 
         font-weight : bold;
-        width       : 100%;
+        margin-right : 10px;
+        margin-top: 5px;
+        border: 1px solid #fefefe;
+        border-radius: 15px;
     }
-
-    .post-question-btn-box p {
-       margin-top: 8px;
+      
+    .navbar-login-box button {
+        border : 1px solid #fefefe;
     
-    }
-    
-    .log {
-        font-family: 'Signika';
-        font-size: 22px;
-        color: white;
-        padding: 10px;
-    }
-    
-    .navbar-login-link button {
-        border     : 1px solid #fefefe;
-        margin-top : 10px; 
     }
 
     .partial-navbar-login-link button {
@@ -64,50 +69,44 @@
     }
     
     .partial-navbar-login-link,
-    .navbar-login-link {
+    .navbar-login-box {
         width   : 100%;
         display: flex;
-        padding : 0 7px 7px; 
     }
 
-    .navbar-login-link {
+    .navbar-login-box {
         width: auto;
+        margin-top: 7px;
+        justify-content: right;
+        padding-right: 10px;
     }
 
     .logo-contents {
         justify-content: center;
-        display: flex;
-        width: 100%;
-        
+        border : px solid black;
+        padding: 5px 0 !important;
     }
 
     .logo {
-        margin-left: 30%;
+        font-family: 'Signika';
+        font-size: 20px;
+        margin: 0 !important;
+        color: white;
+        border  : px solid blue;
     }
 
-    .logo-img-box {
-        border-radius: 50%;
-        width        : 50px;
-        height       : 50px;
-        border       : px solid red;
-    }
-
-    .logo-img {
-        border-radius: 50%;
-        width        : 50px;
-        height       : 50px;
-    }
-
-
-    .mobile-navbar-bottom {
+    .navbar-bottom {
         display: flex;
         background: white;
         width: 100%;
     }
 
+    .navbar-bottom-contents {
+        width : 100%;
+    }
 
     .navigation-menu {
-        border       : 1px solid black;
+        border       : 1px solid rgb(155, 149, 149);
         display      : flex;
         width        : 100%;
         padding-left : 7px;
@@ -123,14 +122,25 @@
         margin          : 10px 0 0;
     }
 
-    .navigation-img-item { 
-        padding : 7px  25px 7px 15%;  
+    .navbar-menu {
+        width: 100%;
+    }
+
+    .navbar-item {
+        width  : 100%;
+        display: flex;
+        justify-content: center;
     
     }
     
-    .navigation-img-box, #nav-bar-modal-men {
+    .navigation-img-box {
         justify-content: flex-end;
         display: flex;
+        border: px solid blue;
+    }
+
+    .navbar-item .nav-bar-img {
+        margin-top: 5px;
     }
 
     .nav-bar-img {

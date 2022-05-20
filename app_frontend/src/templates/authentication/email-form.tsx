@@ -135,6 +135,7 @@ export const EmailPasswordResetSuccess =(props)=>{
 
 
 export const SmsCodeForm = props => {
+    
     let {submitting,
         onSignUpForm,
         onPasswordResetForm,
@@ -154,7 +155,7 @@ export const SmsCodeForm = props => {
     let error = form.error; 
 
     let onSubmitStyles = props['onSubmitStyles']; 
-
+    
     return(
         <div className="sms-code-form-box" id="form-container">
             <ul className="form-title-box">

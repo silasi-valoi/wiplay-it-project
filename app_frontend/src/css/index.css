@@ -15,10 +15,6 @@
     
 }
 
-.alert {
-    
-}
-
 .alert-box {
     justify-content : center;
     display         : flex;
@@ -88,23 +84,11 @@
 
 }
 
-.author-img-box {
-}
-
-.author-name-box {
-
-}
-
 .time-created {
     font-size : 11px;
     color     : grey;
     font-family : 'Open Sons Condensed';
 }
-
-.author-img {
-
-}
-
 
 .author-img a img {
     border : 1px solid  #D5D7D5;
@@ -608,9 +592,6 @@
 
     body {
         background : #F6F6F6;
-    }
-
-    .app-container{
     }
 
     .app-box-container {

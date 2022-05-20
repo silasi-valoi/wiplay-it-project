@@ -15,14 +15,11 @@
     width      : 100%;
     background : #edf0f3;
     border-radius: 7px;
-   
 }
 
 .password-form-description-box {
     font-family: 'Oswald';
  }
-
-
 
 .email-confirm-title-box,
 .form-title-box {
@@ -128,19 +125,34 @@
     position: relative;
 }
 
+.phone-number-input,
 .auth-input-field input {
     border    : 1px solid #D2D2D2;
     font-size : 15px;
-
 }
 
+.phone-number-input {
+    width: 100% !important;
+}
+
+.phone-number-input:active, 
+.phone-number-input:focus,
 .auth-input-field input:active, 
 .auth-input-field input:focus {
     border: 1px solid #5384e5 !important;
     outline: 0 !important;
-    box-shadow: 0 !important;
+    box-shadow: none !important;
 }
 
+.auth-input-field .toggle-input {
+    color : #5384e5;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.auth-input-field .toggle-input:hover {
+    cursor: pointer;
+}
 
 .navbar-title-box,
 .authenticated-title,
@@ -270,7 +282,7 @@
     font-weight : bold;
 }
 
-
+.phone-number-label,
 .floating-label {
     position: absolute;
     pointer-events: none;
@@ -283,6 +295,13 @@
  
 }
 
+.phone-number-label {
+    position: inherit;
+    top:0;
+    left: 0;
+
+}
+
 textarea:not(:empty)  ~ .floating-label,
 input:not([value=''])  ~ .floating-label,
 textarea:focus ~ .floating-label, 
@@ -291,7 +310,6 @@ input:focus ~ .floating-label {
     left: 0;
     font-size: 12px;
 }
-
 
 .name-field-box2 {
   margin-left: 1%;

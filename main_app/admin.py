@@ -55,7 +55,7 @@ class FeedBackAdmin(admin.ModelAdmin):
 admin.site.register(FeedBack, FeedBackAdmin)
 
 class AnswerBookmarkAdmin(admin.ModelAdmin):
-    fields = ['answer', 'author', ]
+    fields = ['answers', 'author', ]
 
 
 admin.site.register(AnswerBookmark, AnswerBookmarkAdmin)

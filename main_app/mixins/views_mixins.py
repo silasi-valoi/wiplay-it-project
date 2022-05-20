@@ -183,6 +183,7 @@ class CreateMixin(BaseMixin):
 		
 	def create(self, data):
 		author = self.request.user;	
+		print(data)
 
 		serializer = self.get_serializer(data=data)
 
@@ -191,6 +192,7 @@ class CreateMixin(BaseMixin):
 
 		if data.get('about_text', None) is None:
 			instance = serializer.save(author=author)
+			print(instance)
 			
 		else:
 			instance = serializer.save()
@@ -229,6 +231,13 @@ class DestroyMixin(BaseMixin):
 	def perform_destroy(self, instance):
 		instance.deleted = True
 		instance.save()
+
+	
+class DestroyModelMixin(DestroyMixin):
+	
+	def perform_destroy(self, instance):
+		instance.delete()
+		
 		
 	
 	

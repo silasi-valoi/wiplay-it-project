@@ -14,7 +14,8 @@ import {displaySuccessMessage} from 'utils';
 
 import {formIsValid,
         validatePhoneNumber,
-        validateEmail,} from 'containers/authentication/utils';   
+        validateEmail,
+        authSubmit,} from 'containers/authentication/utils';   
 
 import {store} from "store/index";
 import {authenticateWithGet}  from "dispatch/index"
@@ -71,17 +72,37 @@ class AccountConfirmationPage extends Component{
  
     resendConfirmation =()=> {
         let currentUser:object = this.state['currentUser'];
-        let currentForm:object = this.state['form'];
-        let email:string = currentUser &&  currentUser['email'];
-        
-        if (email) {
-            this._SetForm('emailResendForm', {form:{email}});
+        let currentForm:object = this.props['authForm']['form'];
+        let userName:string = currentUser &&  currentUser['email'];
+        console.log(currentUser)
+        console.log(currentForm)
+
+        let isPhoneNumber = validatePhoneNumber(userName);
+        let isEmail = validateEmail(userName);
+        let formName:string;
+        let options:object;
+
+        if (isPhoneNumber) {
+            formName = 'accountConfirmationSmsResendForm';
+            options = {
+                form : {'phone_number':userName}
+            }
+
+        }else if(isEmail){
+            formName = 'accountConfirmationEmailResendForm';
+            options = {
+                form : {'email':userName}
+            }
             
-            const submit:Function = this.props['onSubmit'];
-            setTimeout(()=> {
-                submit()
-            }, 500);
         }
+
+        this._SetForm(formName, options);
+            
+        const submit:Function = this.props['onSubmit'];
+        setTimeout(()=> {
+            authSubmit(true);
+        }, 500);
+        
     };
     
     getProps=():object =>{
@@ -94,9 +115,9 @@ class AccountConfirmationPage extends Component{
      
     render() {
         let props = this.getProps();
-        let  submitting = props['authForm']['submitting'];
+        let submitting = props['authForm']['submitting'];
         let onSubmitStyles = props['onSubmitStyles'];
-        
+                
         return (
             <div className="">
                 <fieldset style={onSubmitStyles} disabled={submitting} >
@@ -129,7 +150,7 @@ class AccountConfirmationPage extends Component{
     };
 };
 
-export default AuthenticationHoc(AccountConfirmationPage);
+export default AccountConfirmationPage;
 
 
 const SmsCodeHelperText = (props)=>{
@@ -152,7 +173,8 @@ const SmsCodeHelperText = (props)=>{
 
 const EmailConfirmation = (props)=>{
     
-    let {successMessage, form,  submitting, currentUser} = props['authForm'];
+    let {successMessage, form,  submitting} = props['authForm'];
+    const currentUser = props.currentUser;
 
     let email = currentUser && currentUser.email;
     form = form && form['emailResendForm'];
@@ -245,7 +267,7 @@ export class AccountEmailConfirmationPage extends Component{
         
         let formName:string = 'AccountConfirmation'
         let {key} = this.props['match'].params; 
-        let apiUrl = Apis.accountConfirmApi(key);
+        let apiUrl = Apis.accountConfirmationEmailApi(key);
         key && store.dispatch<any>(authenticateWithGet({key, apiUrl, formName}));  
     };
 

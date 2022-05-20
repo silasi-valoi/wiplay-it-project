@@ -131,22 +131,21 @@ class PostReplyView(BaseApiView):
 class PostChildReplyView(PostReplyView):
 	fields_to_update = get_model_fields('reply_child_fields') 
 	
-	
-		       
+			       
 class PostReplyDetailView(PostReplyView):
 	serializer_class = PostReplyReadSerializer
 	
 
-class AnswerBookMarkView(BaseApiView):
+class AnswerBookmarkView(BaseApiView):
 	queryset = AnswerBookmark.objects.all()
 	serializer_class = AnswerBookmarkSerializer
-	fields_to_update = {'related_field':'answer'}
+	fields_to_update = {'related_field':'answers'}
 
 
-class PostBookMarkView(BaseApiView):
+class PostBookmarkView(BaseApiView):
 	queryset = PostBookmark.objects.all()
 	serializer_class = PostBookmarkSerializer
-	fields_to_update = {'related_field':'post'}
+	fields_to_update = {'related_field':'posts'}
 	
 			
 			

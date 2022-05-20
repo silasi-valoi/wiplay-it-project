@@ -60,7 +60,7 @@ export const ProfileComponent = props => {
 
     const EditProfileLink = ()=>{
         const pathToEditProfile = userProfile  && 
-                 `/profile/update/${userProfile.slug}/`;
+                 `/update/profile/${userProfile.slug}/`;
         return(
             <button 
                 className="btn-sm edit-user-profile"

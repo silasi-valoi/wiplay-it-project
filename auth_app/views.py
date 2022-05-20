@@ -41,7 +41,8 @@ from main_app.mixins.views_mixins import RetrieveMixin, UpdateObjectMixin
 from main_app.views import BaseApiView
 from .models import (User, PhoneNumberConfirmation)
 
-from .serializers import (CustomRegisterSerializer,
+from .serializers import (RegisterEmailSerializer,
+                          RegisterPhoneNumberSerializer,
                           CustomLoginSerializer,
                           PhoneNumberConfirmationSerializer,
                           PasswordChangeConfirmationSerializer,
@@ -83,7 +84,7 @@ def jwt_response_payload_handler(token, user=None, request=None):
 
 class CustomRegisterView(RegisterView):
 	queryset = User.objects.all()
-	serializer_class = CustomRegisterSerializer
+	serializer_class = RegisterEmailSerializer
 
 	def get_response_data(self, user):
 
@@ -103,9 +104,8 @@ class CustomRegisterView(RegisterView):
 			return TokenSerializer(user.auth_token).data
 
 	def create(self, request, *args, **kwargs):
-		username = request.data.get('email', None)
-		self.is_phone_number  = is_using_phone_number(username)
-		self.is_email_address = is_using_email_address(username)
+		email = request.data.get('email', None)
+		self.is_email_address = is_using_email_address(email)
 			
 		serializer = self.get_serializer(data=request.data)
 		serializer.is_valid(raise_exception=True)
@@ -138,7 +138,11 @@ class CustomRegisterView(RegisterView):
                        None)
 
 		return user
+
+class RegisterPhoneNumberView(CustomRegisterView):
+	serializer_class = RegisterPhoneNumberSerializer
 	
+		
 		
 class CustomLoginView(LoginView):
 	queryset = User.objects.all()
@@ -264,16 +268,39 @@ class VerifyPhoneNumberView(APIView):
 		return Response({'non_field_errors':msg}, status=status.HTTP_400_BAD_REQUEST )
 
 
-class SendAccountConfirmationView(APIView):
+class SendAccountConfirmationEmailView(APIView):
 	permission_classes = (AllowAny,)
 
 	def get_serializer(self, *args, **kwargs):
 		return AccountConfirmationResendSerializer(*args, **kwargs)
 		
+	def post(self, request, *args, **kwargs):
+		serializer = self.get_serializer(data=request.data)	
+		serializer.is_valid(raise_exception=True)
 
-	def send_email_confirmation(self, user=None):
+		self.user = serializer.validated_data.get('user', None)
 		if self.user:
 			send_email_confirmation(self.request, self.user)
+		
+		return Response(self.get_response(), status=status.HTTP_201_CREATED)
+		
+	def get_response(self):
+		if self.user:
+			email = self.user.email
+			msg = _('Account confirmation e-mail has been resent')
+			return{
+				'detail':msg,
+				'email':email
+			}
+		return {}
+
+
+class SendAccountConfirmationSmsView(APIView):
+	permission_classes = (AllowAny,)
+
+	def get_serializer(self, *args, **kwargs):
+		return PhoneNumberSerializer(*args, **kwargs)
+		
 					
 	def send_phone_number_confirmation(self, phone_number=None):
 		if phone_number:
@@ -281,48 +308,31 @@ class SendAccountConfirmationView(APIView):
 			return phone_number
 
 	def post(self, request, *args, **kwargs):
-		email = request.data.get('email')
-		self.is_phone_number  = is_using_phone_number(email)
-		self.is_email_address = is_using_email_address(email)
-
 		serializer = self.get_serializer(data=request.data)	
-
 		serializer.is_valid(raise_exception=True)
 
-		self.user = serializer.validated_data.get('user', None)
+		self.phone_number = serializer.save(request)
 		
-		if self.user:
-			if self.is_phone_number:
-				self.phone_number = serializer.validated_data.get('phone_number')
-				self.send_phone_number_confirmation(self.phone_number)
+		if self.phone_number:
+			self.send_phone_number_confirmation(self.phone_number)
 
-			elif self.is_email_address:
-				self.send_email_confirmation(self.user)
-
-		response_data = self.get_response()
-		return Response(response_data, status=status.HTTP_201_CREATED)
+		return Response(self.get_response(), status=status.HTTP_201_CREATED)
 		
 
 	def get_response(self):
-		
-		if self.user and self.is_phone_number:
-			phone_number = self.phone_number
-
+		phone_number = self.phone_number
+		if phone_number:
 			msg = _('Account confirmation code has been resent')
 			return {
 				'detail':msg,
 				'phone_number':phone_number.national_format
 			}
 
-		elif self.user:
-			email = self.user.email
-			msg = _('Account confirmation e-mail has been resent')
-			return{
-				'detail':msg,
-				'email':email
-			}
+		return {
+			'detail' : 'Phone number does not exist.'
+		}
+		
 
-		return {}
 
 class EmailView(APIView):
 	def get_serializer(self, *args, **kwargs):

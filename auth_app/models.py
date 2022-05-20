@@ -36,7 +36,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     is_active       = models.BooleanField('active',default=True)
     is_staff        = models.BooleanField('staff', default=False)
     is_confirmed    = models.BooleanField('Is confirmed', default=False)
-    country         = models.CharField(max_length=100, null=True)
         
     objects = UserManager()
 
@@ -148,16 +147,16 @@ def create_profile(sender, instance, created, **kwargs):
 
 
 class PhoneNumber (models.Model):
-    dial_code =  models.CharField(max_length=10, null=True)
-    format =  models.CharField(max_length=50, null=True)
-    country_name =  models.CharField(max_length=100, null=True)
-    country_code =  models.CharField(max_length=10, null=True)
-    phone_number  = models.CharField(max_length=50, null=True)
-    national_format = models.CharField(max_length=50, null=True)
-    inter_format    = models.CharField(max_length=50, null=True)
-    verified        = models.BooleanField(default=False)
-    primary         = models.BooleanField(default=False)
-    user            = models.ForeignKey(settings.AUTH_USER_MODEL,
+    dial_code = models.CharField(max_length=10, null=True)
+    format = models.CharField(max_length=50, null=True)
+    country_name = models.CharField(max_length=100, null=True)
+    country_code = models.CharField(max_length=10, null=True)
+    phone_number = models.CharField(max_length=50, null=True)
+    national_format = models.CharField(max_length=100, null=True)
+    inter_format = models.CharField(max_length=100, null=True)
+    verified = models.BooleanField(default=False)
+    primary = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              verbose_name=_('user'),
                              related_name='phone_numbers',
                              on_delete=models.CASCADE,
@@ -175,30 +174,13 @@ class PhoneNumber (models.Model):
     class Meta:
         db_table = 'users_phone_numbers'
 
-    def get_country_code(self):
-    
-        return self.country_code.upper()
-        
-    def set_national_format(self, phone_number):
-        country = self.get_country_code()
        
-        if not country:
-            return
-
-        print(country, phone_number)
-        
-        self.national_format = get_national_number_format(country, phone_number)
+    def set_national_format(self, phone_number):
+        self.national_format = get_national_number_format(self.country_code, phone_number)
         self.save()
 
     def set_inter_format(self, phone_number):
-        country = self.get_country_code()
-        if not country:
-            return
-
-        print(country, phone_number)
-        
-
-        self.inter_format = get_inter_number_format(country, phone_number)
+        self.inter_format = get_inter_number_format(self.country_code, phone_number)
         self.save()
 
     def set_primary(self, primary_number):

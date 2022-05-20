@@ -41,8 +41,7 @@ export const QuestionComponent = props => {
             obj       : question,
             currentUser,
             linkName  : linkName,
-           
-        };
+    };
 
 
     let editObjProps = {
@@ -57,7 +56,7 @@ export const QuestionComponent = props => {
         apiUrl : Apis.updateQuestionApi(question.id)
     };
 
-    let answersById = ()=>{
+    let answersById = () => {
         if (question.user_has_answer) {
             return `answers${question.id}`
         }

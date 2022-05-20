@@ -35,7 +35,9 @@
     overflow-y  : hidden;
     border-top  : 1px solid #D5D7D5;
     border-bottom : 1px solid #D5D7D5;
-    padding : 5px 0;
+    padding : 5px 10px;
+    
+
 }
 
 .index-users-box {
@@ -51,6 +53,27 @@
     
 }
 
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    background-color: #EEEDED;
+    border-radius: 65%;
+    z-index: 999;
+    border : 1px solid  #D5D7D5;
+    
+    
+}
+
+.scroll-btn-left {
+    left: 15px;
+    
+}
+
+
+.scroll-btn-right {
+    right: 12px;
+    
+}
 
 .index-user-list-contents {
    border : px solid black;
@@ -134,6 +157,10 @@
 
 
 @media (max-width: 980px) {
+
+    .scroll-btn {
+        top : 105%
+    }
  
 }
 

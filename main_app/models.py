@@ -231,10 +231,11 @@ class Bookmark(models.Model):
    
 
 class AnswerBookmark(Bookmark):
-    answer = models.ForeignKey(
+    answers = models.ForeignKey(
                         Answer, 
                         on_delete=models.CASCADE,
                         blank=True, 
+                        null=True,
                         related_name="answers"
                     )
       
@@ -242,16 +243,20 @@ class AnswerBookmark(Bookmark):
         db_table = "answer_bookmark"
 
     def __str__(self):
-        return self.answer.answer
+        if self.answers:
+            return self.answers.answer
+
+        return ""
 
     def save(self, *args, **kwargs):
         super().save()
 
 class PostBookmark(Bookmark):
-    post = models.ForeignKey(
+    posts = models.ForeignKey(
                     Post, 
                     on_delete=models.CASCADE,
                     blank=True,
+                    null=True,
                     related_name="posts" 
                 )
 
@@ -259,7 +264,10 @@ class PostBookmark(Bookmark):
         db_table = "post_bookmark"
 
     def __str__(self):
-        return self.post.title
+        if self.posts:
+            return self.posts.title
+
+        return ""
 
 
 

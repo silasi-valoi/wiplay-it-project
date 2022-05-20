@@ -3,13 +3,13 @@ import {Apis} from 'api';
 import {toggleAuthForm} from 'actions/actionCreators';
 import {authenticate} from 'dispatch/index';
 import {createFormData} from 'utils';
-import  * as action  from 'actions/actionCreators';
 
 
 
 export default class FormValidator {
     public formName:string;
     public form:object;
+    public formErrors:object;
     public isEmail:boolean;
     public isPhoneNumber:boolean;
     
@@ -26,8 +26,9 @@ export default class FormValidator {
     };
 
     isClean(){
-        let errors = this.errors()
-        if (errors) {
+        this.validate();
+
+        if (this.formErrors) {
             return false;
 
         }else{
@@ -49,44 +50,62 @@ export default class FormValidator {
         return false;
     };
 
-    errors(){
-        let formName = this.formName;
+    validate = () => {
         let form:object = this.form;
-               
-        let formErrors;
+
+        console.log(form)          
+        
         let isValid = formIsValid(form);
-
         if (!isValid) {
-            formErrors = {non_field_errors:['Please fill in all fields']};
+            this.formErrors = {non_field_errors:['Please fill in all fields']};
+            return
         }
-   
-        let email = form['email'];
-        if (email) {
+        
+        let formName = this.formName;
+
+        if (formName === 'signUpForm') {
+            this. validateSignupForm(form);
             
-            this.isPhoneNumber = this._isPhoneNumber(email);
-            this.isEmail = this._isEmail(email);
-
-            if (!this.isEmail && !this.isPhoneNumber) {
-                if (formName === 'signUpForm' || 
-                    formName === 'loginForm' || 
-                    formName === 'passwordResetForm') {
-                    formErrors = {email:['Please enter a valid email or phone number']};
-                }else{
-
-                    formErrors = {email:['Please enter a valid email address.']};
-                }
-            }
+        } else if (formName === 'loginForm'){
+            this. validateLoginForm(form)
+            
         }
-               
-        return formErrors;
     };
 
+
+    validateSignupForm = (form:object) => {
+        let email:string = form['email'];
+        let phoneNumber:string = form['phone_number'];
+
+        this.isPhoneNumber = this._isPhoneNumber(phoneNumber);
+        this.isEmail = this._isEmail(email);
+        console.log("Phone Number: ",this.isPhoneNumber, phoneNumber)
+        console.log("Email Address: ",this.isEmail, email)
+ 
+        if (phoneNumber && !this.isPhoneNumber) {
+            this.formErrors = {email:['Please enter a valid phone number']};
+
+        }else if(email && !this.isEmail){
+            this.formErrors = {email:['Please enter a valid email address.']};
+        }
+    };
+
+
+    validateLoginForm = (form:object) => {
+        let email = form['email'];
+        this.isPhoneNumber = this._isPhoneNumber(email);
+        this.isEmail = this._isEmail(email);
+
+    };
+
+   
 };
 
 
-export const authSubmit =(self:object, useToken:boolean=false, formName?:string, action?:Function)=>{
+export const authSubmit =(useToken:boolean=false, formName?:string)=>{
+    let _store:object = store.getState().entities;  
     
-    let authForm :object = self['state']['authForm'];
+    let authForm:object = _store['authForm'];
 
     if(!formName){
         formName = authForm['formName'];
@@ -98,32 +117,29 @@ export const authSubmit =(self:object, useToken:boolean=false, formName?:string,
     if (!validatedForm.isClean()) {
                 
         if(form){
-            form[formName]['error'] = validatedForm.errors();
-
+            form[formName]['error'] = validatedForm.formErrors;
             return store.dispatch<any>(toggleAuthForm({form, formName, submitting : false}));
-
         }
     }
 
     let apiUrl = getAuthUrl(formName);  
-    let email = form['email'];
-          
-    let isPhoneNumber:boolean = validatePhoneNumber(email);
-    let isEmail:boolean = validateEmail(email);
+
+    if (authForm['withPhoneNumber']) {
+        apiUrl = Apis.phoneNumberRegisterApi();
+    } 
+              
+    let isPhoneNumber:boolean = validatedForm.isPhoneNumber;
+    let isEmail:boolean = validatedForm.isEmail;
     
     store.dispatch<any>(toggleAuthForm({isEmail, isPhoneNumber, submitting : true}));
 
-    form = validatedForm.formData();    
+    form = validatedForm.formData();  
     
-    if (action) {
-        return store.dispatch<any>(action({apiUrl, form, formName, useToken}));
-    }
-   
     return store.dispatch<any>(authenticate({apiUrl, form, formName, useToken}));
 };
 
 
-export const formIsValid =(form:object)=> {
+export const formIsValid = (form:object) => {
     //Check form is complete
 
     if (form) {
@@ -139,6 +155,8 @@ export const formIsValid =(form:object)=> {
 };
 
 export const validatePhoneNumber=(phoneNumber:string):boolean =>{
+    phoneNumber.replace(/\s+/g, '')
+    
     let numberRegExp = /^\+?[\d\s]+$/
     return numberRegExp.test(phoneNumber)
 };
@@ -155,25 +173,27 @@ export const updateAuthForm = (self, form:object, formName:string, options?:obje
     let _store:object = store.getState().entities;  
     
     let authForm:object = _store['authForm'];
+
+    if (Object.keys(form)) {
+        let currentForm:object = authForm['form'];
+        form = constructForm(currentForm, form, formName);
+        store.dispatch<any>(toggleAuthForm({...authForm, form, formName, ...options}));
+        
+    }else {
+        store.dispatch<any>(toggleAuthForm({formName, ...options}));
+    }
     
-    let currentForm:object = authForm['form'];
-    form = constructForm(currentForm, form, formName);
-       
-    store.dispatch<any>(toggleAuthForm({...authForm, form, formName, ...options}));
+   
 };
 
 
 export const constructForm =(currentForm:object, newForm:object, formName:string)=> {
     
     if(currentForm && formName) {
-
-        if (Object.keys(newForm)) {
-            currentForm[formName] = newForm;
-        }
-
-       return currentForm
+        currentForm[formName] = newForm;
+        return currentForm
         
-    }else {
+    }else if(formName) {
                     
         let formValue = {
             value        : newForm,
@@ -198,7 +218,7 @@ export const getFormFields = () : object => {
             'first_name' : '',
             'last_name'  : '',
             'email'      : '',
-            'password'   : '',
+            'password' : '',
         },
 
         emailForm  : {
@@ -231,10 +251,10 @@ export const getAuthUrl =(formName)=> {
     switch(formName){
         case 'loginForm':
         case 'reLoginForm':
-            return Apis.logginUser();
+            return Apis.logginUserApi();
 
         case 'signUpForm':
-            return Apis.createUser();
+            return Apis.emailRegisterApi();
                 
         case 'passwordResetForm':
             return Apis.passwordResetApi();
@@ -248,8 +268,11 @@ export const getAuthUrl =(formName)=> {
         case 'passwordResetSmsCodeForm':
             return Apis.passwordResetSmsConfirmApi();
 
-        case 'emailResendForm':
-            return Apis.confirmationEmailResendApi();
+        case 'accountConfirmationEmailResendForm':
+            return Apis.accountConfirmationEmailSendApi();
+
+        case 'accountConfirmationSmsResendForm':
+            return Apis.accountConfirmationSmsSendApi();
 
         case 'phoneNumberConfirmationForm':
             return Apis.accountConfirmPhoneNumberApi();

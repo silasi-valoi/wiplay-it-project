@@ -14,15 +14,13 @@ from main_app.admin_api.views import AboutView
 from main_app.models import ( Question, Post,BugReport,
 								 FeedBack,ContactAdmin,
                                  Answer, Comment, 
-                                 Reply, AnswerBookmark,PostBookmark,
-                                 DraftEditorMediaContent )
+                                 Reply, DraftEditorMediaContent )
 
-from main_app.views import (BaseApiView, PostView,
+from main_app.views import (AnswerBookmarkView, BaseApiView, PostBookmarkView, PostView,
                                PostCommentView, PostReplyView,
                                PostChildReplyView,
 	                           QuestionView, AnswerView,
 	                           AnswerCommentView, AnswerReplyView,
-	                           AnswerBookMarkView, PostBookMarkView,
 	                           AnswerChildReplyView)
 
 
@@ -118,30 +116,18 @@ class CreateAnswerReplyChildView(CreateMixin , AnswerChildReplyView):
 		
 		return get_object_or_404(Reply, id=self.kwargs['pk'])  
     
-			
 
-
-class AddAnswerBookMarkView(CreateMixin, AnswerBookMarkView):
-			
+class AddAnswerBookMarkView(CreateMixin, AnswerBookmarkView):
+				
 	def get_object(self):
 		return get_object_or_404(Answer, id=self.kwargs['pk']) 
 
-class AddPostBookMarkView(CreateMixin, PostBookMarkView):
+class AddPostBookMarkView(CreateMixin, PostBookmarkView):
 			
 	def get_object(self):
 		return get_object_or_404(Post, id=self.kwargs['pk'])  
-    
-class DeleteAnswerBookMarkView(AnswerBookMarkView):
 
-	def get_object(self):
-		return get_object_or_404(AnswerBookmark, answer=self.kwargs['pk'])
-
-    
-class DeletePostBookMarkView(PostBookMarkView):
-
-	def get_object(self):
-		return get_object_or_404(PostBookmark, post=self.kwargs['pk'])
-
+		 
 class CreateDraftEditorContentsView(CreateMixin, BaseApiView):
 	queryset = DraftEditorMediaContent.objects.all()
 	serializer_class = DraftEditorContentsSerializer

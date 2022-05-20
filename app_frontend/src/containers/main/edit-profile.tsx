@@ -17,7 +17,7 @@ import {displaySuccessMessage, createFormData} from 'utils';
 import {Apis} from 'api';
 
 
-class EditProfileRouter extends Component{
+class EditProfileContainer extends Component{
 
     constructor(props) {
         super(props);
@@ -38,7 +38,7 @@ class EditProfileRouter extends Component{
     };
 };
  
-export default MainAppHoc(EditProfileRouter);
+export default MainAppHoc(EditProfileContainer);
 
 
 export class EditProfile extends Component{

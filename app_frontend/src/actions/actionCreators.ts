@@ -598,7 +598,7 @@ export const handleError  = (error?:any, opts?:object):object => {
     if (typeof error === 'object') {
         error = error['detail']    
     }
-    
+        
     return {
         type: types.SERVER['ERROR'],
         payLoad: {
@@ -738,8 +738,8 @@ export const getUserListSuccess = (byId:string, users:[]):object => {
         type: types.GET_USER_LIST['SUCCESS'],
         byId,
         payLoad: {
-            userList    : users,
-            isLoading   : false,
+            userList : users,
+            isLoading : false,
             timeStamp,
        }
     };
@@ -779,12 +779,12 @@ export const getCommentLindData = (params:object):object => {
     const byId:string = params['commentsById'];
           
     return {     
-        type   : 'GET_COMMENT_LINK_DATA',
+        type : 'GET_COMMENT_LINK_DATA',
         byId,
         payLoad : {
-            showLink         : commentsCount > 1,
-            commentList      : comments,
-            isLoading        : false,
+            showLink : commentsCount > 1,
+            commentList : comments,
+            isLoading : false,
             commentsCount,
         }
     };
@@ -828,7 +828,7 @@ export const showModal = (byId:string, opening:boolean):object =>{
 export const getAdminPending = ():object => {
     
     return {
-        type    : 'ADMIN_PENDING',
+        type : 'ADMIN_PENDING',
         payLoad : {
             isLoading: true,
         }
@@ -838,7 +838,7 @@ export const getAdminPending = ():object => {
 export const getAdminSuccess = (data:object):object => {
 
     return {
-        type    : 'ADMIN_SUCCESS',
+        type : 'ADMIN_SUCCESS',
         payLoad : {
             ...data,
             isLoading: false,
@@ -855,7 +855,7 @@ export const getAdminError = (params:object):object => {
     }
     
     return {
-        type    : 'ADMIN_ERROR',
+        type : 'ADMIN_ERROR',
         payLoad : {
             error,
             isLoading: false,
@@ -866,7 +866,7 @@ export const getAdminError = (params:object):object => {
 export const sendMessagePending = ():object => {
     
     return {
-        type    : 'SEND_MESSAGE_PENDING',
+        type : 'SEND_MESSAGE_PENDING',
         payLoad : {
             isLoading: true,
         }
@@ -877,10 +877,10 @@ export const sendMessageSuccess = (data:object):object => {
     let successMessage = 'Message has succefully been sent';
 
     return {
-        type    : 'SEND_MESSAGE_SUCCESS',
+        type : 'SEND_MESSAGE_SUCCESS',
         payLoad : {
             data,
-            isLoading   : false,
+            isLoading : false,
             messageSent : true,
             successMessage,
         }
@@ -895,7 +895,7 @@ export const sendMessageError = (params:string):object => {
     }
     
     return {
-        type    : 'SEND_MESSAGE_ERROR',
+        type : 'SEND_MESSAGE_ERROR',
         payLoad : {
             error,
             isLoading: false,

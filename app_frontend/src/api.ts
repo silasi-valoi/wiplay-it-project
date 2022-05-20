@@ -202,19 +202,19 @@ export const Apis = {
     },
 
 
-    addPostBookMarkApi(id:number):string {
+    addPostBookmarkApi(id:number):string {
         return `api/post/${id}/bookmark/add/`
     },
     
-    addAnswerBookMarkApi(id:number):string {
+    addAnswerBookmarkApi(id:number):string {
         return `api/answer/${id}/bookmark/add/`
     },  
 
-    removeAnswerBookMarkApi(id:number):string {
+    removeAnswerBookmarkApi(id:number):string {
         return `api/answer/${id}/bookmark/remove/`
     },   
 
-    removePostBookMarkApi(id:number):string {
+    removePostBookmarkApi(id:number):string {
         return `api/post/${id}/bookmark/remove/`
     },
 
@@ -366,12 +366,15 @@ export const Apis = {
         return `/api/post/reply/${id}/delete/`;
     },
 
-
-    createUser():string {
-        return `/rest-auth/registration/`;
+    emailRegisterApi():string {
+        return `/rest-auth/email/registration/`;
     },
 
-    logginUser():string {
+    phoneNumberRegisterApi():string {
+        return `rest-auth/phone/number/registration/`;
+    },
+
+    logginUserApi():string {
         return `/rest-auth/login/`;
     },
 
@@ -380,23 +383,27 @@ export const Apis = {
     },
 
     passwordResetApi():string {
-        return `/rest-auth/password/reset/`;
+        return `/rest-auth/password/reset/`
     },
     
     passwordChangeConfirmApi():string {
-        return `/rest-auth/password/reset/confirm/`;
+        return `/rest-auth/password/reset/confirm/`
     },
 
-    accountConfirmApi(key:string):string {
-        return `/rest-auth/account-confirm-email/${key}/`;
+    accountConfirmationEmailApi(key:string):string {
+        return `/rest-auth/account-confirm-email/${key}/`
     },
 
     accountConfirmPhoneNumberApi():string {
         return `/rest-auth/account-confirm-phone-number/`
     },
 
-    confirmationEmailResendApi():string{
-        return `/rest-auth/confirmation/resend/`;
+    accountConfirmationEmailSendApi():string{
+        return `/rest-auth/confirmation/email/send/`
+    },
+
+    accountConfirmationSmsSendApi():string {
+        return `rest-auth/confirmation/sms/send/`
     },
 
     passwordResetSmsConfirmApi():string {

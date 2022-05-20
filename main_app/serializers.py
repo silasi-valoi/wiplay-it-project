@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from rest_framework import serializers
 from django.utils.translation import ugettext_lazy as _
 from auth_app.models import User
-from .models import ( Question, Post, Answer, Comment,Reply,
+from .models import ( Bookmark, Question, Post, Answer, Comment,Reply,
 	                  DraftEditorMediaContent, AnswerBookmark,
 	                  PostBookmark, AboutCompany, DefaultProfilePicture,
 	                  BugReport, FeedBack, ContactAdmin)
@@ -283,6 +283,10 @@ class DraftEditorContentsSerializer(BaseModelSerializer):
 		model = DraftEditorMediaContent
 		fields = '__all__'
 
+class AnswerBookSerialise(serializers.Serializer):
+	bookmarks = serializers.SerializerMethodField()
+
+	pass
 
 class AnswerBookmarkSerializer(BaseModelSerializer):
 	bookmarks = serializers.SerializerMethodField()
@@ -292,31 +296,31 @@ class AnswerBookmarkSerializer(BaseModelSerializer):
 		fields = '__all__'
 
 	def create(self, validated_data):
+		print(validated_data)
 		ModelClass = self.Meta.model
 		instance, created = ModelClass._default_manager.get_or_create(**validated_data)
-				
+		print(created, instance)				
 		return instance
 
 	def get_bookmarks(self, obj):
 		if not self.current_user().is_authenticated: 
 			return []
-		
+				
 		answers = Answer.objects.filter(
-								answers__author=self.current_user(),
-								answers=obj.id
-
-							)
+						answers__author=self.current_user(),
+					)
+		print(answers)
 			
 		serializer = AnswerReadSerializer(
-							    answers, 
-								context=self.context,
-								many=True
-							)
+					    answers, 
+						context=self.context,
+						many=True
+					)
 		return serializer.data
 
 
 class PostBookmarkSerializer(BaseModelSerializer):
-	post = serializers.SerializerMethodField()
+	bookmarks = serializers.SerializerMethodField()
 
 	class Meta:
 		model = PostBookmark
@@ -329,14 +333,12 @@ class PostBookmarkSerializer(BaseModelSerializer):
 		return instance
 
 	
-	def get_post(self, obj):
+	def get_bookmarks(self, obj):
 		if not self.current_user().is_authenticated: 
 			return []
 
 		post_bookmarks = Post.objects.filter(
 								posts__author=self.current_user(),
-								posts=obj.id
-
 							)
 		
 		post_bookmarks_serialiser = PostReadSerializer(
@@ -366,6 +368,7 @@ class IndexSerializer(BaseSerializer):
 								answers__author=self.current_user()
 
 							)
+				
 		post_bookmarks = Post.objects.filter(
 								posts__author=self.current_user()
 							)

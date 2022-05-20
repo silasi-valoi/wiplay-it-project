@@ -1,6 +1,8 @@
 from ast import Try
 from curses.ascii import EM
+import email
 import random
+from sqlite3 import DatabaseError
 
 import phonenumbers
 from django.conf import settings
@@ -16,9 +18,12 @@ from rest_framework import serializers, exceptions
 from rest_framework.authtoken.models import Token
 from django.contrib.sites.models import Site
 try:
+	from allauth.account.adapter import get_adapter 
+	from allauth.account.utils import setup_user_email
 	from allauth.account.models import EmailAddress
 	from allauth.account import app_settings as allauth_settings
 	from allauth.utils import (email_address_exists)
+
 except ImportError:
 	raise ImportError("allauth needs to be added to INSTALLED_APPS.")
 
@@ -48,20 +53,119 @@ from auth_app.utils import (is_using_phone_number,
 
 UserModel = get_user_model()
 
+		
+
+class EmailAddressSerializer(serializers.Serializer):
+	email = serializers.EmailField(required=True, allow_blank=False)
+
+	def get_queryset(self):
+		return EmailAddress.objects.all()
+
+	def get_email_address(self, request):
+		try:
+			return EmailAddress.objects.get(user=request.user, email=request.data['email'])
+			
+		except EmailAddress.DoesNotExist:
+			msg = _('Email address does not exist or it has been deleted.')
+			raise serializers.ValidationError(msg)
+				
+	
+	def email_address_exists(self, email):
+		return EmailAddress.objects.filter(user=self.request.user, email=email).exists()
+		
+
+	def add_email_address(self, email):
+		user  = self.request.user
+		email_address = EmailAddress.objects.add_email(
+												self.request,
+												user,
+												email,
+               									confirm=True,
+											)
+
+		return email_address
+
+	
+	def save(self, request):
+		self.request = request
+		
+		email = self.validated_data.get('email')
+		if self.email_address_exists(email):
+			emails = EmailAddress.objects.filter(user=request.user, email=email)
+								
+			return emails[0]
+		
+		return None
+
+
+class PhoneNumberSerializer(serializers.Serializer):
+	phone_number = serializers.CharField(required=True, allow_blank=False)
+	country_code = serializers.CharField(required=False, allow_blank=True)
+	country_name = serializers.CharField(required=False, allow_blank=True)
+	dial_code = serializers.CharField(required=False, allow_blank=True)
+	format = serializers.CharField(required=False, allow_blank=True)
+
+	def get_phone_number(self):
+		pass
+	
+	def send_confirmation(self, phone_numbers, request=None):
+		if phone_numbers:
+			for number in phone_numbers:
+				if not number.verified:
+					number.send_confirmation(request)
+
+	def add_phone_number(self, request):
+		data = self.get_cleaned_data()
+
+		phone_number = PhoneNumber.objects.add_phone_number(
+												request,
+												request.user,
+												data,
+               									confirm=True,
+											)
+		return phone_number
+
+	def validate(self, data):
+		return data
+
+	def save(self, request):
+		self.request = request
+		phone_number = self.validated_data.get('phone_number')
+		print(phone_number)
+		print(request.user.is_authenticated)
+					
+		if phone_number_exists(phone_number) and request.user.is_authenticated:
+			phone_numbers = get_phone_numbers(phone_number, request)
+			phone_numbers = get_for_user(phone_numbers, request.user)
+			print(phone_numbers)
+			
+			return phone_numbers[0] if phone_numbers else None
+							
+		return None
+
+	def get_cleaned_data(self):
+							
+		return {
+            'phone_number' : self.validated_data.get('phone_number', ''),
+            'country_name' : self.validated_data.get('country_name', ''),
+            'country_code' : self.validated_data.get('country_code', ''),
+            'format' : self.validated_data.get('format', ''),
+            'dial_code' : self.validated_data.get('dial_code', '') 
+        }
+
 
 class CustomLoginSerializer(LoginSerializer):
 	username = None
 	email    = serializers.CharField(required=False, allow_blank=True)
 	password = serializers.CharField(style={'input_type': 'password'})
 	
-
-	def _validate_phone_number(self, phone_number, password):
+	def _validate_phone_number(self, phone_number:str, password):
+		phone_number = phone_number.replace(" ", '')	
 		
 		if not phone_number_exists(phone_number):
 			msg = _('Account with this phone number does not exists')
 			raise serializers.ValidationError(msg)
 
-				
 		phone_numbers = get_phone_numbers(phone_number)
 		unique_username = None
 		
@@ -109,86 +213,105 @@ class CustomLoginSerializer(LoginSerializer):
 			raise exceptions.ValidationError(msg)
 
 
-
-class CustomRegisterSerializer(RegisterSerializer):
+class BaseRegisterSerializer(RegisterSerializer):
 	username   = None
 	password1  = None
 	password2  = None
+	email = serializers.CharField(required=False, allow_blank=True)
 	first_name = serializers.CharField(required=True)
 	last_name  = serializers.CharField(required=True)
-	email      = serializers.CharField(required=True)
-	country    = serializers.CharField(required=False, allow_blank=True)
-	password   = serializers.CharField(write_only=True)
+	password = serializers.CharField(write_only=True)
 
+	def validate_password(self, password):
+		return get_adapter().clean_password(password)
+
+	def validate(self, data):
+		return data
+
+	
+class RegisterPhoneNumberSerializer(BaseRegisterSerializer, PhoneNumberSerializer):
+	
+	def validate_country_code(self, country_code=None):
+		if not country_code:
+			msg = _("Country code is invalid.")
+			raise serializers.ValidationError(msg)
+
+		self.country_code = country_code.upper()
+
+		return self.country_code
+	
 	def validate_phone_number(self, phone_number=None):
+		data = self.get_initial()
+		
+		self.country_code =  data.get('country_code', '').upper()
+
+		if not self.country_code:
+			msg = _("Country code is invalid.")
+			raise serializers.ValidationError(msg)
+
+		
+		if not is_valid_number(self.country_code, phone_number):
+			msg = _("Phone number is invalid.")
+			raise serializers.ValidationError(msg)
+
+		
+		self.phone_number = get_e164_number_format(self.country_code, phone_number) 
 			
 		if allauth_settings.UNIQUE_EMAIL:
-			if  phone_number_exists(phone_number):
+			
+			if phone_number_exists(self.phone_number):
 				msg = _("A user is already registered with this phone number.")
 				raise serializers.ValidationError(msg)
 
 		return phone_number
 
-	def validate_email(self, email):
-		
-		self.is_phone_number  = is_using_phone_number(email)
-		self.is_email_address = is_using_email_address(email)
-
-		self.username = email
-		if self.is_phone_number:
-			return self.validate_phone_number(self.username)
-		
-		if allauth_settings.UNIQUE_EMAIL:
-			if email and email_address_exists(email):
-				msg = _("A user is already registered with this e-mail address.")
-				raise serializers.ValidationError(msg)
-		return self.username
-
-	def validate(self, data):
-		self.country_code = data.get('country', None)
-		
-		_data = {}
-		if self.is_phone_number:
-			if not is_valid_number(self.country_code, self.username):
-				msg = _("Phone number is invalid.")
-				raise serializers.ValidationError(msg)
-						
-			_data['email'] = get_e164_number_format(self.country_code, self.username) 
-
-		data.update(_data)
-		return data
 	
-
 	def custom_signup(self, request, user):
-
-		if self.country_code:
-			country = user.user_country
-			country.set_short_name(self.country_code) 
-
-			if self.is_phone_number:
-				country.set_long_name(self.country_code, self.username)
-
-		if self.is_phone_number:
-			PhoneNumber.objects.add_phone_number(
+		data = self.get_cleaned_data()
+		
+		phone_number = PhoneNumber.objects.add_phone_number(
 												request,
 												user,
-												self.username,
+												data,
                									confirm=True,
                									signup=True
 											)
+		
 		return user
 
+
 	def get_cleaned_data(self):
-		super(CustomRegisterSerializer, self).get_cleaned_data()
-				
+		
+		super(BaseRegisterSerializer, self).get_cleaned_data()
+		username =  self.validated_data.get('email', self.phone_number)
+					
 		return {
             'first_name' : self.validated_data.get('first_name', ''),
             'last_name'  : self.validated_data.get('last_name', ''),
-            'email'      : self.validated_data.get('email', ''),
+            'email'      : self.phone_number,
             'password'   : self.validated_data.get('password', ''),
-            'country'    : self.validated_data.get('country', '') 
+            'phone_number' : username,
+            'country_name' : self.validated_data.get('country_name', ''),
+            'country_code' : self.validated_data.get('country_code', ''),
+            'format' : self.validated_data.get('format', ''),
+            'dial_code' : self.validated_data.get('dial_code', '')
         }
 
+
+class RegisterEmailSerializer(BaseRegisterSerializer):
+	email = serializers.CharField(required=True)
+	
+	def get_cleaned_data(self):
+		
+		super(RegisterEmailSerializer, self).get_cleaned_data()
+	
+		return {
+            'first_name' : self.validated_data.get('first_name', ''),
+            'last_name' : self.validated_data.get('last_name', ''),
+            'email' :  self.validated_data.get('email', ''),
+            'password' : self.validated_data.get('password', ''),
+		}
+		
 
 class TokenSerializer(serializers.ModelSerializer):
 
@@ -243,155 +366,19 @@ class PasswordChangeConfirmationSerializer(SmsCodeSerializer):
 class AccountConfirmationResendSerializer(serializers.Serializer):
 	email = serializers.CharField(required=False, allow_blank=True)
 
-	def validate(self, attrs):
-		value = attrs.get('email')
-		self.is_phone_number  = is_using_phone_number(value)
-		self.is_email_address = is_using_email_address(value)
-		
-		user  = None
-		if self.is_phone_number:
-			phone_number = self._validate_phone_number(value)
-			attrs['phone_number'] = phone_number
-			user = phone_number.user
-
-		elif self.is_email_address:
-			user = self._validate_email(value)
-
-		attrs['user'] = user
-		return attrs
-
-
-	def _validate_phone_number(self, phone_number):
-		if not phone_number_exists(phone_number):
-			msg = _('Account with this phone number does not exists')
-			raise serializers.ValidationError(msg)
-
-		phone_numbers = get_phone_numbers(phone_number)
-
-		for numbObj in phone_numbers:
-			username = numbObj.user.email
-			if is_using_phone_number(username):
-				return numbObj
-
-		return None
-
 	def _validate_email(self, email):
 		if not email_address_exists(email):
-			msg = _('Email address does not exist or it has been deleted.')
+			msg = _('Account with this email address does not exist.')
 			raise serializers.ValidationError(msg)
 
 		return EmailAddress.objects.get(email=email).user	
 
+	def validate(self, attrs):
+		value = attrs.get('email')
+		user = self._validate_email(value)
+		attrs['user'] = user
 
-class PhoneNumberModelSerializer(serializers.ModelSerializer):
-	
-	class Meta:
-		model = PhoneNumber 
-		fields = '__all__'
-
-
-class EmailAddressModelSerializer(serializers.ModelSerializer):
-	
-	class Meta:
-		model = EmailAddress 
-		fields = '__all__'
-
-		
-
-class EmailAddressSerializer(serializers.Serializer):
-	email = serializers.EmailField(required=True, allow_blank=False)
-
-	def get_queryset(self):
-		return EmailAddress.objects.all()
-
-	def get_email_address(self, request):
-		try:
-			return EmailAddress.objects.get(user=request.user, email=request.data['email'])
-			
-		except EmailAddress.DoesNotExist:
-			msg = _('Email address does not exist or it has been deleted.')
-			raise serializers.ValidationError(msg)
-				
-	
-	def email_address_exists(self, email):
-		return EmailAddress.objects.filter(user=self.request.user, email=email).exists()
-		
-
-	def add_email_address(self, email):
-		user  = self.request.user
-		email_address = EmailAddress.objects.add_email(
-												self.request,
-												user,
-												email,
-               									confirm=True,
-											)
-
-		return email_address
-
-	
-	def save(self, request):
-		self.request = request
-		
-		email = self.validated_data.get('email')
-		if self.email_address_exists(email):
-			emails = EmailAddress.objects.filter(user=request.user, email=email)
-								
-			return emails[0]
-		
-		return None
-
-
-class PhoneNumberSerializer(serializers.Serializer):
-	phone_number = serializers.CharField(required=True, allow_blank=False)
-	country_code = serializers.CharField(required=False, allow_blank=True)
-	country_name = serializers.CharField(required=False, allow_blank=True)
-	dial_code = serializers.CharField(required=False, allow_blank=True)
-	format = serializers.CharField(required=False, allow_blank=True)
-	
-	def send_confirmation(self, phone_numbers, request=None):
-		if phone_numbers:
-			for number in phone_numbers:
-				if not number.verified:
-					number.send_confirmation(request)
-
-	def add_phone_number(self, request):
-		data = self.get_cleaned_data()
-
-		phone_number = PhoneNumber.objects.add_phone_number(
-												request,
-												request.user,
-												data,
-               									confirm=True,
-											)
-		return phone_number
-
-
-	def save(self, request):
-		self.request = request
-		phone_number = self.validated_data.get('phone_number')
-					
-		if phone_number_exists(phone_number):
-
-			phone_numbers = get_phone_numbers(phone_number, request)
-			phone_numbers = get_for_user(phone_numbers, request.user)
-			
-			return phone_numbers[0] if phone_numbers else None
-							
-		return None
-
-	def get_cleaned_data(self):
-						
-		return {
-            'phone_number' : self.validated_data.get('phone_number', ''),
-            'country_name'  : self.validated_data.get('country_name', ''),
-            'country_code'      : self.validated_data.get('country_code', ''),
-            'format'   : self.validated_data.get('format', ''),
-            'dial_code'    : self.validated_data.get('dial_code', '') 
-        }
-
-	
-
-
+		return attrs
 
 
 class CustomPasswordResetForm(PasswordResetForm):
@@ -431,12 +418,12 @@ class CustomPasswordResetSerializer(PasswordResetSerializer):
 		
 		phone_numbers = get_phone_numbers(value)
 
-		for numbObj in phone_numbers:
-			if numbObj:
-				unique_username = numbObj.user.email
+		for number in phone_numbers:
+			if number:
+				unique_username = number.user.email
 
 				if is_using_phone_number(unique_username):
-					return numbObj
+					return number
 		return None
 	
 	def get_unique_user(self, value):
@@ -570,6 +557,20 @@ class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
 
 		return attrs
 	
+
+class PhoneNumberModelSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = PhoneNumber 
+		fields = '__all__'
+
+
+class EmailAddressModelSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = EmailAddress 
+		fields = '__all__'
+
 
 class ProfileSerializer(serializers.ModelSerializer):
 	class Meta:

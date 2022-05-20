@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { MatchMediaHOC } from 'react-match-media';
-import { ModalMenuToggle} from './menu';
+import { Search } from 'react-feather';
+
+import { NavigationMenu} from './menu';
 import { OpenAuthModalBtn, OpenEditorBtn  } from "templates/buttons";
 import { createPostProps,
          createQuestionProps,
@@ -37,13 +39,23 @@ export const NavBar = props => {
 		<nav className="mobile-navbar-top fixed-top navbar-expand-lg navbar-light"
               id="navigation-mobile">
             <div style={{display:'flex'}} className="navbar-contents-top">
+                <ul className='nav-bar-search'>
+                    <button 
+                        type="button" 
+                        onClick={ () => console.log("trigger search")}
+                        className="btn-sm search-btn" >
+                            <Search className="search-icon" size={20}/>  
+                            Search
+                    </button>
+
+                </ul>
                           
                 <ul className="logo-contents">
                     <li className="logo" >Wiplayit</li>
                 </ul>
 
                 { !isAuthenticated &&
-                    <ul className="navbar-login-link">
+                    <ul className="navbar-login-box">
                         <li className="">
                             <OpenAuthModalBtn {..._authenticationProps}/>
                         </li>                    
@@ -51,24 +63,15 @@ export const NavBar = props => {
                        
                     ||
                 
-                    <ul className="navigation-img-item">
-                        <ModalMenuToggle {...props}/>
+                    <ul className="add-question-box">
+                        <OpenEditorBtn {..._createQuestionProps}/>
                     </ul>
                 }
             </div>
 
-            <div className="mobile-navbar-center">
-                <div className="mobile-navbar-bottom-contents">
-                    <ul className="add-question-box">
-                        <li className="">
-                            <OpenEditorBtn {..._createQuestionProps}/>
-                        </li>
-                    </ul>
-                    <ul className="add-post-box">
-                        <li className="">
-                            <OpenEditorBtn {..._createPostProps}/>
-                        </li>
-                    </ul>
+            <div className="navbar-bottom">
+                <div className="navbar-bottom-contents">
+                    <NavigationMenu {...props}/>
                 </div>
             </div>
             
@@ -80,3 +83,15 @@ export const NavBar = props => {
 const NavBarSmallScreen = MatchMediaHOC(NavBar,'(max-width: 980px)');
 export default NavBarSmallScreen;
 
+/*
+<ul className="add-question-box">
+                        <li className="">
+                            <OpenEditorBtn {..._createQuestionProps}/>
+                        </li>
+                    </ul>
+                    <ul className="add-post-box">
+                        <li className="">
+                            <OpenEditorBtn {..._createPostProps}/>
+                        </li>
+                    </ul>*/
+                     

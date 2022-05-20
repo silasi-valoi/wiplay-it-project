@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import MainAppHoc from "containers/main/index-hoc";
+import { NavBarTabStyles } from 'templates/navigations/utils';
 
 
 class  NotificationsContainer extends Component  {
@@ -14,6 +15,12 @@ class  NotificationsContainer extends Component  {
 
     static pageName(){
         return "Notifications"
+    }
+
+    static navbarTabeStyles(){
+        return {
+            notificationsTab : NavBarTabStyles()
+        }
     }
 
     componentDidMount() {

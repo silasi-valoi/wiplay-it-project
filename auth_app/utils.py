@@ -18,19 +18,21 @@ def signup_phone_number(request, user):
     pass
 
 def phone_number_exists(phone_number, request=None, exclude_user=None):
-    from .models import  PhoneNumber
+    from .models import  PhoneNumber, User as user_model
 
-    ret = PhoneNumber.objects.filter(phone_number__iexact=phone_number).exists()
+    
+    phone_numbers = PhoneNumber.objects
+    
+    ret = user_model.objects.filter(email__iexact=phone_number).exists()
         
     if not ret:
-        ret = PhoneNumber.objects.filter(national_format__iexact=phone_number).exists()
+        ret = phone_numbers.filter(national_format__iexact=phone_number).exists()
     
     if not ret:
-        ret = PhoneNumber.objects.filter(inter_format__iexact=phone_number).exists()
+        ret = phone_numbers.filter(inter_format__iexact=phone_number).exists()
            
     if not ret:
-        ret = PhoneNumber.objects.filter(user__email__iexact=phone_number).exists()
-
+        ret = phone_numbers.filter(phone_number__iexact=phone_number).exists()
     return ret
 
 def get_for_user(numbers, user):
@@ -144,8 +146,8 @@ def parse_phone_number(country, phone_number):
     except Exception as e:
         return None
 
-def is_valid_number(country, phone_number):
-    phone_number = parse_phone_number(country, phone_number)
+def is_valid_number(country_code, phone_number):
+    phone_number = parse_phone_number(country_code, phone_number)
     return phonenumbers.is_valid_number(phone_number)
 
 def get_e164_number_format(country, phone_number):

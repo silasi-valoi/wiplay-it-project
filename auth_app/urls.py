@@ -4,12 +4,11 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
 from .views import ( 
-                FacebookLogin, TwitterLogin, 
+                FacebookLogin, SendAccountConfirmationEmailView, SendAccountConfirmationSmsView, TwitterLogin, 
                 GoogleLogin ,  CustomRegisterView,
                 CustomLoginView, VerifyEmailView, 
                 PasswordChangeConfirmationView, 
-                SendAccountConfirmationView,
-                VerifyPhoneNumberView,
+                VerifyPhoneNumberView,RegisterPhoneNumberView,
                 UpdatePhoneNumberView, CustomPasswordResetView
             )
 
@@ -31,7 +30,8 @@ urlpatterns = [
     path('rest-auth/facebook/', FacebookLogin.as_view(), name='fb_login'),
     path('rest-auth/twitter/', TwitterLogin.as_view(), name='twitter_login'),
     path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
-    path('rest-auth/registration/', CustomRegisterView.as_view()),
+    path('rest-auth/email/registration/', CustomRegisterView.as_view()),
+    path('rest-auth/phone/number/registration/', RegisterPhoneNumberView.as_view()),
     path('rest-auth/login/', CustomLoginView.as_view()),
     path('rest-auth/password/reset/', CustomPasswordResetView.as_view()),
     path('rest-auth/add/phone-number/', AddPhoneNumberView.as_view()),
@@ -52,8 +52,11 @@ urlpatterns = [
     path('rest-auth/password-change-confirm-sms-code/',
         PasswordChangeConfirmationView.as_view(), name='password_change_confirm_code'),
 
-    path('rest-auth/confirmation/resend/',
-         SendAccountConfirmationView.as_view(),     name='account_confirm_send'),
+    path('rest-auth/confirmation/email/send/',
+         SendAccountConfirmationEmailView.as_view(), name='account_confirm_email_send'),
+
+    path('rest-auth/confirmation/sms/send/',
+          SendAccountConfirmationSmsView.as_view(), name='account_confirm_sms_send'),
 
     path("api/user/<int:pk>/followers/", 
         RetrieveUserFollowers.as_view({'get': 'list'})),

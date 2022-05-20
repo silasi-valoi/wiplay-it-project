@@ -11,7 +11,7 @@ import PasswordChangeSmsCodePage from 'containers/authentication/password-sms-co
 import PasswordChangePage from 'containers/authentication/password-change';
 import {AccountEmailConfirmationPage} from "containers/authentication/account-confirmation"
 
-import EditProfileRouter from "containers/main/edit-profile";
+import EditProfile from "containers/main/edit-profile";
 
 import PostListPage from "containers/main/post-list"
 import PostPage    from "containers/main/post-page"
@@ -44,7 +44,7 @@ function App() {
             <Switch>
                 <Route exact path="/" component={HomePage}/>
                 <Route path="/profile/:slug/" component={UserProfileContainer}/>
-                <Route path="/question/:slug/" component={QuestionPage}/>
+                <Route exact path="/question/:slug/" component={QuestionPage}/>
                 <Route path="/user/registration/" component={AuthenticationPage}/>
                 <Route path="/registration/account/confirm/:key/" component={AccountEmailConfirmationPage}/>
                 <Route path="/reset/:uid/:token/" component={PasswordChangePage}/>
@@ -54,7 +54,7 @@ function App() {
                 <Route path="/answer/:id/" component={AnswerContainer}/>
                 <Route path="/questions/" component={QuestionListPage}/>
                 <Route path="/post/:slug/" component={PostPage}/>
-                <Route path="/profile/update/:slug/" component={EditProfileRouter}/>
+                <Route path="/update/profile/:slug/" component={EditProfile}/>
             
                 <Route path="/:slug/answer/" component={QuestionPage}/>
                 <Route path="/feedback/" component={FeedBackContainer}/>

@@ -38,7 +38,18 @@
     margin: 0 5px;
     font-size: 12px;
     text-align: center;
+}
 
+.partial-navbar-item {
+    border : px solid red;
+    padding: 10px 15px;
+}
+
+.navbar-item button:hover {
+    color: #A33F0B;
+    border-bottom: 2px solid #A33F0B;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 #feather-bell {
@@ -50,7 +61,7 @@
 }
 
 #feather-edit, #feather-users   {
-    margin-left: 8px
+    margin-left : 8px
 }
 
 .navbar-btn-text {
@@ -74,7 +85,7 @@
 }
 
 .partial-navbar-login-link button,
-.navbar-login-link button {
+.navbar-login-box button {
     border-radius: 15px;
     color: green;
     font-family: 'Signika';
@@ -92,11 +103,7 @@
 }
 
 .logo-contents {
-    font-weight : bold;
-    font-family : 'Ubuntu';
-    font-size   : 17px;
-    color       : #fefefe;
-    padding     : 12px 0 7px; 
+        
 }
 
 .menu-img-box {

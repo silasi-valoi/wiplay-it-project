@@ -228,7 +228,7 @@ class  SettingsContainer extends Component  {
         }
         
         let isAuthenticated = true;
-        authSubmit(this, isAuthenticated, formName);
+        authSubmit(isAuthenticated, formName);
     };
 
     passwordConfirmed = () => {
@@ -281,7 +281,7 @@ class  SettingsContainer extends Component  {
         updateAuthForm(this, form, formName, opts); 
 
         setTimeout(() => {
-            authSubmit(this, true, formName);
+            authSubmit(true, formName);
         }, 500);
     }
 
@@ -307,7 +307,7 @@ class  SettingsContainer extends Component  {
         updateAuthForm(this, form, formName); 
                 
         setTimeout(() => {
-            authSubmit(this, true, formName);
+            authSubmit(true, formName);
         }, 300);
         
     };

@@ -4,6 +4,7 @@ import {  BrowserRouter } from "react-router-dom";
 import { MatchMediaHOC } from 'react-match-media';
 import * as Icon from 'react-feather';
 import {Redirect} from './utils';
+import userProfileAvatar from 'media/user-image-placeholder.png';
 import { OpenUsersModalBtn,
          ModalCloseBtn  } from "templates/buttons";
 import { Modal}   from  "containers/modal/modal-container";
@@ -22,6 +23,7 @@ export const NavBarMenuItems = props => {
   
     return(
         <BrowserRouter>
+        {isAuthenticated  &&
             <div id="" className="menu-img-container">
                 <div className="menu-img-box" 
                      onClick={() => Redirect(toProfileProps)}> 
@@ -41,6 +43,7 @@ export const NavBarMenuItems = props => {
                     </li>
                 </ul>
             </div>
+            }
             <div className="menu-btn-container">
                 <button type="button"
                         onClick={() => Redirect({pathname:'/help/'})}
@@ -92,22 +95,20 @@ export const NavBarMenuItems = props => {
 
 
 export const NavBarDropDown = props => {
-    let { currentUser, isAuthenticated } = props;
-    let profile = currentUser && currentUser.profile;
+    let { currentUser } = props;
+    let profile = currentUser?.profile;
        
     return(
         
         <div className="navigation-img-box">
-            { isAuthenticated &&
-                    
-                <ul className="nav-bar-img-box">
+            <ul className="nav-bar-img-box">
                     <li className="dropleft" id="navBardropdown" 
                     data-toggle="dropdown"
                     aria-haspopup="false" 
                     aria-expanded="true"> 
-                        { profile && 
+                        { 
                             <img alt="" 
-                                 src={profile.profile_picture}
+                                 src={profile?.profile_picture || userProfileAvatar}
                                 className="nav-bar-img"/>
                         }
                     </li>
@@ -116,10 +117,7 @@ export const NavBarDropDown = props => {
                         aria-labelledby="navBardropdown">
                         <NavBarMenuItems {...props}/>
                     </li>
-                </ul>
-            }
-
-            
+            </ul>
         </div>
     )
 }
@@ -151,11 +149,9 @@ export const ModalMenu = props =>{
 
 
 export const ModalMenuToggle = props => {
-    let {isAuthenticated, currentUser} = props;
-    if (!currentUser) return null;
-    if (!isAuthenticated) return null;
-
-    let profile = currentUser.profile;
+    let { currentUser } = props;
+        
+    let profile = currentUser?.profile;
     
     let modalProps = {
             ...props,
@@ -168,12 +164,10 @@ export const ModalMenuToggle = props => {
 
             <div className="nav-bar-modal-menu" id="nav-bar-modal-menu">
                 <div className="nav-bar-img-box"> 
-                    {profile && 
-                        <img alt="" 
-                             onClick={()=> Modal(modalProps)}
-                             src={profile.profile_picture}
-                             className="nav-bar-img"/>
-                    }
+                    <img alt="" 
+                        onClick={()=> Modal(modalProps)}
+                        src={profile?.profile_picture || userProfileAvatar}
+                        className="nav-bar-img"/>
                 </div>
             </div>
         </div>
@@ -193,13 +187,12 @@ export const NavBarBottom = props =>{
 }
 
 export const NavigationMenu =(props)=>{
+    
     let {homeTab,
          questionListTab,
-         usersTab,
          currentUser,
          isAuthenticated,
          notificationsTab} = props || {};
-
     
 
     return(
@@ -212,8 +205,7 @@ export const NavigationMenu =(props)=>{
                     className="btn-sm navbar-btn">
                     <Icon.Home 
                         id="feather-home" 
-                        size={20} 
-                        {...homeTab}
+                        size={15} 
                     />
                     Home
                 </button> 
@@ -221,7 +213,7 @@ export const NavigationMenu =(props)=>{
 
             <ul  className="navbar-item">
                 <OpenUsersModalBtn {...{currentUser, isAuthenticated}}>
-                    <Icon.Users id="feather-users" size={20} {...usersTab}/>
+                    <Icon.Users id="feather-users" size={15}/>
                     People
                 </OpenUsersModalBtn>
             </ul>
@@ -234,12 +226,11 @@ export const NavigationMenu =(props)=>{
                     className="btn-sm navbar-btn answer-question-btn">
                     <Icon.Edit 
                         id="feather-edit"
-                        size={20}
-                        {...questionListTab}
+                        size={15}
                     />
                     Answer
                </button>
-            </ul>
+            </ul> 
                 
             <ul  className="navbar-item">
                 <button 
@@ -249,12 +240,15 @@ export const NavigationMenu =(props)=>{
                     className="btn-sm navbar-btn notifications-btn">
                     <Icon.Bell 
                         id="feather-bell"
-                        size={20}
-                        {...notificationsTab}
+                        size={15}
                     />
                     Notifications
                 </button>
             </ul> 
+
+            <ul className="navbar-item">
+                <ModalMenuToggle {...props}/>
+            </ul>
         </div> 
     );
 }

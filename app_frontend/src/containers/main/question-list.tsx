@@ -7,7 +7,7 @@ import {store} from 'store/index';
 import  MainAppHoc from "containers/main/index-hoc";
 import {OpenEditorBtn}  from "templates/buttons";
 import {PageErrorComponent, UnconfirmedUserWarning} from 'templates/partials';
-import {createQuestionProps} from 'templates/navigations/utils';
+import {createQuestionProps, NavBarTabStyles} from 'templates/navigations/utils';
 import  AjaxLoader from 'templates/ajax-loader';
  
 
@@ -31,6 +31,12 @@ class  QuestionListPage extends Component  {
     }
     static pageName(){
         return "Questions"
+    };
+
+    static navbarTabeStyles(){
+        return {
+            questionListTab : NavBarTabStyles()
+        }
     }
 
    public get isMounted() {

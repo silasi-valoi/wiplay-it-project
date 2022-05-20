@@ -1,6 +1,7 @@
  
 import Axios, {Apis} from 'api';
 import * as action  from 'actions/actionCreators';
+import { getDataFromCache } from 'utils';
 
 
 export const _GetApi = (useToken:boolean, opts?:object) =>{
@@ -447,6 +448,7 @@ export const Delete = (params:object)=>{
     let apiUrl = params['apiUrl'];
     let objName:string = params['objName'];
     const Api  = _GetApi(true); 
+    console.log(params)
    
     return async  dispatch => {
         let errorOpts:object = {
@@ -462,18 +464,14 @@ export const Delete = (params:object)=>{
         }else{
 
             Api.delete(apiUrl, {}).then(response => {
-                console.log(response, params) 
-                if(params['bookmarkType']){
+                params['data'] = response.data;
 
+                if(params['bookmarkType']){
                     return handleBookmarkDeleteSuccess(params, dispatch);
 
                 }else{
-                    params['data'] = response.data;
-
                     return handleObjDeleteSuccess(params, dispatch);
                 }
-                
-
             }).catch(error =>{
                 handleErrors(error, errorOpts)
             });
@@ -482,7 +480,7 @@ export const Delete = (params:object)=>{
 }; 
 
 
-const handleObjDeleteSuccess = (params ,dispatch) => {
+const handleObjDeleteSuccess = (params, dispatch) => {
     let updateProps:object = {
         ...params,
         isDeleting:true,
@@ -496,39 +494,24 @@ const handleObjDeleteSuccess = (params ,dispatch) => {
     dispatch(action.updateActionSuccess(updateProps));
 };
 
-
-
-
 const handleBookmarkDeleteSuccess = (params:object, dispatch) => {
         let objName:string = params['objName'];
-        let bookmarks = removeBookmark(params['obj'], params['bookmarkType'])
+        let indexData:object = getDataFromCache('index');
+        let bookmarkType = params['bookmarkType'];
+
+        let bookmarks = indexData && indexData['bookmarks'];
+        bookmarks[bookmarkType] = params['data'].bookmarks;
          
-        dispatch(action.getIndexSuccess(bookmarks));
+        dispatch(action.getIndexSuccess(indexData));
                                                
         let alertMessage = {
-            textMessage : `${objName} removed from your bookmarks.`,
+            textMessage : `${objName === 'AnswerBookmark'? 'Answer': 'Post'} removed from your bookmarks.`,
             messageType : 'success'
         }
-        dispatch(action.HandleAlertMessage(alertMessage))
+
+        dispatch(action.HandleAlertMessage(alertMessage));
 };
 
-const removeBookmark = (data:object, bookmarkType:string) => {
-    let cache:object = JSON.parse(localStorage.getItem('@@CacheEntities')) || {};
-    let index:object = cache['index'];
-    
-    let bookmarks = index && index['bookmarks'];
-    if (bookmarks) {
-        let bookmarksCache:object[] = bookmarks[bookmarkType];
-        bookmarks[bookmarkType] = bookmarksCache.filter((bookmark)=> {
-                                    return bookmark['id'] !== data['id'];
-                                });
-    }
-    
-    index['bookmarks'] = bookmarks;
-    index['bookmarkRemoved'] = true;
-    
-    return index
-}; 
 
 export function handleSubmit(params:object) {
     
@@ -577,6 +560,7 @@ function sendPostRequest(params:object, dispatch:Function){
         console.log(response)
         createProps['data'] = prepPayLoad(objName, response.data); 
         createProps['successMessage'] = BuildAlertMessage(createProps);
+        console.log(createProps)
 
         isModal && dispatch(action.ModalSubmitSuccess(createProps));
         dispatch(action.createActionSuccess(createProps));
@@ -695,6 +679,7 @@ export function authenticate(params:object):Function {
     const apiUrl:string = params['apiUrl'];
     const form:object = params['form'];
     const useToken:boolean = params['useToken']
+    console.log(params)
        
     const Api = _GetApi(useToken, {timeout:120000, requestFor:'authentication'});   
    
@@ -716,9 +701,7 @@ export function authenticate(params:object):Function {
             dispatch(action.authenticationPending(params));
                     
             Api.post(apiUrl, form).then(response => {
-                if(isTokenRefresh){
-                    return true;
-                }
+                console.log(response)
                 
                 let {data}  = response;
                 if (formName === 'phoneNumberConfirmationForm'){
@@ -746,6 +729,7 @@ export const handleErrors  = (error:object, options?:object) => {
     let online:boolean = error['online'];
     const response:object = error && error['response'];
     const request:object = error && error['request'];
+    console.log(error)
     
     if (response) {
         return handleErrorResponse(response, options);
@@ -825,7 +809,8 @@ const handleSuccessAuth = (formName:string, data:object, dispatch:Function):obje
         case 'passwordResetSmsCodeForm':
             return handleSmsCode(data, dispatch)
 
-        case 'emailResendForm':
+        case 'accountConfirmationSmsResendForm':
+        case 'accountConfirmationEmailResendForm':
             return handleConfirmationResend(data, dispatch)
         
         case 'addPhoneNumberForm':
@@ -997,10 +982,10 @@ const prepPayLoad = (objName:string, data:object):object =>{
             return {user: data}
 
         case 'AnswerBookmark':
-            return {answers : data}
+            return {answers : data['bookmarks']}
 
         case 'PostBookmark':
-            return {posts : data}
+            return {posts : data['bookmarks']}
     }
 };  
 

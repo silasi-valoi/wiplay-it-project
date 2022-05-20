@@ -151,7 +151,7 @@ class Command(BaseCommand):
         user = None
 
         for u in users:
-            if isinstance(u, dict) and u['id'] == id:
+            if u.get('id', None) == id:
                 search_data = {
                     "email":u['email'],
                    "first_name":u['first_name'],
@@ -213,7 +213,7 @@ class Command(BaseCommand):
 
         for answer in answers:
             user = self.get_user(answer['author_id'])
-            print(answer)
+            
             if user:
                 answer['author_id'] = user.id
             

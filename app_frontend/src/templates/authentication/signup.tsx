@@ -1,11 +1,7 @@
 import React from 'react';
 import { MatchMediaHOC } from 'react-match-media';
-import {  Link } from "react-router-dom";
-import { CountryDropdown } from 'react-country-region-selector';
 
-import { NonFieldErrors,
-         CountryFieldErrors,
-         EmailFieldErrors} from "templates/authentication/errors"
+import { NonFieldErrors, EmailFieldErrors, PhoneNumberFieldErrors} from "templates/authentication/errors"
 import { ToogleAuthFormBtn, 
          RegistrationSubmitBtn,
          SpinLoader} from  'templates/authentication/utils';
@@ -14,10 +10,11 @@ import PhoneInput from 'react-phone-input-2';
 
 export const  SignUpForm = props => {
     const authForm = props.authForm;
-    
+        
     let { 
           submitting,
           form,
+          withPhoneNumber,
           onSignUpForm,
           isSocialAuth} = authForm;
 
@@ -25,6 +22,7 @@ export const  SignUpForm = props => {
     if (!form) return null;
 
     let error = form['error'];
+    let phoneNumber:object = form['phone_number']
     
     const toggleSignUpFormProps = {
             ...props,
@@ -83,28 +81,38 @@ export const  SignUpForm = props => {
                                 <div>
                                     <EmailFieldErrors {...error}/>
                                     <NonFieldErrors {...error}/>
+                                    <PhoneNumberFieldErrors {...error}/>
                                 </div>
                             }
                           
-                            {props.withPhoneNumber &&
+                            {withPhoneNumber &&
                                 <div className='phone-number-box auth-input-field'>
-                                    <span  onClick={props.toogleInput}>
+                                    
+                                    <span className='toggle-input' 
+                                          onClick={() => props.toggleInput(false)}>
                                         Register using your email address
                                     </span>
+                                    <ul className="phone-number-label">Phone Number</ul>
                                     <PhoneInput
                                         country={'za'}
-                                        value={form.phone_number}
-                                        onChange={(phoneNumber, phoneNumberInfo)=> {
-                                            props.handleCountry(phoneNumber, phoneNumberInfo)
+                                        placeholder=""
+                                        enableAreaCodes={false}
+                                        countryCodeEditable={false}
+                                        containerClass="phone-number-container"
+                                        inputClass="phone-number-input"
+                                        value={phoneNumber? phoneNumber['number']: ''}
+                                        onChange={(number, phoneNumberInfo)=> {
+                                            props.handlePhoneNumber(number, phoneNumberInfo)
                                         }}
                                     />
+                                    
                                 </div>
 
                                 ||
 
                                 <div className="email-box auth-input-field">
-                                    
-                                    <span  onClick={props.toogleInput}>
+                                    <span style={{'display':'none'}} className='toggle-input' 
+                                        onClick={()=> props.toggleInput(true)}>
                                         Register using your phone number
                                     </span>
                                     <input

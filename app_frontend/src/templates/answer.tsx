@@ -86,12 +86,13 @@ export const AnswersComponent = props => {
   
     let createBookmarkProps:object = {
         ...editObjProps,
+        objName           : 'AnswerBookmark',
         bookmarkType      : 'answers',
         byId              : `bookmarkedAnswers`,
         isPost            : true,
         isPut             : false,
         actionType : types.CREATE_BOOKMARK,
-        apiUrl : Apis.addAnswerBookMarkApi(answer.id)
+        apiUrl : Apis.addAnswerBookmarkApi(answer.id)
     };
 
     let deleteObjProps = {

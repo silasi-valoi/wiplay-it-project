@@ -27,16 +27,7 @@ const _PartialNavBar = props =>{
         return null;
     }
     
-    var {currentUser, isAuthenticated } = props;
-    
-    let path_to_profile = `/`;
-    let userProfile = {};
-       
-    if (currentUser) {
-      path_to_profile = `/profile/${currentUser.id}/${currentUser.slug}/`;
-      userProfile  = currentUser.profile;
-    }
-
+    let { isAuthenticated } = props;
     const _authenticationProps = {...authenticationProps}
        
     return (
@@ -57,9 +48,10 @@ const _PartialNavBar = props =>{
                 <b className="page-name">{props.pageName}</b>  
             </div>
          
-            <div className="navigation-img-item">
+            <div className="partial-navbar-item">
 
                 { isAuthenticated &&
+                
                     <ModalMenuToggle {...props}/>
                     
                     ||

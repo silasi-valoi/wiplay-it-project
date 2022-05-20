@@ -3,7 +3,7 @@ import {history} from 'App';
 import {ContentState, EditorState} from 'draft-js';
 import {convertFromRaw as _convertFromRaw, convertToRaw as _convertToRaw} from 'draft-js';
 import {decorator} from 'containers/draft-js-editor/plugins';
-import {isString} from 'typeChecker'; 
+import {isString, isObject} from 'typeChecker'; 
 import GetTimeStamp from 'timeStamp';
 import {closeModals}   from  'containers/modal/utils';
 

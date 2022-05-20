@@ -62,6 +62,7 @@ urlpatterns = [
          RetrievePostCommentListView.as_view({'get':'list', }), name="{post_comment_list"),
     path("api/post/comment/<int:pk>/reply/list/",
          RetrievePostReplyListView.as_view({'get':'list' }), name="{post_reply_list"),
+         
     path("api/post/reply/<int:pk>/children/list/",
           RetrievePostReplyChildrenListView.as_view({'get':'list' }), name="reply_list"),
     path("api/post/<int:pk>/upvoters/",

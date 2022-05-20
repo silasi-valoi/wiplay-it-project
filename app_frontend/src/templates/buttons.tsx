@@ -546,7 +546,7 @@ export const OpenAuthModalBtn = props => {
                       
     return(
         <button className="btn-sm"
-                onClick={()=> Modal(modalProps) }>
+                onClick={()=> Modal(modalProps)}>
             {linkName} 
             {children} 
         </button>

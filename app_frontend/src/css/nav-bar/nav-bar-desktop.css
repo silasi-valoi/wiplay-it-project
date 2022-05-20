@@ -44,22 +44,8 @@
     .navigation-menu {
         display : flex;
         width : 100%;
-        border : px solid red;
     }
 
-    .navigation-item {
-        border : px solid black !important;
-        list-style-type : none;
-        margin          : 0;
-        padding         : 0;
-        font-family     : 'Jura';
-        font-weight     : bold;
-        border-radius   : 0 !important;
-        border          : none;
-        color           : #615f5e; 
-        background      : white;
-        text-align      : center;
-    }
 
     .nav-menu {
         display : flex;
@@ -129,7 +115,7 @@
 
     .logo-box {
         background : #ffff;
-        width : 100%;
+        width : 30%;
         margin: 0 5px;
         display: flex;
         justify-content: flex-end;
@@ -155,17 +141,11 @@
    
     .post-question-box {
         display : flex;
-        border  : px solid blue;
-        justify-content: flex-end !important; 
+        padding : 0 15px;
     }
 
     .post-question-btn-box {
         display :  flex;
-    }
-
-    .create-post-btn-box, .create-question-btn-box {
-        border  : px solid black;
-        display : flex;
     }
 
     .create-question-btn, .create-post-btn {
@@ -174,54 +154,75 @@
         font-weight : bold;
         font-size   : 11px;
         height      : 30px; 
-        margin-top  : 9px;             
+        margin-top  : 7px;             
     }
 
     .create-question-btn:hover, .create-post-btn:hover {
         color  : #fefefe;
     }
 
-    .post-question-btn-box p {
-        margin : 12px 5px 0;
-        font-weight : bold;
-        font-size : 13px;
-    }
 
-    .navbar-login-link  {
+    .navbar-login-box  {
         border : px solid blue;
         width: 20%;
     }
-    .navbar-login-link li  {
+    .navbar-login-box li  {
         border: px solid red;
-        margin: 5% 5% 0;
+        margin: 3% 5% 0;
     }
     
-    .navbar-login-link button {
+    .navbar-login-box button {
         border : 1px solid red;
     }
 
     .navigation-img-box {
         border : px solid red;
-        width :  70%;
+        width :  10%;
         margin: 0 5px;
         display: flex;
         justify-content: flex-end;
     }
+
+    .navbar-item .navigation-img-box {
+        display: none;
+    }
     
-    .dropdown-menu-box {
+    .nav-bar-search-box {
         border : px solid blue;
-        
+        width: 30%;
+    
     }
 
-    #navBardropdown {
-        border : px solid blue;
-                     
+    .nav-bar-search-form {
+        padding-top: 5px;
+        border : px solid red;
+        display: flex;
     }
 
+    .search-btn {
+        position: absolute;
+        color: gray;
+        padding-top: 8px;
+    }
+
+    .nav-bar-search-input {
+        padding-left: 10%;
+        border: 1px solid #D5D7D5;
+        border-radius: 5px;
+       
+    }
+
+    .nav-bar-search-input:focus,
+    .nav-bar-search-input:active {
+        border: 1px solid #5384e5 !important;
+        outline: none;
+        box-shadow: none;
+    }
+    
     .nav-bar-img-box {
         border : px solid black; 
-        margin-right: 10%;
-        padding-top: 3%;
+        margin-right: 15%;
+        padding-top: 7%;
     }
 
     .nav-bar-img {

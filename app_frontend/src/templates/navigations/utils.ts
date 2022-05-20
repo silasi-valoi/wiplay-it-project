@@ -56,7 +56,7 @@ export const createQuestionProps:object = {
     objName      : 'Question',
     isPost       : true,
     withTextArea :true,
-    linkName     : "Ask Question",
+    linkName     : "Add Question",
     editorPlaceHolder : `Add Question...`,
     className    : "create-question-btn btn",
     editorLinkMobileStyles,
@@ -70,3 +70,12 @@ export const authenticationProps:object = {
     linkName  : "Login/Register",
     modalName : 'authenticationForm',
 };
+
+export const NavBarTabStyles = () => {
+    return {
+        color : '#A33F0B',
+        borderBottom : '2px solid #A33F0B',
+        borderBottomLeftRadius : 0,
+        borderBottomRightRadius : 0,
+    }
+}

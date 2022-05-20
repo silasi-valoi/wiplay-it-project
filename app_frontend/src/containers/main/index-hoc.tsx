@@ -52,6 +52,7 @@ export function MainAppHoc(Component) {
                 currentUser        : {},
                 userIsConfirmed    : false, 
                 userAuth           : {},
+                searchForm         : {search:''},
                 isAuthenticating   : false,
                 cacheEntities      : this._cacheEntities(), 
                 isAuthenticated    : this.authenticated(),
@@ -231,13 +232,14 @@ export function MainAppHoc(Component) {
 
         _HandleErrors(errors:object){
             if (!errors || !errors['error']) return;
+            console.log(errors)
                           
             displayErrorMessage(this, errors['error']);
             delete errors['error'];
         }
 
         handleAlertMessage(alertMessage:object){
-
+            
             if (!alertMessage) {
                 return;
             }
@@ -544,11 +546,11 @@ export function MainAppHoc(Component) {
             
             let objName:string = params['objName'];
 
-            if(objName === 'Answer'){
-                apiUrl = Apis.removeAnswerBookMarkApi(bookmarkId);
+            if(objName === 'AnswerBookmark'){
+                apiUrl = Apis.removeAnswerBookmarkApi(bookmarkId);
 
-            }else{
-                apiUrl = Apis.removePostBookMarkApi(bookmarkId);
+            }else if (objName === 'PostBookmark'){
+                apiUrl = Apis.removePostBookmarkApi(bookmarkId);
             }
 
             this.deleteObj({...params, apiUrl});
@@ -573,6 +575,7 @@ export function MainAppHoc(Component) {
             if (isBookMarked){
                 return this.removeBookmark(params)
             }
+            console.log(data)
                      
             params['formData'] = createFormData({data});
             this.props.submit(params);
@@ -599,15 +602,30 @@ export function MainAppHoc(Component) {
                     let upvotes  = obj.upvotes; 
                     return createFormData({upvotes});
             }
+        };
+
+        handleSearchChange = (event) => {
+            event &&  event.preventDefault();
+            let searchForm:object = this.state['searchForm']
+            let name:string = event.target['name'];
+            let data:string = event.target['value'];
+
+            searchForm[name] = data;
+            this.setState({searchForm})
 
         };
     
         getProps():object{
             let pageName:string = "";
+            let tabStyles:object;
             if (isFunction(Component.pageName)) {
                pageName = Component.pageName();
             }
             
+            if(isFunction(Component.navbarTabeStyles)){
+                tabStyles = Component.navbarTabeStyles()
+            }
+                        
             return {
                 ...this.props,
                 logout                  : this.logout.bind(this),
@@ -617,8 +635,11 @@ export function MainAppHoc(Component) {
                 addBookmark             : this.addBookmark.bind(this),
                 reloadPage              : this.reloadPage.bind(this),
                 pushToRouter            : this.pushToRouter.bind(this),
+                handleSearchChange      : this.handleSearchChange.bind(this),
                 pageName                :  pageName,
                 ...this.state,
+                ...tabStyles,
+
             };
         };
 
@@ -645,8 +666,7 @@ export function MainAppHoc(Component) {
                                 <NavBarSmallScreen  {...props}/>      
                                 <PartalNavBar {...props}/>
                                 <NavBarBigScreen {...props}/>
-                                <NavBarBottom {...props}/>
-                                
+                                       
                                 <Component {...props}/>                    
                             </fieldset>
                         </div>

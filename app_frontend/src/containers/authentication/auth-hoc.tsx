@@ -21,6 +21,7 @@ import {getFormFields,
         updateAuthForm,
         formIsValid,
         constructForm } from 'containers/authentication/utils';
+import { Phone } from 'react-feather';
 
 
 
@@ -94,7 +95,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             cacheEntities : JSON.parse(localStorage.getItem('@@CacheEntities')),
          
         };
-
+    
         constructor(props) {
             super(props);
         };
@@ -178,7 +179,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             this.onAuthStoreUpdate();
             let state:object = store.getState(); 
             
-            let entities:object =  state['entities'];
+            let entities:object = state['entities'];
             let authForm:object = entities['authForm'];
 
             if (process) {
@@ -253,14 +254,15 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             let confirmationResendAuth:object = userAuth['confirmationResendAuth'];
             if (confirmationResendAuth['successMessage']) {
                 let authForm:object = this.state['authForm'];
+                                                
+                if (isPhoneNumber) {
+                    authForm['formName'] = 'phoneNumberConfirmationForm'
+                }
+
                 authForm['successMessage'] = confirmationResendAuth['successMessage'];
-                
+                                
                 this.isMounted && this.setState({authForm});
                 delete confirmationResendAuth['successMessage'];
-                                
-                if (isPhoneNumber) {
-                    this.formConstructor('phoneNumberConfirmationForm');
-                }
             }
         };
         
@@ -356,7 +358,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
         onSubmit = (e) => {
             e && e.preventDefault();
             
-            authSubmit(this);
+            authSubmit();
         };
 
         handleFormChange:React.ReactEventHandler<HTMLInputElement> =(event)=>{
@@ -379,16 +381,22 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             }
         };
 
-        selectCountry = (value) : void => {
-            let authForm:object = this.state['authForm'];
-            let form:object = authForm['form'];
-            let formName = authForm['formName'];
+        handlePhoneNumber = (number:string, phoneNumberInfo:object) => {
+            let form:object  = this.state['authForm']['form'];
+            let formName:string = 'signUpForm';
 
-            form[formName]['country'] = value;
-            
-            store.dispatch<any>(action.toggleAuthForm({form, formName}));
-        }
+            form = form[formName]
        
+            form['phone_number'] = number; 
+            form['country_code'] = phoneNumberInfo['countryCode'];
+            form['country_name'] = phoneNumberInfo['name'];
+            form['dial_code'] = phoneNumberInfo['dialCode'];
+            form['format'] = phoneNumberInfo['format'];
+       
+            updateAuthForm(this, form, formName, {onAddPhoneNumberForm:true});
+        };
+
+           
         getFormOpts = (formName:string, value:boolean) : object => {
         
             switch(formName){
@@ -434,15 +442,26 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             let form:object = formFields[formName];
                        
             if (formName === 'passwordResetForm' || 
-                formName === 'emailResendForm') {
+                formName ===  'accountConfirmationEmailResendForm' ||
+                formName === 'emailConfirmationSendForm') {
+                    
                 form = formFields['emailForm'];
 
             }else if(formName === 'passwordResetSmsCodeForm' || 
                      formName === 'phoneNumberConfirmationForm'){
+
                 form = formFields['smsCodeForm'];
 
             }else if(formName === 'passwordChangeConfirmForm'){
+
                 form = formFields['passwordChangeForm'];
+
+            }else if(formName === 'phoneNumberConfirmationSendForm' ||
+                    formName === 'accountConfirmationSmsResendForm'){
+
+                form = {
+                    phone_number : formFields['phoneNumberForm']['phone_number']
+                };
             }
             
             if (form) {
@@ -459,15 +478,28 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 if(options){
                     formOptions = {...formOptions, ...options};
                 }
-                             
+                console.log(formOptions)
+                                             
                 updateAuthForm(this, form, formName, formOptions);
                 
             }
         };
 
-        toogleInput = (type:string) => {
-            console.log(type)
+        toogleInput = (value:boolean) => {
+            if (!this.isMounted) {
+                return     
+            }
 
+            let formFields = getFormFields();
+            let form:object = formFields['signUpForm'];
+            if (value) {
+                form  = {...form, ...formFields['phoneNumberForm']}
+                delete form['email']
+            }else{
+                form['email'] = "";
+            }
+            
+            updateAuthForm(this, form, 'signUpForm', {withPhoneNumber:value});
         }
 
         toggleAuthForm = (params:object):void => {
@@ -485,6 +517,7 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
                 if(defaultFormName){
                     console.log("With the default form")
                    formName = defaultFormName;
+
                 }else{
                     return
                 }
@@ -525,7 +558,8 @@ export const AuthenticationHoc = <BaseProps extends InjectedProps>(
             return {
                 ...this.props,
                 ...this.state,
-                selectCountry    : this.selectCountry.bind(this),
+                handlePhoneNumber: this.handlePhoneNumber.bind(this),
+                toggleInput      : this.toogleInput.bind(this),
                 onSubmit         : this.onSubmit.bind(this),
                 formConstructor  : this.formConstructor.bind(this),
                 handleFormChange : this.handleFormChange.bind(this),

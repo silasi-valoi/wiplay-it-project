@@ -206,6 +206,7 @@ export default  class AppEditor extends Component{
         let isPut:boolean = this.props['isPut'];
         let objName:string = this.props['objName'];
         let data:object = this.props['obj'];
+        console.log(data)
                    
         if (isPut) {
 
@@ -481,8 +482,8 @@ export default  class AppEditor extends Component{
         if (!this.matchDesktopMedia()) return;
         
         let editorsBoxElem = document.getElementById('editors-box');
-        let content      = document.getElementById('modal-content');
-        let overlay      = document.getElementById('modal-overlay');
+        let content = document.getElementById('modal-content');
+        let overlay = document.getElementById('modal-overlay');
 
         if (!overlay && !content) return;
         
@@ -573,7 +574,7 @@ export default  class AppEditor extends Component{
                                                      { display : 'none' };
         
         return (
-            <div onScroll={this.handleScroll()}
+            <div onScroll={(e)=>this.handleScroll(e)}
                 className="editor-container" 
                 id="editor-container" > 
                 

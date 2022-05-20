@@ -10,7 +10,7 @@ admin.site.register(DefaultProfilePicture, DefaultProfilePictureAdmin)
 
 
 class UserAdmin(admin.ModelAdmin):
-    fields = ['first_name', 'last_name', 'email', 'country',
+    fields = ['first_name', 'last_name', 'email', 
      		 'is_confirmed', 'is_active' , 'is_staff', 'is_superuser' ]
 
 admin.site.register(User,UserAdmin)

@@ -155,15 +155,13 @@ REST_FRAMEWORK = {
 
 }
 
-
 REST_AUTH_SERIALIZERS = {
-   'USER_DETAILS_SERIALIZER'   : 'auth_app.serializers.BaseUserSerializer',
-   'TOKEN_SERIALIZER'          : 'auth_app.serializers.TokenSerializer',
+   'USER_DETAILS_SERIALIZER' : 'auth_app.serializers.BaseUserSerializer',
+   'TOKEN_SERIALIZER' : 'auth_app.serializers.TokenSerializer',
    'PASSWORD_RESET_SERIALIZER' : 'auth_app.serializers.CustomPasswordResetSerializer',
    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'auth_app.serializers.CustomPasswordResetConfirmSerializer',
 
 }
-
 
 REST_AUTH_REGISTER_SERIALIZERS = {
        
@@ -179,13 +177,10 @@ JWT_AUTH = {
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=365),
 
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'auth_app.views.jwt_response_payload_handler',
-    
 }
 
 
 # Application definition
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
