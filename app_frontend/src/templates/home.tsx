@@ -164,14 +164,14 @@ export const Users = props => {
             <button type="button"
                     style={props.scrollBtnStyles}
                     onClick={(e)=>props.handleScroll('left')}
-                    className="scroll-btn scroll-btn-left btn-sm">
-                <ArrowLeft className="" size={20}/>
+                    className="scroll-btn scroll-btn-left">
+                <ArrowLeft className="" size={15}/>
             </button>
             <button type="button" 
                     style={{}}
                     onClick={(e)=>props.handleScroll('right')}
-                     className="scroll-btn scroll-btn-right btn-sm">
-                <ArrowRight className="" size={20}/>
+                     className="scroll-btn scroll-btn-right">
+                <ArrowRight className="" size={15}/>
             </button>
                         
             { _UserList(props, userList) }

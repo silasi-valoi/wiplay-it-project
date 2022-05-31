@@ -364,22 +364,16 @@ class IndexSerializer(BaseSerializer):
 				'posts':[]
 			}
 		
-		answer_bookmarks = Answer.objects.filter(
-								answers__author=self.current_user()
-
-							)
+		answers = Answer.objects.filter(answers__author=self.current_user())
 				
-		post_bookmarks = Post.objects.filter(
-								posts__author=self.current_user()
-							)
-		print(answer_bookmarks)
-		print(post_bookmarks)
+		posts = Post.objects.filter(posts__author=self.current_user())
+		
 		answer_bookmarks_serialiser = AnswerReadSerializer(
-											answer_bookmarks, 
+											answers, 
 											context=self.context,
 											many=True).data	
 		post_bookmarks_serialiser = PostReadSerializer(
-											post_bookmarks, 
+											posts, 
 											context=self.context,
 											many=True).data	
 		return {

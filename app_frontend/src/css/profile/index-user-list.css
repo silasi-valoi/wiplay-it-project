@@ -20,14 +20,13 @@
 
 
 .index-user-list-title-box {
-    margin : 5px 0;
+    margin : 5px 10px;
 }
-
 
 .index-user-list-title-box li {
     font-size:  12px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
-
 
 .index-user-list-container {
     display     : flex; 
@@ -40,25 +39,26 @@
 
 }
 
-.index-users-box {
-   
-}
-
 .index-user-list-box {
     border-radius : 10px; 
     border        : 1px solid  #D5D7D5;
     margin        : 5px 8px 5px 0; 
     max-width     : 150px;
     position: relative;
-    
 }
 
 .scroll-btn {
     position: absolute;
     top: 50%;
     background-color: #EEEDED;
-    border-radius: 65%;
     z-index: 999;
+    color: dimgrey;
+    width: 30px;
+    height: 30px;
+    padding: 6px 0px;
+    border-radius: 15px;
+    font-size: 8px;
+    text-align: center;
     border : 1px solid  #D5D7D5;
     
     

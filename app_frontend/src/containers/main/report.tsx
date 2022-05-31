@@ -38,6 +38,11 @@ class ReportContainer extends Component{
                 <HelpPageNavBar {...props}/>        
                 <div className="report-page">        
                     <div className="report-container">
+                        <ul className="feedback-title">
+                            <li className="">
+                                Report a bug
+                            </li>
+                        </ul>
                         <div className="report-box">
                             <MessageFormContainer {...props}/>
                         </div>

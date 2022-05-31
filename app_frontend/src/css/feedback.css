@@ -18,11 +18,14 @@
 		font-size   : 18px;
 		margin      : 0 0 17px;
 		text-align  : center;
+		border : px solid black;
 
 	}
 
 	.feedback-helper-text {
-		font-size: 16px;
+		font-size : 16px;
+		margin : 10px !important;
+		border : px solid red;
 	}
 
 }

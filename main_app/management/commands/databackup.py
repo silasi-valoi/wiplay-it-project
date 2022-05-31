@@ -278,6 +278,7 @@ class Command(BaseCommand):
         self.previous_users = users
         
         for user in users:
+            user.pop('country', False)
             email = user['email']
             search_data = {"email":email}
             if not self.data_exist(User, search_data):

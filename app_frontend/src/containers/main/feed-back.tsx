@@ -23,7 +23,6 @@ class FeedBackContainer extends Component{
         
     }
 
-
     render(){
    
         let apiUrl = Apis.getFeedBackApi();
@@ -40,19 +39,19 @@ class FeedBackContainer extends Component{
                     <div className="feedback-container">
                         <ul className="feedback-title">
                             <li className="">
-                                How would want to see this platform be?
+                                How would you like to see this platform be?
                             </li>
                         </ul>
                         <ul className="feedback-helper-text">
                             <li className="">
-                                Wiplayit is a new platform and everyday we work to make
+                                Wiplayit is a new social network and everyday we work to make
                                 this platform a better place for football lovers. 
                             </li>
 
                             <li className="">
-                                So as a user of this flatform we would like to hear from you
-                                what we can add or change in the platform to make it great 
-                                and enjoyable. 
+                                So as a user we would like to hear from you
+                                what we can do or change in the social network platform to make it great 
+                                and enjoyable.  
                             </li>
                         </ul>
 

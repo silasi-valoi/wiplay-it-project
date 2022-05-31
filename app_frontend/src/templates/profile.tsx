@@ -270,7 +270,7 @@ export const ImageView  = (props) => {
     return (
         <div className='image-view-modal'>
             <ModalCloseBtn> 
-               <Icon.X id="feather-x" size={25} color="white"/>
+               <Icon.X id="feather-x" size={30} color="white"/>
             </ModalCloseBtn> 
             <div className='image-view-box'>
                 <img src={props.image} ></img>
