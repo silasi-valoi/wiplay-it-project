@@ -25,7 +25,7 @@ djangorestframework-jwt==1.11.0
 idna==3.3
 jmespath==0.10.0
 mysqlclient==2.1.0
-oauthlib==3.1.1
+oauthlib==3.2.1
 phonenumbers==8.12.41
 Pillow==9.0.0
 pycparser==2.21
