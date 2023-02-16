@@ -42,4 +42,4 @@ six==1.16.0
 sqlparse==0.4.2
 twilio==6.63.2
 urllib3==1.26.8
-Werkzeug==2.1.1
+Werkzeug==2.2.3
